@@ -1,3 +1,0 @@
-library
-send2trash
-psutil
