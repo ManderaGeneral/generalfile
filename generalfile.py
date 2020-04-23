@@ -13,5 +13,5 @@ TODO: Change suffix, "suffix" is apparently already used for filetype
 TODO: Multiple dots are actually allowed
 """
 
-from classfile import File, Path, PathList
-from classfiletsv import FileTSV
+from base.classfile import File, Path, PathList
+from extensions.classfiletsv import FileTSV

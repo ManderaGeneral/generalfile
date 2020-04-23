@@ -90,5 +90,5 @@ class PathList(list):
 
 
 
-from classfile import File
-from classpath import Path
+from base.classfile import File
+from base.classpath import Path

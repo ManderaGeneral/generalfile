@@ -1,4 +1,4 @@
-from classfile import *
+from base.classfile import *
 
 import pandas as pd
 import csv

@@ -369,28 +369,4 @@ class Path(str):
             return absolutePath
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-from classpathlist import PathList
-from classfile import File
+from base.classfile import File

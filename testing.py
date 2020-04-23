@@ -1,15 +1,9 @@
 """
 Random testing
 """
-import unittest
 import multiprocessing as mp
 
 from generalfile import *
-
-import time
-import datetime as dt
-
-
 
 
 def threadTestWrite(queue, i):
