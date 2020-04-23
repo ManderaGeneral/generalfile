@@ -248,7 +248,7 @@ class File:
                     File.rename(pathNew, path.filenamePure)
                 File.delete(pathLock)
             except FileExistsError:
-                if (dt.datetime.now() - File.getTimeModified(pathLock)).seconds > 5:
+                if (modTime := File.getTimeModified(pathLock)) is not None and (dt.datetime.now() - modTime).seconds > 5:
                     File.delete(pathLock)
             else:
                 break
@@ -390,8 +390,8 @@ class File:
             except FileNotFoundError:
                 return False
             # Try again since it might just be being used by another process
-            # except PermissionError:
-                # return File.delete(path)
+            except PermissionError:
+                return File.delete(path)
         elif path.isFolder:
             shutil.rmtree(path, ignore_errors=True)
         return True
@@ -439,11 +439,14 @@ class File:
         Gets datetime of when file (or folder?) was last modified
 
         :param str path: Path or Str
-        :return: Datetime
+        :return: Datetime or None
         """
         path = File.toPath(path)
+        try:
+            modTime = os.path.getmtime(path)
+        except FileNotFoundError:
+            return None
 
-        modTime = os.path.getmtime(path)
         intModTime = int(modTime)
         return dt.datetime.fromtimestamp(intModTime)
 
@@ -454,11 +457,15 @@ class File:
         Can be innacurate it seems when re-creating files.
 
         :param str path: Path or Str
-        :return: Datetime
+        :return: Datetime or None
         """
         path = File.toPath(path)
 
-        createTime = os.path.getctime(path)
+        try:
+            createTime = os.path.getctime(path)
+        except FileNotFoundError:
+            return None
+
         intCreateTime = int(createTime)
         return dt.datetime.fromtimestamp(intCreateTime)
 
