@@ -7,12 +7,14 @@ import shutil
 import json
 import pathlib
 import datetime as dt
+from generallibrary import Timer
 
 class File:
     """
     File class exists so that FileTSV for example can inherit it.
     Method parameter 'path' takes a Path or a Str, Str is converted to Path.
     """
+    timeoutSeconds = 5
     def __init__(self):
         raise UserWarning("No need to instantiate File, all methods are static")
 
@@ -205,7 +207,7 @@ class File:
         return default if read is None else read
 
     @staticmethod
-    def write(path, writeObj=None, backup=True, overwrite=False):
+    def write(path, writeObj=None, overwrite=False):
         """
         Dynamic function that can write to any document if methods exist for that filetype.
 
@@ -219,7 +221,6 @@ class File:
         :param bool overwrite: Set to False if overwriting shouldn't be allowed
         :param str path: Path or Str
         :param writeObj: A useful object that the dynamic write method can use
-        :param backup: Create backup or not to prevent losing data
         :return: Whatever the write method returns
         :raises EnvironmentError: if write method is missing for that filetype
         :raises FileExistsError: if overwriting when overwrite is set to False
@@ -233,10 +234,10 @@ class File:
 
         if not exists:
             File.createFolder(path)
-            backup = False
 
         pathNew = path.setSuffix("NEW")
         pathLock = path.setSuffix("LOCK")
+        timer = Timer()
 
         while True:
             try:
@@ -248,10 +249,14 @@ class File:
                     File.rename(pathNew, path.filenamePure)
                 File.delete(pathLock)
             except FileExistsError:
-                if (modTime := File.getTimeModified(pathLock)) is not None and (dt.datetime.now() - modTime).seconds > 5:
+                if Timer(File.getTimeModified(pathLock)).seconds() > 5:
                     File.delete(pathLock)
+            except PermissionError:
+                pass
             else:
                 break
+            if timer.seconds() > File.timeoutSeconds:
+                raise TimeoutError(f"Couldn't open {pathLock} for writing")
         return writeReturn
 
     @staticmethod
@@ -384,14 +389,20 @@ class File:
         if not File.exists(path):
             return False
 
+        timer = Timer()
         if path.isFile:
-            try:
-                os.remove(path)
-            except FileNotFoundError:
-                return False
-            # Try again since it might just be being used by another process
-            except PermissionError:
-                return File.delete(path)
+            while True:
+                try:
+                    os.remove(path)
+                except FileNotFoundError:
+                    return False
+                # Try again since it might just be being used by another process
+                except PermissionError:
+                    pass
+                else:
+                    break
+                if timer.seconds() > File.timeoutSeconds:
+                    raise TimeoutError(f"Couldn't delete {path}")
         elif path.isFolder:
             shutil.rmtree(path, ignore_errors=True)
         return True
