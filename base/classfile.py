@@ -15,6 +15,7 @@ class File:
     Method parameter 'path' takes a Path or a Str, Str is converted to Path.
     """
     timeoutSeconds = 5
+    deadLockSeconds = 5
     def __init__(self):
         raise UserWarning("No need to instantiate File, all methods are static")
 
@@ -22,7 +23,6 @@ class File:
     def toPath(path, requireFiletype=None, requireExists=None):
         """
         Makes sure we're using Path class.
-        Doesn't create a new object if it's already a Path.
         Has built-in parameters to scrub.
         Uses Path.toPath() but it also has extra functionality to check whether path exists.
 
@@ -249,7 +249,8 @@ class File:
                     File.rename(pathNew, path.filenamePure)
                 File.delete(pathLock)
             except FileExistsError:
-                if Timer(File.getTimeModified(pathLock)).seconds() > 5:
+                secondsSinceChange = Timer(File.getTimeModified(pathLock)).seconds()
+                if secondsSinceChange > File.deadLockSeconds:
                     File.delete(pathLock)
             except PermissionError:
                 pass
@@ -261,12 +262,26 @@ class File:
 
     @staticmethod
     def rename(path, name):
-        path = File.toPath(path, requireExists=True)
+        """
+        Rename a file or folder. Cannot change filetype.
 
+        :param str path: Generic path to folder or file that exists.
+        :param name: New name of folder or file.
+        :return: None
+        :raises FileExistsError: If new path exists
+        :raises NameError: If used invalid name
+        """
+        path = File.toPath(path, requireExists=True)
         if path.isFile:
-            os.rename(path, path.setFilenamePure(name).setSuffix(None))
-        elif path.isFolder:
-            os.rename(path, path.getParent().addPath(name))
+            newPath = path.setFilenamePure(name).setSuffix(None)
+        else:
+            newPath = path.getParent().addPath(name)
+        if File.exists(newPath):
+            raise FileExistsError(f"New path {newPath} exists already")
+        try:
+            os.rename(path, newPath)
+        except FileExistsError:
+            raise NameError(f"{newPath} probably contains an invalid name such as CON, PRN, NUL or AUX")
 
     @staticmethod
     def copy(path, destPath, overwrite=False):
@@ -283,6 +298,7 @@ class File:
         :raises FileExistsError: If trying to overwrite when not allowed
         :raises AttributeError: If filetypes don't match
         :raises NotADirectoryError: If trying to copy folder to file
+        :raises NameError: If used invalid name
         """
         path = File.toPath(path, requireExists=True)
         path = File.getAbsolutePath(path)
@@ -303,7 +319,10 @@ class File:
                     raise FileExistsError("Not allowed to overwrite")
 
             File.createFolder(destPath)
-            shutil.copy(path, destPath, follow_symlinks=False)
+            try:
+                shutil.copy(path, destPath, follow_symlinks=False)
+            except FileNotFoundError:
+                raise NameError(f"{destPath} probably contains an invalid name such as CON, PRN, NUL or AUX")
 
         elif path.isFolder and destPath.isFolder:
             if not overwrite:
@@ -313,7 +332,10 @@ class File:
                 if any(absoluteDestPaths.exists()):
                     raise FileExistsError("Atleast one file exists and not allowed to overwrite")
 
-            shutil.copytree(path, destPath, dirs_exist_ok=True)
+            try:
+                shutil.copytree(path, destPath, dirs_exist_ok=True)
+            except NotADirectoryError:
+                raise NameError(f"{destPath} probably contains an invalid name such as CON, PRN, NUL or AUX")
         else:
             raise NotADirectoryError("Cannot copy folder to file")
 
@@ -321,9 +343,11 @@ class File:
     def createFolder(path):
         """
         Create folder(s) for path.
+        If a filepath is given then the filename is ignored.
 
         :param str path: Path or Str
         :return: Whether any folders were created or not
+        :raises NameError: If used invalid name
         """
         path = File.toPath(path)
         path = File.getAbsolutePath(path)
@@ -332,7 +356,11 @@ class File:
         if File.exists(path):
             return False
 
-        pathlib.Path(path).mkdir(parents=True, exist_ok=True)
+        try:
+            pathlib.Path(path).mkdir(parents=True, exist_ok=True)
+        except NotADirectoryError:
+            raise NameError(f"{path} probably contains an invalid name such as CON, PRN, NUL or AUX")
+
         return True
 
     @staticmethod

@@ -7,6 +7,7 @@ Exceptions raised directly by indirect function should be generic Exception
 import unittest
 import multiprocessing as mp
 import datetime as dt
+import time
 
 from generalfile import *
 
@@ -189,6 +190,19 @@ class FileTest(unittest.TestCase):
         self.assertEqual(File.write("folder/folder/folder/test.txt", "helloa", overwrite=True), '"helloa"')
         self.assertEqual(File.write(File.getAbsolutePath("folder/folder/folder/test.txt"), "hellos", overwrite=True), '"hellos"')
 
+    def test_rename(self):
+        File.write("folder/test.txt")
+        self.assertRaises(NameError, File.rename, "folder/test.txt", "aux")
+        self.assertRaises(NameError, File.rename, "folder", "aux")
+
+        File.rename("folder/test.txt", "hello")
+        self.assertTrue(File.exists("folder/hello.txt"))
+        self.assertFalse(File.exists("folder/test.txt"))
+        File.rename("folder", "folder2")
+        self.assertTrue(File.exists("folder2"))
+        self.assertFalse(File.exists("folder"))
+
+
     def test_copy(self):
         File.write("exists.txt", 1)
         File.write("exists2.txt", 2)
@@ -204,6 +218,10 @@ class FileTest(unittest.TestCase):
         self.assertRaises(NotADirectoryError, File.copy, "folder", "exists.txt")
         self.assertRaises(FileExistsError, File.copy, "exists.txt", "folder")
         self.assertRaises(FileExistsError, File.copy, "folder", "")
+
+        self.assertRaises(NameError, File.copy, "exists.txt", "aux.txt")
+        self.assertRaises(NameError, File.copy, "exists.txt", "aux")
+        self.assertRaises(NameError, File.copy, "folder", "aux")
 
         File.copy(File.getAbsolutePath("Exists.txt"), "exists7.txt")
         self.assertEqual(File.read("exisTs7.txt"), 1)
@@ -351,8 +369,6 @@ class FileTest(unittest.TestCase):
         self.assertLess((dt.datetime.now() - File.getTimeCreated(File.getAbsolutePath("folder"))).seconds, 3)
         self.assertLess((dt.datetime.now() - File.getTimeCreated("Folder")).seconds, 3)
 
-
-
     def test_threads(self):
         threads = []
         queue = mp.Queue()
@@ -376,7 +392,6 @@ def threadTest(queue, i):
     :param int i:
     """
     queue.put(int(File.write("test.txt", i, overwrite=True)))
-
 
 if __name__ == "__main__":
     x = unittest.main()

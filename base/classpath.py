@@ -100,7 +100,6 @@ class Path(str):
     def toPath(path, requireFiletype = None):
         """
         Makes sure we're using Path class.
-        Doesn't create a new object if it's already a Path.
         Has built-in parameters to scrub.
 
         :param str path: Generic Path
