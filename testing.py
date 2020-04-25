@@ -1,19 +1,29 @@
 """
 Random testing
 """
-import multiprocessing as mp
-
 from generalfile import *
+import pandas as pd
 
 
 File.setWorkingDir("test/tests")
-File.clearFolder("")
 
-File.write("test.txt")
 
-File.copy("", "aux")
+df = pd.DataFrame({
+    "a": {"color": "red", "value": 5},
+    "b": {"color": "red", "value": 2}
+})
 
-# File.rename("test.txt", "aux")
+# df = pd.DataFrame([
+#     {"color": "red", "value": 5},
+#     {"color": "red", "value": 2}
+# ])
 
-# File.createFolder("aux")
 
+
+FileTSV.write("df.tsv", df, overwrite=True)
+
+print(df)
+
+df = FileTSV.read("df.tsv")
+
+print(df)

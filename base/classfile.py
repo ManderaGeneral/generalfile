@@ -17,7 +17,7 @@ class File:
     timeoutSeconds = 5
     deadLockSeconds = 5
     def __init__(self):
-        raise UserWarning("No need to instantiate File, all methods are static")
+        raise UserWarning("No need to instantiate File, all methods are static or classmethods")
 
     @staticmethod
     def toPath(path, requireFiletype=None, requireExists=None):
@@ -178,8 +178,8 @@ class File:
                 return None
             return jsonDumps
 
-    @staticmethod
-    def read(path, default=None):
+    @classmethod
+    def read(cls, path, default=None):
         """
         Dynamic function that can read any document if methods exist for that filetype
 
@@ -197,7 +197,7 @@ class File:
         """
         path = File.toPath(path, requireFiletype=True)
         exists = File.exists(path)
-        if (readMethod := getattr(File, "_read_{}".format(path.filetype), None)) is None:
+        if (readMethod := getattr(cls, "_read_{}".format(path.filetype), None)) is None:
             raise EnvironmentError("Missing read method for filetype {}".format(path.filetype))
         if not exists:
             return default
@@ -206,8 +206,8 @@ class File:
             read = readMethod(textIO)
         return default if read is None else read
 
-    @staticmethod
-    def write(path, writeObj=None, overwrite=False):
+    @classmethod
+    def write(cls, path, writeObj=None, overwrite=False):
         """
         Dynamic function that can write to any document if methods exist for that filetype.
 
@@ -227,7 +227,7 @@ class File:
         """
         path = File.toPath(path, requireFiletype=True)
         exists = File.exists(path)
-        if (writeMethod := getattr(File, "_write_{}".format(path.filetype), None)) is None:
+        if (writeMethod := getattr(cls, "_write_{}".format(path.filetype), None)) is None:
             raise EnvironmentError("Missing write method for filetype {}".format(path.filetype))
         if exists and not overwrite:
             raise FileExistsError("Tried to overwrite {} when overwrite was False".format(path))
