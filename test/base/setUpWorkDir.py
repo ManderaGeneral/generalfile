@@ -3,8 +3,8 @@ from generalfile import *
 
 class SetUpWorkDir:
     """Class to set up working dir for tests, File extensions import this class."""
-    workingDir = Path("test/tests").getAbsolute()
-    if not workingDir.getParent().endsWithPath("test"):
+    workingDir = Path(test.__file__).getParent().addPath("tests")
+    if not workingDir.endsWithPath("generalfile/test/tests"):
         raise EnvironmentError(f"Failed setting correct working dir, should be ..test/tests but it's {workingDir}")
 
     @classmethod

@@ -5,10 +5,8 @@ import pandas as pd
 from generalfile import *
 
 
-
-test.SetUpWorkDir.activate()
-
-print(File.getWorkingDir())
+# test.SetUpWorkDir.activate()
+# print(File.getWorkingDir())
 
 
 
