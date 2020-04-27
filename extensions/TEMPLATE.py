@@ -21,8 +21,6 @@ class FileXXX(File):
 
 
 
-
-
 class FileTSV(File):
     def scrubDictOfDicts(self, dictOfDicts, indexName):
         """

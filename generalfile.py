@@ -17,4 +17,3 @@ TODO: pip install flynt to convert format() to f strings
 """
 
 from base.classfile import File, Path, PathList
-from extensions.classfiletsv import FileTSV

@@ -7,9 +7,11 @@ import shutil
 import json
 import pathlib
 import datetime as dt
-from generallibrary import Timer
 
-class File:
+from generallibrary import Timer
+from extensions.classfiletsv import FileTSV
+
+class File(FileTSV):
     """
     File class exists so that FileTSV for example can inherit it.
     Method parameter 'path' takes a Path or a Str, Str is converted to Path.
@@ -533,3 +535,4 @@ class File:
 
 from base.classpath import Path
 from base.classpathlist import PathList
+
