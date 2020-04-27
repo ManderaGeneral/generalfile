@@ -6,21 +6,16 @@ Exceptions raised directly by indirect function should be generic Exception
 """
 import unittest
 import multiprocessing as mp
-import datetime as dt
 import time
 
 from generalfile import *
 
 
-class FileTest(unittest.TestCase):
-    originalWorkingDir = File.getWorkingDir()
-    workingDir = File.getAbsolutePath("tests")
 
+class FileTest(unittest.TestCase):
     def setUp(self):
         """Set working dir and clear folder"""
-        File.setWorkingDir(self.workingDir)
-        if File.getWorkingDir().endsWithPath("tests"):
-            File.clearFolder("", delete=True)
+        test.SetUpWorkDir.activate()
 
     def test_toPath(self):
         File.write("exists.txt")
@@ -157,8 +152,8 @@ class FileTest(unittest.TestCase):
     def test_read(self):
         self.assertRaises(Exception, File.read, "folder")
         self.assertRaises(Exception, File.read, File.getAbsolutePath("folder"))
-        self.assertRaises(EnvironmentError, File.read, "missingMethod.tsv")
-        self.assertRaises(EnvironmentError, File.read, File.getAbsolutePath("missingMethod.tsv"))
+        self.assertRaises(EnvironmentError, File.read, "missingMethod.nonExistantFiletype")
+        self.assertRaises(EnvironmentError, File.read, File.getAbsolutePath("missingMethod.nonExistantFiletype"))
 
         self.assertEqual(File.read(File.getAbsolutePath("doesntExist.txt")), None)
         self.assertEqual(File.read("doesntExist.txt"), None)
@@ -180,7 +175,7 @@ class FileTest(unittest.TestCase):
     def test_write(self):
         self.assertRaises(Exception, File.write, "folder")
         self.assertRaises(Exception, File.write, File.getAbsolutePath("folder"))
-        self.assertRaises(EnvironmentError, File.write, "missingMethod.tsv")
+        self.assertRaises(EnvironmentError, File.write, "missingMethod.nonExistantFiletype")
         self.assertIsNone(File.write("test.txt"))
         self.assertRaises(FileExistsError, File.write, "test.txt")
         self.assertRaises(FileExistsError, File.write, "tEst.txt")
@@ -354,20 +349,20 @@ class FileTest(unittest.TestCase):
 
     def test_getTimeModified(self):
         File.write("folder/test.txt")
-
-        self.assertLess((dt.datetime.now() - File.getTimeModified("folder/test.txt")).seconds, 3)
-        self.assertLess((dt.datetime.now() - File.getTimeModified(File.getAbsolutePath("folder/test.txt"))).seconds, 3)
-        self.assertLess((dt.datetime.now() - File.getTimeModified("folder")).seconds, 3)
-        self.assertLess((dt.datetime.now() - File.getTimeModified(File.getAbsolutePath("folder"))).seconds, 3)
-        self.assertLess((dt.datetime.now() - File.getTimeModified("Folder")).seconds, 3)
+        # Sometimes it got a really small negative number because it's so fast, such as "-2.384185791015625e-07"
+        self.assertTrue(-0.1 <= time.time() - File.getTimeModified("folder/test.txt") < 0.1)
+        self.assertTrue(-0.1 <= time.time() - File.getTimeModified(File.getAbsolutePath("folder/test.txt")) < 0.1)
+        self.assertTrue(-0.1 <= time.time() - File.getTimeModified("folder") < 0.1)
+        self.assertTrue(-0.1 <= time.time() - File.getTimeModified(File.getAbsolutePath("folder")) < 0.1)
+        self.assertTrue(-0.1 <= time.time() - File.getTimeModified("Folder") < 0.1)
 
     def test_getTimeCreated(self):
         File.write("folder/test.txt")
-        self.assertLess((dt.datetime.now() - File.getTimeCreated("folder/test.txt")).seconds, 3)
-        self.assertLess((dt.datetime.now() - File.getTimeCreated(File.getAbsolutePath("folder/test.txt"))).seconds, 3)
-        self.assertLess((dt.datetime.now() - File.getTimeCreated("folder")).seconds, 3)
-        self.assertLess((dt.datetime.now() - File.getTimeCreated(File.getAbsolutePath("folder"))).seconds, 3)
-        self.assertLess((dt.datetime.now() - File.getTimeCreated("Folder")).seconds, 3)
+        self.assertTrue(-0.1 <= time.time() - File.getTimeCreated("folder/test.txt") < 0.1)
+        self.assertTrue(-0.1 <= time.time() - File.getTimeCreated(File.getAbsolutePath("folder/test.txt")) < 0.1)
+        self.assertTrue(-0.1 <= time.time() - File.getTimeCreated("folder") < 0.1)
+        self.assertTrue(-0.1 <= time.time() - File.getTimeCreated(File.getAbsolutePath("folder")) < 0.1)
+        self.assertTrue(-0.1 <= time.time() - File.getTimeCreated("Folder") < 0.1)
 
     def test_threads(self):
         threads = []
@@ -395,6 +390,7 @@ def threadTest(queue, i):
 
 if __name__ == "__main__":
     x = unittest.main()
+
 
 
 
@@ -437,3 +433,82 @@ if __name__ == "__main__":
     #             return File().read(path, default={})
     #         else:
     #             return File().readValue(path, key)
+
+
+
+
+# class FileTSV(File):
+#     def scrubDictOfDicts(self, dictOfDicts, indexName):
+#         """
+#         dictOfDicts can be singular dict also
+#         """
+#         if isinstance(dictOfDicts, dict):
+#             if isinstance(lib.dictFirstValue(dictOfDicts), dict):
+#                 return dictOfDicts
+#             else:
+#                 return {dictOfDicts[indexName]: dictOfDicts}
+#
+#         print(dictOfDicts)
+#         lib.error("dictOfDicts failed scrubbing, printed above")
+#
+#     def tsvWrite(self, filepath, dictOfDicts, indexName):
+#         dictOfDicts = self.scrubDictOfDicts(dictOfDicts, indexName)
+#         filepath = self.yesTsv(filepath)
+#         self.createFolderPath(filepath)
+#
+#         with open(filepath, 'w') as tsvfile:
+#             writer = csv.writer(tsvfile, delimiter = "\t", lineterminator = "\n")
+#             writer.writerow(list(lib.dictFirstValue(dictOfDicts, iterate = True).keys()))
+#             for index, subDict in dictOfDicts.items():
+#                 writer.writerow(list(subDict.values()))
+#         return dictOfDicts
+#
+#     def tsvAppend(self, filepath, dictOfDicts, indexName):
+#         """
+#         Write instead if file doesn't exist
+#         """
+#         filepath = self.yesTsv(filepath)
+#
+#         if not self.exists(filepath):
+#             return self.tsvWrite(filepath, dictOfDicts, indexName)
+#
+#         dictOfDicts = self.scrubDictOfDicts(dictOfDicts, indexName)
+#
+#         with open(filepath, 'a') as tsvfile:
+#             writer = csv.writer(tsvfile, delimiter = "\t", lineterminator = "\n")
+#             for index, subDict in dictOfDicts.items():
+#                 writer.writerow(list(subDict.values()))
+#
+#         return dictOfDicts
+#
+#     def tsvRowToDict(self, row):
+#         return {k: lib.strToDynamicType(v) for k, v in row.items()}
+#
+#     def tsvRead(self, filepath, indexName):
+#         """
+#         Manually add index to each created dict
+#         Check for indexName duplicates, if there are any just use the last one
+#         row in reader is an iterator I think, it contains all values as strings, first row will be the labels
+#         """
+#         filepath = self.yesTsv(filepath)
+#         if not self.exists(filepath):
+#             return {}
+#
+#         with open(filepath, 'r') as tsvfile:
+#             reader = csv.DictReader(tsvfile, delimiter = "\t")
+#             returnDict = {subDict[indexName]: subDict for subDict in map(self.tsvRowToDict, reader)}
+#             # returnDict = {subDict[indexName]: subDict for subDict in map(dict, reader)}  # Without casting, 3 times faster
+#
+#         return returnDict
+#
+#     def tsvUpdate(self, filepath, values, indexName):
+#         """
+#         See if row exists, insert new if it doesn't, update if it does
+#         Use pandas dataframe?
+#         """
+#         df = pd.read_csv(filepath)
+#         print(df.head(5))
+#
+#     def yesTsv(self, filepath):
+#         # return "{}.tsv".format(self.noFiletypeEnding(filepath))
+#         return ""

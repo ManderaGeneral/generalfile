@@ -51,6 +51,7 @@ class Path(str):
         self.partsList = self.split("/")
 
         # Catch some simple mistakes
+
         if self.count(".") > 1:
             raise WindowsError("More than one dot in {}".format(self))
         for i, part in enumerate(self.partsList):

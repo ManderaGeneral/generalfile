@@ -477,19 +477,16 @@ class File(FileTSV):
     @staticmethod
     def getTimeModified(path):
         """
-        Gets datetime of when file (or folder?) was last modified
+        Gets time of when file (or folder?) was last modified
 
         :param str path: Path or Str
-        :return: Datetime or None
+        :return: Time or None if file wasn't found
         """
         path = File.toPath(path)
         try:
-            modTime = os.path.getmtime(path)
+            return os.path.getmtime(path)
         except FileNotFoundError:
             return None
-
-        intModTime = int(modTime)
-        return dt.datetime.fromtimestamp(intModTime)
 
     @staticmethod
     def getTimeCreated(path):
@@ -501,34 +498,10 @@ class File(FileTSV):
         :return: Datetime or None
         """
         path = File.toPath(path)
-
         try:
-            createTime = os.path.getctime(path)
+            return os.path.getctime(path)
         except FileNotFoundError:
             return None
-
-        intCreateTime = int(createTime)
-        return dt.datetime.fromtimestamp(intCreateTime)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

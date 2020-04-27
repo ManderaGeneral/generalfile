@@ -21,7 +21,7 @@ class FileTSV:
         typeChecker(df, pd.DataFrame)
 
         path = cls.toPath(textIO.name)
-        df.to_csv(path, sep="\t")
+        df.to_csv(path, sep="\t", quoting=csv.QUOTE_NONNUMERIC)
 
         # writer = csv.DictWriter(textIO, fieldnames=tuple(df.keys()), delimiter="\t", lineterminator="\n")
         # writer.writerows(df)
@@ -35,7 +35,7 @@ class FileTSV:
         :return:
         """
         path = cls.toPath(textIO.name)
-        df = pd.read_csv(path, sep="\t", index_col=0)
+        df = pd.read_csv(path, sep="\t", index_col=0, quoting=csv.QUOTE_NONNUMERIC)
         return df
 
 
