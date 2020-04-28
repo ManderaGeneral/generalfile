@@ -439,10 +439,11 @@ class File(FileTSV):
                     raise TimeoutError(f"Couldn't delete {path}")
         elif path.isFolder:
             shutil.rmtree(path, ignore_errors=True)
-        # while File.exists(path):
-        #     print(f"{path} still exists")
-        #     sleep(0.1)
-        #     raise WindowsError
+        # If path is working dir then shutil.rmtree() only clears folder.
+        if not File.sameDestination(path, File.getWorkingDir()):
+            while File.exists(path):
+                print(f"{path} still exists")
+                sleep(0.1)
         return True
 
     @staticmethod

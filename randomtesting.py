@@ -5,15 +5,24 @@ import pandas as pd
 from generalfile import *
 import os
 import shutil
+import generallibrary as lib
 
 test.SetUpWorkDir.activate()
-File.openFolder("")
+# File.openFolder("")
 
 
 
 
+File.write("folder/folder2/test.txt")
 
-# shutil.rmtree(Path().getParent(), ignore_errors=True)
+# File.clearFolder("", delete=True)
+
+# File.setWorkingDir(File.getWorkingDir().getParent())
+
+
+lib.sleep(2)
+
+shutil.rmtree(Path().getParent(2).addPath("hello"), ignore_errors=True)
 
 
 
