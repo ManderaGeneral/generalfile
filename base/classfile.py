@@ -246,20 +246,15 @@ class File(FileTSV):
                 with open(pathLock, "x") as lockIO:
                     with open(pathNew, "w") as textIO:
                         writeReturn = writeMethod(textIO, writeObj)
-                    if exists:
-                        File.delete(path)
+                    File.delete(path)
                     File.rename(pathNew, path.filenamePure)
                     lockIO.close()
                     File.delete(pathLock)
             except FileExistsError as e:
-                secondsSinceChange = Timer(File.getTimeModified(pathLock)).seconds()
-                # File.delete(pathLock)  # I think we can delete directly if we get FileExistsError from "with open()" because PermErr. triggers first
-                sleep(0.1)
-                print(e, secondsSinceChange)
+                # PermissionError would have triggered if we couldn't delete lock
+                File.delete(pathLock)
             except PermissionError as e:
-                secondsSinceChange = Timer(File.getTimeModified(pathLock)).seconds()
-                sleep(0.1)
-                print(e, secondsSinceChange)
+                pass
             else:
                 break
             if timer.seconds() > File.timeoutSeconds:
