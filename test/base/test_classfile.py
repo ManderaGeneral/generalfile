@@ -364,6 +364,9 @@ class FileTest(unittest.TestCase):
         self.assertTrue(-0.1 <= time.time() - File.getTimeCreated(File.getAbsolutePath("folder")) < 0.1)
         self.assertTrue(-0.1 <= time.time() - File.getTimeCreated("Folder") < 0.1)
 
+    def test_openFolder(self):
+        self.assertIsNone(File.openFolder(Path().getParent(2)))
+
     def test_threads(self):
         threads = []
         queue = mp.Queue()

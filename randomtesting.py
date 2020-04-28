@@ -3,10 +3,13 @@ Random testing
 """
 import pandas as pd
 from generalfile import *
+import os
+
+test.SetUpWorkDir.activate()
 
 
-# test.SetUpWorkDir.activate()
-# print(File.getWorkingDir())
+
+
 
 
 

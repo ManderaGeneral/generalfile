@@ -8,7 +8,7 @@ import json
 import pathlib
 import datetime as dt
 
-from generallibrary import Timer
+from generallibrary import Timer, sleep
 from extensions.classfiletsv import FileTSV
 
 class File(FileTSV):
@@ -17,7 +17,7 @@ class File(FileTSV):
     Method parameter 'path' takes a Path or a Str, Str is converted to Path.
     """
     timeoutSeconds = 5
-    deadLockSeconds = 5
+    deadLockSeconds = 3
     def __init__(self):
         raise UserWarning("No need to instantiate File, all methods are static or classmethods")
 
@@ -243,19 +243,23 @@ class File(FileTSV):
 
         while True:
             try:
-                with open(pathLock, "x"):
+                with open(pathLock, "x") as asd:
                     with open(pathNew, "w") as textIO:
                         writeReturn = writeMethod(textIO, writeObj)
                     if exists:
                         File.delete(path)
                     File.rename(pathNew, path.filenamePure)
                 File.delete(pathLock)
-            except FileExistsError:
+            except FileExistsError as e:
+                # HERE ** FileExistsError is also raised by File.rename, we're getting "New path test.txt exists already"
                 secondsSinceChange = Timer(File.getTimeModified(pathLock)).seconds()
-                if secondsSinceChange > File.deadLockSeconds:
-                    File.delete(pathLock)
-            except PermissionError:
-                pass
+                File.delete(pathLock)  # I think we can delete directly if we get FileExistsError from "with open()" because PermErr. triggers first
+                sleep(0.1)
+                print(e, secondsSinceChange)
+            except PermissionError as e:
+                secondsSinceChange = Timer(File.getTimeModified(pathLock)).seconds()
+                sleep(0.1)
+                print(e, secondsSinceChange)
             else:
                 break
             if timer.seconds() > File.timeoutSeconds:
@@ -487,6 +491,7 @@ class File(FileTSV):
             return os.path.getmtime(path)
         except FileNotFoundError:
             return None
+        # except PermissionError: HERE **
 
     @staticmethod
     def getTimeCreated(path):
@@ -502,6 +507,16 @@ class File(FileTSV):
             return os.path.getctime(path)
         except FileNotFoundError:
             return None
+
+    @staticmethod
+    def openFolder(path):
+        """
+        Open file explorer on given path, files are ignored
+
+        :param str path: Generic path that exists
+        """
+        path = File.toPath(path, requireExists=True).getPathWithoutFile()
+        os.startfile(path)
 
 
 
