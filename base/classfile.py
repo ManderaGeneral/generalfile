@@ -437,8 +437,7 @@ class File(FileTSV):
         # If path is working dir then shutil.rmtree() only clears folder.
         if not File.sameDestination(path, File.getWorkingDir()):
             while File.exists(path):
-                print(f"{path} still exists")
-                sleep(0.1)
+                sleep(0.001)
         return True
 
     @staticmethod
