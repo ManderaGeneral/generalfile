@@ -1,4 +1,5 @@
 """Just contains class for File handling tests"""
+
 from generalfile import *
 
 class SetUpWorkDir:
@@ -13,3 +14,5 @@ class SetUpWorkDir:
         File.setWorkingDir(cls.workingDir)
         if File.getWorkingDir().endsWithPath("tests"):
             File.clearFolder("", delete=True)
+
+
