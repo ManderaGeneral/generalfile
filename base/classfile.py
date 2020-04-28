@@ -243,17 +243,17 @@ class File(FileTSV):
 
         while True:
             try:
-                with open(pathLock, "x") as asd:
+                with open(pathLock, "x") as lockIO:
                     with open(pathNew, "w") as textIO:
                         writeReturn = writeMethod(textIO, writeObj)
                     if exists:
                         File.delete(path)
                     File.rename(pathNew, path.filenamePure)
-                File.delete(pathLock)
+                    lockIO.close()
+                    File.delete(pathLock)
             except FileExistsError as e:
-                # HERE ** FileExistsError is also raised by File.rename, we're getting "New path test.txt exists already"
                 secondsSinceChange = Timer(File.getTimeModified(pathLock)).seconds()
-                File.delete(pathLock)  # I think we can delete directly if we get FileExistsError from "with open()" because PermErr. triggers first
+                # File.delete(pathLock)  # I think we can delete directly if we get FileExistsError from "with open()" because PermErr. triggers first
                 sleep(0.1)
                 print(e, secondsSinceChange)
             except PermissionError as e:
@@ -274,7 +274,7 @@ class File(FileTSV):
         :param str path: Generic path to folder or file that exists.
         :param name: New name of folder or file.
         :return: None
-        :raises FileExistsError: If new path exists
+        :raises EnvironmentError: If new path exists
         :raises NameError: If used invalid name
         """
         path = File.toPath(path, requireExists=True)
@@ -283,7 +283,7 @@ class File(FileTSV):
         else:
             newPath = path.getParent().addPath(name)
         if File.exists(newPath):
-            raise FileExistsError(f"New path {newPath} exists already")
+            raise EnvironmentError(f"New path {newPath} exists already")
         try:
             os.rename(path, newPath)
         except FileExistsError:
@@ -439,6 +439,10 @@ class File(FileTSV):
                     raise TimeoutError(f"Couldn't delete {path}")
         elif path.isFolder:
             shutil.rmtree(path, ignore_errors=True)
+        # while File.exists(path):
+        #     print(f"{path} still exists")
+        #     sleep(0.1)
+        #     raise WindowsError
         return True
 
     @staticmethod
