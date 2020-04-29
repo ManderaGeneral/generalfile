@@ -77,5 +77,6 @@ class PathList(list):
 
 
 
+from generalfile.base.classpath import Path
+from generalfile.base.classfile import File
 
-from generalfile import File, Path

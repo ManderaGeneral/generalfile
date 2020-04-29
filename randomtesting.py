@@ -2,17 +2,17 @@
 Random testing
 """
 
-# from generalfile import *
-# from generalfile.
 
 from generallibrary.time import sleep
+# from generalfile.base.classfile import File
 
 sleep(1)
+
+# File.openFolder("")
 
 
 
 # test.SetUpWorkDir.activate()
-# File.openFolder("")
 
 # sleep(0.1)
 

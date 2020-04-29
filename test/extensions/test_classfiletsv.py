@@ -4,12 +4,13 @@ Tests for class FileTSV
 import unittest
 import pandas as pd
 
-from generalfile import File, test
+from generalfile.base.classfile import File
+from test.base.setUpWorkDir import SetUpWorkDir
 
 class FileTSVTest(unittest.TestCase):
     def setUp(self):
         """Set working dir and clear folder"""
-        test.SetUpWorkDir.activate()
+        SetUpWorkDir.activate()
 
     def test__write_tsv(self):
         df = pd.DataFrame({

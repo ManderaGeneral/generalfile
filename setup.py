@@ -1,13 +1,13 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(
     name = "generalfile",
-    version = "0.1.1",
+    version = "0.1.4",
     description = (""
-                   "New documented file structure, first try."
-                   "Easily manage files."
+                   "Trying new venv"
+                   " Easily manage files."
                    ""),
-    packages = ["generalfile", "test", "generalfile.base", "test.base"],
-    install_requires = ['send2trash', 'pandas']
+    packages = find_packages(),
+    install_requires = ['send2trash', 'pandas', 'wheel']
 )
 

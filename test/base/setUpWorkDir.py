@@ -1,6 +1,8 @@
 """Just contains class for File handling tests"""
 
-from generalfile import Path, File
+from generalfile.base.classpath import Path
+from generalfile.base.classfile import File
+
 
 class SetUpWorkDir:
     """Class to set up working dir for tests, File extensions import this class."""

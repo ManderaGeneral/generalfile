@@ -5,7 +5,9 @@ Exceptions raised directly by function should be specific Exceptions
 Exceptions raised directly by indirect function should be generic Exception
 """
 import unittest
-from generalfile import PathList, Path, File
+from generalfile.base.classpath import Path
+from generalfile.base.classfile import File
+from generalfile.base.classpathlist import PathList
 
 class PathListTest(unittest.TestCase):
     def test_pathList(self):

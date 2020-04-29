@@ -7,8 +7,8 @@ import shutil
 import json
 import pathlib
 
-from generallibrary import Timer, sleep
-from generalfile import FileTSV
+from generallibrary.time import Timer, sleep
+from generalfile.extensions.classfiletsv import FileTSV
 
 class File(FileTSV):
     """
@@ -518,5 +518,6 @@ class File(FileTSV):
 
 
 
-from generalfile import Path, PathList
+from generalfile.base.classpath import Path
+from generalfile.base.classpathlist import PathList
 

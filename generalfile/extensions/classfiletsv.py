@@ -3,7 +3,7 @@ Extension for File to handle tsv files
 """
 import csv
 import pandas as pd
-from generallibrary import typeChecker
+from generallibrary.types import typeChecker
 
 class FileTSV:
     """

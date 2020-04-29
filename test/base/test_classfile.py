@@ -8,12 +8,15 @@ import unittest
 import multiprocessing as mp
 import time
 
-from generalfile import File, Path, test
+
+from generalfile.base.classpath import Path
+from generalfile.base.classfile import File
+from test.base.setUpWorkDir import SetUpWorkDir
 
 class FileTest(unittest.TestCase):
     def setUp(self):
         """Set working dir and clear folder"""
-        test.SetUpWorkDir.activate()
+        SetUpWorkDir.activate()
 
     def test_toPath(self):
         File.write("exists.txt")
