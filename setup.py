@@ -2,13 +2,12 @@ from setuptools import setup
 
 setup(
     name = "generalfile",
-    version = "0.1.0",
+    version = "0.1.1",
     description = (""
-                   "Working. Batch unit test works when targeting generalfile folder. Cannot right click test folder."
-                   "Changed test folder structure. Changed mod and creation time to use time.time()."
+                   "New documented file structure, first try."
                    "Easily manage files."
                    ""),
-    py_modules = ["generalfile"],
+    packages = ["generalfile", "test", "generalfile.base", "test.base"],
     install_requires = ['send2trash', 'pandas']
 )
 

@@ -8,9 +8,7 @@ import unittest
 import multiprocessing as mp
 import time
 
-from generalfile import *
-
-
+from generalfile import File, Path, test
 
 class FileTest(unittest.TestCase):
     def setUp(self):

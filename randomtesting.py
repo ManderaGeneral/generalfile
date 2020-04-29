@@ -1,16 +1,20 @@
 """
 Random testing
 """
-import pandas as pd
-from generalfile import *
-import os
-import shutil
-import generallibrary
 
-test.SetUpWorkDir.activate()
-File.openFolder("")
+# from generalfile import *
+# from generalfile.
 
-generallibrary.sleep(1)
+from generallibrary.time import sleep
+
+sleep(1)
+
+
+
+# test.SetUpWorkDir.activate()
+# File.openFolder("")
+
+# sleep(0.1)
 
 
 

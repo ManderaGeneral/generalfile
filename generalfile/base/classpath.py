@@ -369,4 +369,4 @@ class Path(str):
             return absolutePath
 
 
-from base.classfile import File
+from generalfile import File

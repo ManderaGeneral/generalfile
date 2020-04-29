@@ -1,16 +1,14 @@
 """
 Tests for class FileXXX
 """
-
-from test.base.test_classfile import SetUpWorkDir
-from generalfile import *
-
 import unittest
+
+from generalfile import test
 
 class FileXXXTest(unittest.TestCase):
     def setUp(self):
         """Set working dir and clear folder"""
-        SetUpWorkDir.activate()
+        test.SetUpWorkDir.activate()
 
     def test__write_XXX(self):
         pass

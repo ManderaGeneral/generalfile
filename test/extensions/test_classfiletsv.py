@@ -1,12 +1,10 @@
 """
 Tests for class FileTSV
 """
-
-from generalfile import *
-
 import unittest
 import pandas as pd
 
+from generalfile import File, test
 
 class FileTSVTest(unittest.TestCase):
     def setUp(self):
