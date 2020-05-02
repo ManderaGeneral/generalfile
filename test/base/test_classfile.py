@@ -459,7 +459,7 @@ if __name__ == "__main__":
 #
 #         with open(filepath, 'w') as tsvfile:
 #             writer = csv.writer(tsvfile, delimiter = "\t", lineterminator = "\n")
-#             writer.writerow(list(lib.dictFirstValue(dictOfDicts, iterate = True).keys()))
+#             writer.writerow(list(lib.dictFirstValue(dictOfDicts, iterate = True).columns))
 #             for index, subDict in dictOfDicts.items():
 #                 writer.writerow(list(subDict.values()))
 #         return dictOfDicts

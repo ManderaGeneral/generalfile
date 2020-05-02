@@ -180,7 +180,7 @@ class File(FileTSV):
             return jsonDumps
 
     @classmethod
-    def read(cls, path, default=None):
+    def read(cls, path, default=None, **kwargs):
         """
         Dynamic function that can read any document if methods exist for that filetype
 
@@ -204,11 +204,11 @@ class File(FileTSV):
             return default
 
         with open(path, "r") as textIO:
-            read = readMethod(textIO)
+            read = readMethod(textIO, **kwargs)
         return default if read is None else read
 
     @classmethod
-    def write(cls, path, writeObj=None, overwrite=False):
+    def write(cls, path, writeObj=None, overwrite=False, **kwargs):
         """
         Dynamic function that can write to any document if methods exist for that filetype.
 
@@ -244,7 +244,7 @@ class File(FileTSV):
             try:
                 with open(pathLock, "x") as lockIO:
                     with open(pathNew, "w") as textIO:
-                        writeReturn = writeMethod(textIO, writeObj)
+                        writeReturn = writeMethod(textIO, writeObj, **kwargs)
                     File.delete(path)
                     File.rename(pathNew, path.filenamePure)
                     lockIO.close()

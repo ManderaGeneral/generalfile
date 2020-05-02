@@ -15,24 +15,30 @@ SetUpWorkDir.activate()
 def dfInfo(df):
     print(df)
     print()
-    print("keys: ", df.keys())
+    print("keys: ", df.columns)
     print("index: ", df.index)
+    # print("name", df.index.name)
     print()
 
 def test(name, obj):
     path = f"{name}.tsv"
+
     df = pd.DataFrame(obj)
+    # df = pd.DataFrame(obj).T
+
     File.write(path, df, overwrite=True)
-    read = File.read(path)
+    # read = File.read(path, header=False, column=False)
+    read = File.read(path, header=False, column=True)
+    # read = File.read(path, header=True, column=False)
+    # read = File.read(path, header=True, column=True)
     print(name)
     print()
     dfInfo(df)
-    # dfInfo(read)
+    dfInfo(read)
 
     print()
     print("-----------------------")
     print()
-    return read
 
 
 
