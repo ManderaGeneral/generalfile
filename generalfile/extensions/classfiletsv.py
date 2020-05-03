@@ -30,6 +30,8 @@ class FileTSV:
         Should work with: Keys, Index and Transposed (8 combinations)
         If DataFrame has both keys and index then cell A1 becomes NaN
 
+        TODO: Make it order columns if there are any so that they line up with append.
+
         :param generalfile.base.classfile.File cls: File inherits FileTSV
         :param textIO: Tsv file
         :param pd.DataFrame df: Generic df
