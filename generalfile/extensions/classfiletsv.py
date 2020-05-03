@@ -38,7 +38,8 @@ class FileTSV:
         path = cls.toPath(textIO.name)
 
         if df.empty:
-            open(path, "w")
+            with open(path, "w"):
+                pass
             return False, False
 
         useHeader = cls._indexIsNamed(df.columns)
@@ -107,14 +108,20 @@ class FileTSV:
         return df.convert_dtypes()
 
     @staticmethod
-    def tsvAppend_getRow(iterableObj, key=None):
+    def _tsvAppend_getRow(iterableObj, key=None):
+        """
+        Takes an object and returns a list of rows to use for appending.
+
+        :param iterableObj: Iterable
+        :param key: If iterableObj had a key to assigned it it's given here
+        :return: A
+        """
         row = [key] if key else []
         if isinstance(iterableObj, (list, tuple)):
             row.extend(iterableObj)
         elif isinstance(iterableObj, dict):
             for _, value in sorted(iterableObj.items()):
                 row.append(value)
-
         return row
 
     @classmethod
@@ -124,9 +131,16 @@ class FileTSV:
         If a dict is given and there are iterables as values then the keys of the dict are the first value in each row.
         Otherwise keys in dicts are ignored.
 
+        Identical append objects
+         | [[1, 2, 3], [4, 5, 6]]
+         | [{"a": 1, "b": 2, "c": 3}, {"d": 4, "e": 5, "f": 6}]
+         | {1: {"b": 2, "c": 3}, 4: {"e": 5, "f": 6}}
+         | {1: [2, 3], 4: [5, 6]}
+
         :param generalfile.File cls:
         :param path:
         :param obj: Iterable (Optionally inside another iterable) or a value for a single cell
+        :raises AttributeError: If obj is empty
         """
         path = cls.toPath(path, requireFiletype="tsv", requireExists=True)
         if not obj:
@@ -137,15 +151,15 @@ class FileTSV:
             if isinstance(obj, (list, tuple)):
                 if iterable(obj[0]):
                     for subObj in obj:
-                        rows.append(cls.tsvAppend_getRow(subObj))
+                        rows.append(cls._tsvAppend_getRow(subObj))
                 else:
-                    rows.append(cls.tsvAppend_getRow(obj))
+                    rows.append(cls._tsvAppend_getRow(obj))
             elif isinstance(obj, dict):
                 if iterable(dictFirstValue(obj)):
-                    for key, subObj in obj:
-                        rows.append(cls.tsvAppend_getRow(subObj, key))
+                    for key, subObj in obj.items():
+                        rows.append(cls._tsvAppend_getRow(subObj, key))
                 else:
-                    rows.append(cls.tsvAppend_getRow(obj))
+                    rows.append(cls._tsvAppend_getRow(obj))
         else:
             rows.append([obj])
 

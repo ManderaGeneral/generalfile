@@ -2,9 +2,9 @@ from setuptools import setup, find_packages
 
 setup(
     name = "generalfile",
-    version = "0.1.4",
+    version = "1.0.0",
     description = (""
-                   "Trying new venv"
+                   "Finished TSV."
                    " Easily manage files."
                    ""),
     packages = find_packages(),
