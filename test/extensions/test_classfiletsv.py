@@ -49,8 +49,49 @@ class FileTSVTest(unittest.TestCase):
         self.writeAndCompareObj(df)
         self.writeAndCompareObj(df.T)
 
-    def test_tsv(self):
+    def test_tsvWriteAndRead(self):
         self.doTestsOnDataFrame(pd.DataFrame({"a": {"color": "red", "value": 5}, "b": {"color": "blue", "value": 2}}))
         self.doTestsOnDataFrame(pd.DataFrame([{"color": "red", "value": 5}, {"color": "blue", "value": 2}]))
         self.doTestsOnDataFrame(pd.DataFrame({"a": [1, 2, 3], "b": [4, 5, 6]}))
         self.doTestsOnDataFrame(pd.DataFrame([[1, 2, 3], [4, 5, 6]]))
+
+    # def test_tsvAppend(self):
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -4,6 +4,7 @@ Extension for File to handle tsv files
 import csv
 import pandas as pd
 from generallibrary.types import typeChecker
+from generallibrary.iterables import iterable, dictFirstValue
 
 class FileTSV:
     """
@@ -31,13 +32,15 @@ class FileTSV:
 
         :param generalfile.File cls: File inherits FileTSV
         :param textIO: Tsv file
-        :param pd.DataFrame df: Generic df that's not empty
+        :param pd.DataFrame df: Generic df
         """
         typeChecker(df, pd.DataFrame)
-        if not df.shape[0] or not df.shape[1]:
-            raise AttributeError("DataFrame cannot be empty")
-
         path = cls.toPath(textIO.name)
+
+        if df.empty:
+            open(path, "w")
+            return False, False
+
         useHeader = cls._indexIsNamed(df.columns)
         useIndex = cls._indexIsNamed(df.index)
 
@@ -72,7 +75,10 @@ class FileTSV:
         header = "infer" if header else None
         column = 0 if column else None
 
-        df = cls._read_tsv_helper(path, header, column)
+        try:
+            df = cls._read_tsv_helper(path, header, column)
+        except pd.errors.EmptyDataError:
+            return pd.DataFrame()
 
         # Get rid of empty cell (Happens if file was written with header=True, column=True)
         headerFalseColumnFalse = pd.isna(df.iat[0, 0])
@@ -84,7 +90,7 @@ class FileTSV:
             df = cls._read_tsv_helper(path, header, column)
         else:
             # Get rid of name in index (Happens if file doesn't have an index and column=True)
-            # Doesnt happen other way around for some reason, guess it's the internal order in pandas
+            # Doesn't happen other way around for some reason, guess it's the internal order in pandas
             if df.index.name is not None:
                 if header is None and column == 0:
                     df.index.rename(None, inplace=True)
@@ -100,18 +106,95 @@ class FileTSV:
 
         return df.convert_dtypes()
 
+    @staticmethod
+    def tsvAppend_getRow(iterableObj, key=None):
+        row = [key] if key else []
+        if isinstance(iterableObj, (list, tuple)):
+            row.extend(iterableObj)
+        elif isinstance(iterableObj, dict):
+            for _, value in sorted(iterableObj.items()):
+                row.append(value)
+
+        return row
+
     @classmethod
     def tsvAppend(cls, path, obj):
         """
+        Append an obj to the end of a TSV file.
+        If a dict is given and there are iterables as values then the keys of the dict are the first value in each row.
+        Otherwise keys in dicts are ignored.
 
         :param generalfile.File cls:
         :param path:
-        :param obj:
+        :param obj: Iterable (Optionally inside another iterable) or a value for a single cell
         """
         path = cls.toPath(path, requireFiletype="tsv", requireExists=True)
+        if not obj:
+            raise AttributeError("obj is empty")
+
+        rows = []
+        if iterable(obj):
+            if isinstance(obj, (list, tuple)):
+                if iterable(obj[0]):
+                    for subObj in obj:
+                        rows.append(cls.tsvAppend_getRow(subObj))
+                else:
+                    rows.append(cls.tsvAppend_getRow(obj))
+            elif isinstance(obj, dict):
+                if iterable(dictFirstValue(obj)):
+                    for key, subObj in obj:
+                        rows.append(cls.tsvAppend_getRow(subObj, key))
+                else:
+                    rows.append(cls.tsvAppend_getRow(obj))
+        else:
+            rows.append([obj])
 
         with open(path, 'a') as tsvfile:
             writer = csv.writer(tsvfile, delimiter = "\t", lineterminator = "\n")
-            writer.writerow(obj, )
+            for row in rows:
+                writer.writerow(row)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
