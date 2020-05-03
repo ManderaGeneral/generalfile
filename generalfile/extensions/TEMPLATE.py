@@ -1,20 +1,33 @@
 """
 Extension for File to handle xxx files
 """
-from base.classfile import File
-
-class FileXXX(File):
+class FileXXX:
     """
     Extension for File to handle xxx files
     """
-    @staticmethod
-    def _write_xxx(textIO, obj):
-        path = File.toPath(textIO.name)
+    @classmethod
+    def _write_xxx(cls, textIO, obj):
+        """
+        Method that does the writing for this filetype.
+
+        :param generalfile.base.classfile.File cls:
+        :param textIO:
+        :param obj:
+        :return:
+        """
+        path = cls.toPath(textIO.name)
         textIO.write(str(obj))
         return obj
 
-    @staticmethod
-    def _read_xxx(textIO):
+    @classmethod
+    def _read_xxx(cls, textIO):
+        """
+        Method that does the reading for this filetype.
+
+        :param generalfile.base.classfile.File cls:
+        :param textIO:
+        :return:
+        """
         return textIO.read()
 
 # Replace xxx with filetype, has to match

@@ -30,10 +30,11 @@ class FileTSV:
         Should work with: Keys, Index and Transposed (8 combinations)
         If DataFrame has both keys and index then cell A1 becomes NaN
 
-        :param generalfile.File cls: File inherits FileTSV
+        :param generalfile.base.classfile.File cls: File inherits FileTSV
         :param textIO: Tsv file
         :param pd.DataFrame df: Generic df
         """
+
         typeChecker(df, pd.DataFrame)
         path = cls.toPath(textIO.name)
 
@@ -64,7 +65,7 @@ class FileTSV:
         Should work with: Keys, Index, Transposed, Header, Column (32 combinations).
         DataFrame in file can have a NaN A1 cell.
 
-        :param generalfile.File cls:
+        :param generalfile.base.classfile.File cls:
         :param textIO:
         :param bool header: Use headers or not, overriden if any top left cell is NaN
         :param bool column: Use columns or not, overriden if any top left cell is NaN
@@ -137,7 +138,7 @@ class FileTSV:
          | {1: {"b": 2, "c": 3}, 4: {"e": 5, "f": 6}}
          | {1: [2, 3], 4: [5, 6]}
 
-        :param generalfile.File cls:
+        :param generalfile.base.classfile.File cls:
         :param path:
         :param obj: Iterable (Optionally inside another iterable) or a value for a single cell
         :raises AttributeError: If obj is empty
