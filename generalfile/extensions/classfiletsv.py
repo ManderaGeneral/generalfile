@@ -4,7 +4,7 @@ Extension for File to handle tsv files
 import csv
 import pandas as pd
 from generallibrary.types import typeChecker
-from generallibrary.iterables import iterable, dictFirstValue
+from generallibrary.iterables import getRows
 
 class FileTSV:
     """
@@ -51,7 +51,6 @@ class FileTSV:
         df.to_csv(path, sep="\t", header=useHeader, index=useIndex)
 
         return useHeader, useIndex
-
 
     @classmethod
     def _read_tsv_helper(cls, path, header, column):
@@ -146,29 +145,12 @@ class FileTSV:
         :raises AttributeError: If obj is empty
         """
         path = cls.toPath(path, requireFiletype="tsv", requireExists=True)
-        if not obj:
+        if not obj and obj != 0:
             raise AttributeError("obj is empty")
-
-        rows = []
-        if iterable(obj):
-            if isinstance(obj, (list, tuple)):
-                if iterable(obj[0]):
-                    for subObj in obj:
-                        rows.append(cls._tsvAppend_getRow(subObj))
-                else:
-                    rows.append(cls._tsvAppend_getRow(obj))
-            elif isinstance(obj, dict):
-                if iterable(dictFirstValue(obj)):
-                    for key, subObj in obj.items():
-                        rows.append(cls._tsvAppend_getRow(subObj, key))
-                else:
-                    rows.append(cls._tsvAppend_getRow(obj))
-        else:
-            rows.append([obj])
 
         with open(path, 'a') as tsvfile:
             writer = csv.writer(tsvfile, delimiter = "\t", lineterminator = "\n")
-            for row in rows:
+            for row in getRows(obj):
                 writer.writerow(row)
 
 

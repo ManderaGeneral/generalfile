@@ -2,12 +2,12 @@ from setuptools import setup, find_packages
 
 setup(
     name = "generalfile",
-    version = "1.0.0",
+    version = "1.0.1",
     description = (""
-                   "Finished TSV."
+                   "Added generallibrary.iterables.getRows()."
                    " Easily manage files."
                    ""),
     packages = find_packages(),
-    install_requires = ['send2trash', 'pandas', 'wheel']
+    install_requires = ['generallibrary', 'send2trash', 'pandas', 'wheel']
 )
 
