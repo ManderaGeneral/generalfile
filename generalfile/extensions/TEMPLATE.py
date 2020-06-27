@@ -9,6 +9,7 @@ class FileXXX:
     def _write_xxx(cls, textIO, obj):
         """
         Method that does the writing for this filetype.
+        Add documentation to File.write()
 
         :param generalfile.base.classfile.File cls:
         :param textIO:
@@ -23,6 +24,7 @@ class FileXXX:
     def _read_xxx(cls, textIO):
         """
         Method that does the reading for this filetype.
+        Add documentation to File.read()
 
         :param generalfile.base.classfile.File cls:
         :param textIO:

@@ -191,6 +191,16 @@ class File(FileTSV):
 
             Method has to take path as parameter and return a useful object for that filetype.
 
+        txt:
+            Takes: None
+
+            Returns: Serializable object.
+
+        tsv:
+            Takes: (header: bool, column: bool) - Whether these index exists in file or not. Defaults to False.
+
+            Returns: Pandas DataFrame
+
         :param str path: Path or Str
         :param default: What is returned as backup if reading fails or file doesn't exist
         :return: Useful object for that filetype (Dynamic)
@@ -216,8 +226,20 @@ class File(FileTSV):
 
         Generic write method:
             Only used dynamically by this method.
+
             Suffix has to match a filetype.
+
             Method has to take path and useful object as parameter, return object is optional
+
+        txt:
+            Takes: Serializable object.
+
+            Returns: Text string that is written to txt file.
+
+        tsv:
+            Takes: Pandas DataFrame
+
+            Returns: (header: bool, column: bool) - Whether these index exists in file or not.
 
         :param bool overwrite: Set to False if overwriting shouldn't be allowed
         :param str path: Path or Str
@@ -489,7 +511,7 @@ class File(FileTSV):
             return os.path.getmtime(path)
         except FileNotFoundError:
             return None
-        # except PermissionError: HERE **
+        # except PermissionError:
 
     @staticmethod
     def getTimeCreated(path):
