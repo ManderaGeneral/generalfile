@@ -188,8 +188,8 @@ class FileTest(unittest.TestCase):
 
     def test_rename(self):
         File.write("folder/test.txt")
-        self.assertRaises(NameError, File.rename, "folder/test.txt", "aux")
-        self.assertRaises(NameError, File.rename, "folder", "aux")
+        self.assertRaises((NameError, OSError), File.rename, "folder/test.txt", "aux")
+        self.assertRaises((NameError, OSError), File.rename, "folder", "aux")
 
         File.rename("folder/test.txt", "hello")
         self.assertTrue(File.exists("folder/hello.txt"))
@@ -200,7 +200,6 @@ class FileTest(unittest.TestCase):
 
 
     def test_copy(self):
-        from shutil import Error
         File.write("exists.txt", 1)
         File.write("exists2.txt", 2)
         File.write("folder/exists.txt", 3)
@@ -216,9 +215,9 @@ class FileTest(unittest.TestCase):
         self.assertRaises(FileExistsError, File.copy, "exists.txt", "folder")
         self.assertRaises(FileExistsError, File.copy, "folder", "")
 
-        self.assertRaises(NameError, File.copy, "exists.txt", "aux.txt")
-        self.assertRaises(NameError, File.copy, "exists.txt", "aux")
-        self.assertRaises((NameError, Error), File.copy, "folder", "nul")
+        self.assertRaises((NameError, FileExistsError), File.copy, "exists.txt", "aux.txt")
+        self.assertRaises((NameError, FileExistsError), File.copy, "exists.txt", "aux")
+        self.assertRaises((NameError, FileExistsError), File.copy, "folder", "nul")
 
         File.copy(File.getAbsolutePath("Exists.txt"), "exists7.txt")
         self.assertEqual(File.read("exisTs7.txt"), 1)
