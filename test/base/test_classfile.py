@@ -200,6 +200,7 @@ class FileTest(unittest.TestCase):
 
 
     def test_copy(self):
+        from shutil import Error
         File.write("exists.txt", 1)
         File.write("exists2.txt", 2)
         File.write("folder/exists.txt", 3)
@@ -217,7 +218,7 @@ class FileTest(unittest.TestCase):
 
         self.assertRaises(NameError, File.copy, "exists.txt", "aux.txt")
         self.assertRaises(NameError, File.copy, "exists.txt", "aux")
-        self.assertRaises(NameError, File.copy, "folder", "aux")
+        self.assertRaises((NameError, Error), File.copy, "folder", "nul")
 
         File.copy(File.getAbsolutePath("Exists.txt"), "exists7.txt")
         self.assertEqual(File.read("exisTs7.txt"), 1)
@@ -368,14 +369,16 @@ class FileTest(unittest.TestCase):
     def test_threads(self):
         threads = []
         queue = mp.Queue()
-        for i in range(count := 10):
+        count = 10
+        for i in range(count):
             threads.append(mp.Process(target=threadTest, args=(queue, i)))
         for thread in threads:
             thread.start()
 
         results = []
         for i in range(count):
-            self.assertNotIn(get := queue.get(), results)
+            get = queue.get()
+            self.assertNotIn(get, results)
             results.append(get)
 
         self.assertEqual(len(results), count)

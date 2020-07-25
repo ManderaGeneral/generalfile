@@ -119,7 +119,9 @@ class File(FileTSV):
         else:
             basePath = File.toPath(basePath, requireFiletype=False)
             basePath = File.getAbsolutePath(basePath)
-        if (relativePath := path.removeFromStart(basePath)).isAbsolute:
+
+        relativePath = path.removeFromStart(basePath)
+        if relativePath.isAbsolute:
             raise AttributeError("Working directory ('{}') is not part of path ('{}') so we cannot get the relative path".format(File.getWorkingDir(), path))
         return relativePath
 
@@ -208,7 +210,9 @@ class File(FileTSV):
         """
         path = File.toPath(path, requireFiletype=True)
         exists = File.exists(path)
-        if (readMethod := getattr(cls, "_read_{}".format(path.filetype), None)) is None:
+
+        readMethod = getattr(cls, "_read_{}".format(path.filetype), None)
+        if readMethod is None:
             raise EnvironmentError("Missing read method for filetype {}".format(path.filetype))
         if not exists:
             return default
@@ -250,7 +254,9 @@ class File(FileTSV):
         """
         path = File.toPath(path, requireFiletype=True)
         exists = File.exists(path)
-        if (writeMethod := getattr(cls, "_write_{}".format(path.filetype), None)) is None:
+
+        writeMethod = getattr(cls, "_write_{}".format(path.filetype), None)
+        if writeMethod is None:
             raise EnvironmentError("Missing write method for filetype {}".format(path.filetype))
         if exists and not overwrite:
             raise FileExistsError("Tried to overwrite {} when overwrite was False".format(path))
@@ -347,17 +353,14 @@ class File(FileTSV):
                 raise NameError(f"{destPath} probably contains an invalid name such as CON, PRN, NUL or AUX")
 
         elif path.isFolder and destPath.isFolder:
-            if not overwrite:
-                filePathList = File.getPaths(path).getFiles()
-                relativePaths = filePathList.getRelative(path)
-                absoluteDestPaths = relativePaths.getAbsolute(destPath)
-                if any(absoluteDestPaths.exists()):
-                    raise FileExistsError("Atleast one file exists and not allowed to overwrite")
+            filePathList = File.getPaths(path).getFiles()
+            relativePaths = filePathList.getRelative(path)
+            absoluteDestPaths = relativePaths.getAbsolute(destPath)
+            if not overwrite and any(absoluteDestPaths.exists()):
+                raise FileExistsError("Atleast one file exists and not allowed to overwrite")
 
-            try:
-                shutil.copytree(path, destPath, dirs_exist_ok=True)
-            except NotADirectoryError:
-                raise NameError(f"{destPath} probably contains an invalid name such as CON, PRN, NUL or AUX")
+            for path1, path2 in zip(filePathList, absoluteDestPaths):
+                File.copy(path=path1, destPath=path2, overwrite=overwrite)
         else:
             raise NotADirectoryError("Cannot copy folder to file")
 
