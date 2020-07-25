@@ -215,9 +215,9 @@ class FileTest(unittest.TestCase):
         self.assertRaises(FileExistsError, File.copy, "exists.txt", "folder")
         self.assertRaises(FileExistsError, File.copy, "folder", "")
 
-        self.assertRaises((NameError, FileExistsError), File.copy, "exists.txt", "aux.txt")
-        self.assertRaises((NameError, FileExistsError), File.copy, "exists.txt", "aux")
-        self.assertRaises((NameError, FileExistsError), File.copy, "folder", "nul")
+        self.assertRaises((NameError, FileExistsError, OSError), File.copy, "exists.txt", "aux.txt")
+        self.assertRaises((NameError, FileExistsError, OSError), File.copy, "exists.txt", "aux")
+        self.assertRaises((NameError, FileExistsError, OSError), File.copy, "folder", "nul")
 
         File.copy(File.getAbsolutePath("Exists.txt"), "exists7.txt")
         self.assertEqual(File.read("exisTs7.txt"), 1)
