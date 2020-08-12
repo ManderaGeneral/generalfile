@@ -3,6 +3,9 @@ Base component of generalfile.
 Path is unaware and ignorant of environment.
 """
 
+from generallibrary import VerInfo
+
+
 class Path(str):
     """
     Immutable.
@@ -30,16 +33,17 @@ class Path(str):
         if text is None:
             text = ""
 
-        # Simple invalid characters testing
-        for character in tuple(text):
-            if character in "<>\"|?*":
-                raise WindowsError("Invalid character {} in {}".format(character, text))
+        # Simple invalid characters testing for Windows
+        if VerInfo().windows:
+            for character in tuple(text):
+                if character in "<>\"|?*":
+                    raise WindowsError("Invalid character {} in {}".format(character, text))
+            if text.startswith("/"):
+                text = text[1:]
 
         text = text.replace("\\", "/")
         if text.endswith("/"):
             text = text[0:-1]
-        if text.startswith("/"):
-            text = text[1:]
 
         return super().__new__(cls, text)
 

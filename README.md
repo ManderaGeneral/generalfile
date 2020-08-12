@@ -39,8 +39,13 @@ assert Path("folder/test.txt").setFilenamePure("foobar") == "folder/foobar.txt"
 File.openFolder("")  # Opens current working directory
 ```
 
+## OS Differences
+ * Root folder - Windows: `:` in first part. Other: First character is `/`.
+ * Invalid character - Windows: `<>"|?*`. Other: `\ `.
+
+
 ## Todo
-- Write more Todos
-- Add csv support, inherit tsv's functionality somehow.
-- File.move(path, destination)
-- Possibly create a package for each filetype which can be pip installed seperately.
+ * Write more Todos
+ * Add csv support, inherit tsv's functionality somehow.
+ * File.move(path, destination)
+ * Possibly create a package for each filetype which can be pip installed seperately.
