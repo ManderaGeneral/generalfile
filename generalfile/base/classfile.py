@@ -309,7 +309,7 @@ class File(FileTSV):
         else:
             newPath = path.getParent().addPath(name)
         if File.exists(newPath):
-            raise EnvironmentError(f"New path {newPath} exists already")
+            raise FileExistsError(f"New path {newPath} exists already")
         try:
             os.rename(path, newPath)
         except FileExistsError:
