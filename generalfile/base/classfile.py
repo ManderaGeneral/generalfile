@@ -281,10 +281,10 @@ class File(FileTSV):
                     File.rename(pathNew, path.filenamePure)
                     lockIO.close()
                     File.delete(pathLock)
-            except FileExistsError as e:
+            except FileExistsError:
                 # PermissionError would have triggered if we couldn't delete lock
                 File.delete(pathLock)
-            except PermissionError as e:
+            except PermissionError:
                 pass
             else:
                 break
@@ -314,6 +314,8 @@ class File(FileTSV):
             os.rename(path, newPath)
         except FileExistsError:
             raise NameError(f"{newPath} probably contains an invalid name such as CON, PRN, NUL or AUX")
+        except OSError:  # If dst exists and on POSIX.
+            raise FileExistsError
 
     @staticmethod
     def copy(path, destPath, overwrite=False):

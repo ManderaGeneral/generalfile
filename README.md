@@ -42,7 +42,7 @@ File.openFolder("")  # Opens current working directory
 ## OS Differences
  * Root folder - Windows: `:` in first part. Other: First character is `/`.
  * Invalid character - Windows: `<>"|?*`. Other: `\ `.
- * os.getcwd() raises FileNotFoundError on UNIX.
+ * os.getcwd() raises FileNotFoundError on POSIX.
  * Caps is ignored on Windows.
 
 
