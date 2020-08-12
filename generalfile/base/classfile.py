@@ -284,7 +284,7 @@ class File(FileTSV):
             except FileExistsError:
                 # PermissionError would have triggered if we couldn't delete lock
                 File.delete(pathLock)
-            except PermissionError:
+            except (PermissionError, FileNotFoundError):
                 pass
             else:
                 break
