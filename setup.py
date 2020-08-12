@@ -22,6 +22,8 @@ setup(
     install_requires=["generallibrary", "send2trash", "pandas", "wheel"],
     classifiers=[
         "Operating System :: Microsoft :: Windows :: Windows 7",
+        "Operating System :: Microsoft :: Windows :: Windows 10",
+        "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Development Status :: 2 - Pre-Alpha",
         "License :: OSI Approved :: MIT License",

@@ -34,14 +34,15 @@ class Path(str):
             text = ""
 
         # Simple invalid characters testing for Windows
-        if VerInfo().windows:
-            for character in tuple(text):
-                if character in "<>\"|?*":
-                    raise WindowsError("Invalid character {} in {}".format(character, text))
-            if text.startswith("/"):
-                text = text[1:]
+        for character in "<>\"|?*":
+            if character in text:
+                raise WindowsError("Invalid character {} in {}".format(character, text))
 
         text = text.replace("\\", "/")
+
+        if text.startswith("/") and VerInfo().windows:
+            text = text[1:]
+
         if text.endswith("/"):
             text = text[0:-1]
 
@@ -50,7 +51,15 @@ class Path(str):
     def __init__(self, _=None):
         super().__init__()
 
-        self.isAbsolute = ":" in self
+        windows = VerInfo().windows
+
+        if windows:
+            self.isAbsolute = ":" in self
+        else:
+            self.isAbsolute = self.startswith("/")
+
+
+
         self.isRelative = not self.isAbsolute
         self.partsList = self.split("/")
 
@@ -58,10 +67,14 @@ class Path(str):
 
         if self.count(".") > 1:
             raise WindowsError("More than one dot in {}".format(self))
+
         for i, part in enumerate(self.partsList):
             if ":" in part:
-                if i or (part.index(":") != 1 or part.count(":") > 1):
+                colonCorrectPos = part.index(":") == 1
+                moreThanOneColon = part.count(":") > 1
+                if i or not colonCorrectPos or moreThanOneColon or not windows:
                     raise WindowsError(": in part #{} ({})".format(i, part), self)
+
             if i != len(self.partsList) - 1:
                 if "." in part:
                     raise WindowsError(". in part that's not last #{} ({})".format(i, part), self)
