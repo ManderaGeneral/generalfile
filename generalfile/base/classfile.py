@@ -465,10 +465,11 @@ class File(FileTSV):
                     raise TimeoutError(f"Couldn't delete {path}")
         elif path.isFolder:
             shutil.rmtree(path, ignore_errors=True)
+
         # If path is working dir then shutil.rmtree() only clears folder.
-        if not File.sameDestination(path, workingDir):
-            while File.exists(path):
-                sleep(0.001)
+        # if not File.sameDestination(path, workingDir):
+        #     while File.exists(path):
+        #         sleep(0.001)
 
         # Reset working dir
         try:
