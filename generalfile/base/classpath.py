@@ -27,7 +27,7 @@ class Path(str):
         , "LPT4", "COM5", "LPT5", "COM6", "LPT6", "COM7", "LPT7", "COM8", "LPT8", "COM9", "LPT9")
 
         :param str text: Takes a string or Path resembling a filepath or folderpath
-        :raises WindowsError: If invlaid character found
+        :raises OSError: If invlaid character found
         """
 
         if text is None:
@@ -36,7 +36,7 @@ class Path(str):
         # Simple invalid characters testing for Windows
         for character in "<>\"|?*":
             if character in text:
-                raise WindowsError("Invalid character {} in {}".format(character, text))
+                raise OSError("Invalid character {} in {}".format(character, text))
 
         text = text.replace("\\", "/")
 
@@ -66,18 +66,18 @@ class Path(str):
         # Catch some simple mistakes
 
         if self.count(".") > 1:
-            raise WindowsError("More than one dot in {}".format(self))
+            raise OSError("More than one dot in {}".format(self))
 
         for i, part in enumerate(self.partsList):
             if ":" in part:
                 colonCorrectPos = part.index(":") == 1
                 moreThanOneColon = part.count(":") > 1
                 if i or not colonCorrectPos or moreThanOneColon or not windows:
-                    raise WindowsError(": in part #{} ({})".format(i, part), self)
+                    raise OSError(": in part #{} ({})".format(i, part), self)
 
             if i != len(self.partsList) - 1:
                 if "." in part:
-                    raise WindowsError(". in part that's not last #{} ({})".format(i, part), self)
+                    raise OSError(". in part that's not last #{} ({})".format(i, part), self)
 
         self.filenamePure = None
         self.filenameFull = None

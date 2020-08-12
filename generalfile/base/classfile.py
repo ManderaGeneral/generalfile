@@ -63,8 +63,12 @@ class File(FileTSV):
     def getWorkingDir():
         """
         :returns: Current working directory as absolute Path
+        :raises FileNotFoundError: If doesn't exist
         """
-        return Path(os.getcwd())
+        path = Path(os.getcwd())
+        if not File.exists(path):
+            raise FileNotFoundError(f"Working dir {path} doesn't exist.")
+        return path
 
     @staticmethod
     def setWorkingDir(path):
@@ -425,6 +429,7 @@ class File(FileTSV):
         if not File.exists(path):
             return False
         send2trash(path)
+
         # Reset working dir because send2trash can change it if it removed part of it
         if File.getWorkingDir() != workingDir:
             File.setWorkingDir(workingDir)
@@ -441,6 +446,8 @@ class File(FileTSV):
         path = File.toPath(path)
         if not File.exists(path):
             return False
+
+        workingDir = File.getWorkingDir()
 
         timer = Timer()
         if path.isFile:
@@ -459,9 +466,16 @@ class File(FileTSV):
         elif path.isFolder:
             shutil.rmtree(path, ignore_errors=True)
         # If path is working dir then shutil.rmtree() only clears folder.
-        if not File.sameDestination(path, File.getWorkingDir()):
+        if not File.sameDestination(path, workingDir):
             while File.exists(path):
                 sleep(0.001)
+
+        # Reset working dir
+        try:
+            File.getWorkingDir()
+        except FileNotFoundError:
+            File.setWorkingDir(workingDir)
+
         return True
 
     @staticmethod

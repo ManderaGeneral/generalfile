@@ -15,4 +15,3 @@ assert Path("folder/test.txt").setFilenamePure("foobar") == "folder/foobar.txt"
 File.openFolder("")  # Opens current working directory
 
 
-
