@@ -177,7 +177,7 @@ class FileTest(unittest.TestCase):
     def test_write(self):
         import pathlib
         File.write("tesT.txt")
-        print(pathlib.Path("test.txt").resolve())
+        exit(pathlib.Path("test.txt").resolve())
 
         self.assertRaises(Exception, File.write, "folder")
         self.assertRaises(Exception, File.write, File.getAbsolutePath("folder"))
