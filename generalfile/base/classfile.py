@@ -54,10 +54,17 @@ class File(FileTSV):
         :param str path: Resemble a filepath or folderpath
         :return: Whether file or folder exists or not
         :rtype: bool
+        :raises PermissionError: Resolve can raise this
         """
         path = Path.toPath(path)
         path = File.getAbsolutePath(path)
-        return os.path.exists(path)
+        try:
+            resolved = pathlib.Path(path).resolve(strict=True)  # Returns path with correct cases
+        except FileNotFoundError:
+            return False
+
+        return path == resolved
+        # return os.path.exists(path)
 
     @staticmethod
     def getWorkingDir():
@@ -126,7 +133,7 @@ class File(FileTSV):
 
         relativePath = path.removeFromStart(basePath)
         if relativePath.isAbsolute:
-            raise AttributeError("Working directory ('{}') is not part of path ('{}') so we cannot get the relative path".format(File.getWorkingDir(), path))
+            raise AttributeError("Working directory '{}' is not part of path '{}' so we cannot get the relative path".format(File.getWorkingDir(), path))
         return relativePath
 
     @staticmethod
@@ -283,7 +290,10 @@ class File(FileTSV):
                     File.delete(pathLock)
             except FileExistsError:
                 # PermissionError would have triggered if we couldn't delete lock
-                File.delete(pathLock)
+                try:
+                    File.delete(pathLock)
+                except PermissionError:
+                    pass
             except (PermissionError, FileNotFoundError):
                 pass
             else:
@@ -301,7 +311,7 @@ class File(FileTSV):
         :param name: New name of folder or file.
         :return: None
         :raises EnvironmentError: If new path exists
-        :raises NameError: If used invalid name
+        :raises FileExistsError: Probably contains an invalid name such as CON, PRN, NUL or AUX or if used invalid name or exists
         """
         path = File.toPath(path, requireExists=True)
         if path.isFile:
@@ -312,8 +322,6 @@ class File(FileTSV):
             raise FileExistsError(f"New path {newPath} exists already")
         try:
             os.rename(path, newPath)
-        except FileExistsError:
-            raise NameError(f"{newPath} probably contains an invalid name such as CON, PRN, NUL or AUX")
         except OSError:  # If dst exists and on POSIX.
             raise FileExistsError
 
@@ -329,10 +337,9 @@ class File(FileTSV):
         :param bool overwrite: Allow overwriting or not
         :return: None
         :raises RecursionError: If paths are identical
-        :raises FileExistsError: If trying to overwrite when not allowed
+        :raises FileExistsError: If trying to overwrite when not allowed or if used invalid name
         :raises AttributeError: If filetypes don't match
         :raises NotADirectoryError: If trying to copy folder to file
-        :raises NameError: If used invalid name
         """
         path = File.toPath(path, requireExists=True)
         path = File.getAbsolutePath(path)
@@ -356,7 +363,7 @@ class File(FileTSV):
             try:
                 shutil.copy(path, destPath, follow_symlinks=False)
             except FileNotFoundError:
-                raise NameError(f"{destPath} probably contains an invalid name such as CON, PRN, NUL or AUX")
+                raise FileExistsError(f"{destPath} probably contains an invalid name such as CON, PRN, NUL or AUX")
 
         elif path.isFolder and destPath.isFolder:
             filePathList = File.getPaths(path).getFiles()
@@ -378,7 +385,7 @@ class File(FileTSV):
 
         :param str path: Path or Str
         :return: Whether any folders were created or not
-        :raises NameError: If used invalid name
+        :raises FileExistsError: If used invalid name
         """
         path = File.toPath(path)
         path = File.getAbsolutePath(path)
@@ -390,7 +397,7 @@ class File(FileTSV):
         try:
             pathlib.Path(path).mkdir(parents=True, exist_ok=True)
         except NotADirectoryError:
-            raise NameError(f"{path} probably contains an invalid name such as CON, PRN, NUL or AUX")
+            raise FileExistsError(f"{path} probably contains an invalid name such as CON, PRN, NUL or AUX")
 
         return True
 
@@ -527,10 +534,12 @@ class File(FileTSV):
         :return: Time or None if file wasn't found
         """
         path = File.toPath(path)
+        if not File.exists(path):
+            return
         try:
             return os.path.getmtime(path)
         except FileNotFoundError:
-            return None
+            return
         # except PermissionError:
 
     @staticmethod
@@ -543,10 +552,12 @@ class File(FileTSV):
         :return: Datetime or None
         """
         path = File.toPath(path)
+        if not File.exists(path):
+            return
         try:
             return os.path.getctime(path)
         except FileNotFoundError:
-            return None
+            return
 
     @staticmethod
     def openFolder(path):

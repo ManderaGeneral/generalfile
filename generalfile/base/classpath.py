@@ -17,6 +17,7 @@ class Path(str):
         3. Path:identifier returns a comparable path (lowering all characters for starters)
     """
     suffixDelimeter = "_"
+    partDelimeter = "\\" if VerInfo().windows else "/"
 
     def __new__(cls, text=None):
         """
@@ -36,14 +37,16 @@ class Path(str):
         # Simple invalid characters testing for Windows
         for character in "<>\"|?*":
             if character in text:
-                raise OSError("Invalid character {} in {}".format(character, text))
+                raise OSError(f"Windows: Invalid character '{character}' in '{text}'")
 
-        text = text.replace("\\", "/")
 
-        if text.startswith("/") and VerInfo().windows:
-            text = text[1:]
+        if VerInfo().windows:
+            text = text.replace("/", cls.partDelimeter)
 
-        if text.endswith("/"):
+            if text.startswith(cls.partDelimeter):
+                text = text[1:]
+
+        if text.endswith(cls.partDelimeter):
             text = text[0:-1]
 
         return super().__new__(cls, text)
@@ -56,12 +59,12 @@ class Path(str):
         if windows:
             self.isAbsolute = ":" in self
         else:
-            self.isAbsolute = self.startswith("/")
+            self.isAbsolute = self.startswith(self.partDelimeter)
 
 
 
         self.isRelative = not self.isAbsolute
-        self.partsList = self.split("/")
+        self.partsList = self.split(self.partDelimeter)
 
         # Catch some simple mistakes
 
@@ -72,7 +75,7 @@ class Path(str):
             if ":" in part:
                 colonCorrectPos = part.index(":") == 1
                 moreThanOneColon = part.count(":") > 1
-                if i or not colonCorrectPos or moreThanOneColon or not windows:
+                if i or not colonCorrectPos or moreThanOneColon:
                     raise OSError(": in part #{} ({})".format(i, part), self)
 
             if i != len(self.partsList) - 1:
@@ -112,7 +115,8 @@ class Path(str):
         :param str pathPart: A full path, partial part or even only a filetype.
         :return: A string that can be compared with other paths' identifiers to see if they point to the same file or folder.
         """
-        return pathPart.lower()
+        return pathPart
+        # return pathPart.lower()
 
     @staticmethod
     def toPath(path, requireFiletype = None):
@@ -384,6 +388,9 @@ class Path(str):
             return absolutePath.getRelative(basePath)
         except AttributeError:
             return absolutePath
+
+    def __eq__(self, other):
+        return str(self) == str(other)
 
 
 

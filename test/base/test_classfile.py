@@ -41,6 +41,7 @@ class FileTest(unittest.TestCase):
         self.assertRaises(TypeError,            File.toPath, path="exists.txt",         requireFiletype="tsv",  requireExists=True)
         self.assertRaises(TypeError,            File.toPath, path="doesntExist.txt",    requireFiletype="tsv",  requireExists=True)
 
+        self.assertRaises(FileNotFoundError,    File.toPath, path="existS.txt",                                 requireExists=True)
         self.assertRaises(FileNotFoundError,    File.toPath, path="folderDoesntExist",                          requireExists=True)
         self.assertRaises(FileNotFoundError,    File.toPath, path="doesntExist.txt",                            requireExists=True)
         self.assertRaises(FileNotFoundError,    File.toPath, path="folderDoesntExist",  requireFiletype=False,  requireExists=True)
@@ -49,10 +50,11 @@ class FileTest(unittest.TestCase):
 
         self.assertRaises(FileExistsError,      File.toPath, path="folderExists",                               requireExists=False)
         self.assertRaises(FileExistsError,      File.toPath, path="exists.txt",                                 requireExists=False)
-        self.assertRaises(FileExistsError,      File.toPath, path="Exists.txt",                                 requireExists=False)
         self.assertRaises(FileExistsError,      File.toPath, path="folderExists",       requireFiletype=False,  requireExists=False)
         self.assertRaises(FileExistsError,      File.toPath, path="exists.txt",         requireFiletype=True,   requireExists=False)
         self.assertRaises(FileExistsError,      File.toPath, path="exists.txt",         requireFiletype="txt",  requireExists=False)
+
+        self.assertEqual(File.toPath("Exists.txt", requireExists=False), "Exists.txt")
 
         path = Path("test")
         self.assertIsNot(File.toPath(path), path)
@@ -63,7 +65,6 @@ class FileTest(unittest.TestCase):
         self.assertEqual(File.toPath("test.txt", requireFiletype="txt"), "test.txt")
         File.write("test.txt")
         self.assertEqual(File.toPath("test.txt", requireExists=True), "test.txt")
-        self.assertEqual(File.toPath("tEst.txt", requireExists=True), "tEst.txt")
 
     def test_exists(self):
         self.assertFalse(File.exists(File.getAbsolutePath("doesntExist")))
@@ -171,9 +172,13 @@ class FileTest(unittest.TestCase):
         self.assertEqual(File.read("test3.txt"), ["hello", "there", 2])
 
         File.write(File.getAbsolutePath("test3.txt"), ["hello", "there", 2], overwrite=True)
-        self.assertEqual(File.read("tEst3.txt"), ["hello", "there", 2])
+        self.assertEqual(None, File.read("tEst3.txt"))
 
     def test_write(self):
+        import pathlib
+        File.write("tesT.txt")
+        print(pathlib.Path("test.txt").resolve())
+
         self.assertRaises(Exception, File.write, "folder")
         self.assertRaises(Exception, File.write, File.getAbsolutePath("folder"))
         self.assertRaises(EnvironmentError, File.write, "missingMethod.nonExistantFiletype")
@@ -188,8 +193,8 @@ class FileTest(unittest.TestCase):
 
     def test_rename(self):
         File.write("folder/test.txt")
-        self.assertRaises((NameError, OSError), File.rename, "folder/test.txt", "aux")
-        self.assertRaises((NameError, OSError), File.rename, "folder", "aux")
+        self.assertRaises((FileExistsError, OSError), File.rename, "folder/test.txt", "aux")
+        self.assertRaises((FileExistsError, OSError), File.rename, "folder", "aux")
 
         File.rename("folder/test.txt", "hello")
         self.assertTrue(File.exists("folder/hello.txt"))
@@ -215,12 +220,12 @@ class FileTest(unittest.TestCase):
         self.assertRaises(FileExistsError, File.copy, "exists.txt", "folder")
         self.assertRaises(FileExistsError, File.copy, "folder", "")
 
-        self.assertRaises((NameError, FileExistsError, OSError), File.copy, "exists.txt", "aux.txt")
-        self.assertRaises((NameError, FileExistsError, OSError), File.copy, "exists.txt", "aux")
-        self.assertRaises((NameError, FileExistsError, OSError), File.copy, "folder", "nul")
+        self.assertRaises((FileExistsError, FileExistsError, OSError), File.copy, "exists.txt", "aux.txt")
+        self.assertRaises((FileExistsError, FileExistsError, OSError), File.copy, "exists.txt", "aux")
+        self.assertRaises((FileExistsError, FileExistsError, OSError), File.copy, "folder", "nul")
 
-        File.copy(File.getAbsolutePath("Exists.txt"), "exists7.txt")
-        self.assertEqual(File.read("exisTs7.txt"), 1)
+        with self.assertRaises(FileNotFoundError):
+            File.copy(File.getAbsolutePath("Exists.txt"), "exists7.txt")
 
         File.copy(File.getAbsolutePath("exists.txt"), "exists6.txt")
         self.assertEqual(File.read("exists6.txt"), 1)
@@ -256,7 +261,7 @@ class FileTest(unittest.TestCase):
         self.assertEqual(File.read("folder/exists.txt"), 1)
 
         File.copy("exists.txt", "folDer9")
-        self.assertEqual(File.read("folder9/exists.txt"), 1)
+        self.assertEqual(File.read("folDer9/exists.txt"), 1)
 
         File.copy(File.getAbsolutePath("exists.txt"), File.getAbsolutePath("folder3"), overwrite=True)
         self.assertEqual(File.read("folder3/exists.txt"), 1)
@@ -280,7 +285,8 @@ class FileTest(unittest.TestCase):
         self.assertEqual(len(File.getPaths("folder")), 0)
 
         File.write("folder/test.txt", 5)
-        self.assertTrue(File.clearFolder("Folder"))
+        self.assertFalse(File.clearFolder("Folder"))
+        self.assertTrue(File.clearFolder("folder"))
         self.assertEqual(len(File.getPaths("folDer")), 0)
 
         File.write("folder/test.txt", 5)
@@ -308,7 +314,8 @@ class FileTest(unittest.TestCase):
         self.assertTrue(File.trash(File.getAbsolutePath("folder")))
 
         File.write("folder/exists.txt")
-        self.assertTrue(File.trash(File.getAbsolutePath("Folder")))
+        self.assertFalse(File.trash(File.getAbsolutePath("Folder")))
+        self.assertTrue(File.trash(File.getAbsolutePath("folder")))
         self.assertEqual(len(File.getPaths("folder")), 0)
 
     def test_delete(self):
@@ -326,7 +333,8 @@ class FileTest(unittest.TestCase):
         self.assertTrue(File.delete(File.getAbsolutePath("folder")))
 
         File.write("folder/exists.txt")
-        self.assertTrue(File.delete(File.getAbsolutePath("Folder")))
+        self.assertFalse(File.delete(File.getAbsolutePath("Folder")))
+        self.assertTrue(File.delete(File.getAbsolutePath("folder")))
         self.assertEqual(len(File.getPaths("folder")), 0)
 
     def test_getPaths(self):
@@ -346,24 +354,23 @@ class FileTest(unittest.TestCase):
         self.assertEqual(len(File.getPaths(File.getAbsolutePath("folder/test2.txt"))), 2)
         self.assertEqual(len(File.getPaths("folder")), 2)
         self.assertEqual(len(File.getPaths(File.getAbsolutePath("folder"))), 2)
-        self.assertEqual(len(File.getPaths(File.getAbsolutePath("folDer"))), 2)
+        self.assertEqual(len(File.getPaths(File.getAbsolutePath("folDer"))), 0)
 
     def test_getTimeModified(self):
         File.write("folder/test.txt")
-        # Sometimes it got a really small negative number because it's so fast, such as "-2.384185791015625e-07"
-        self.assertTrue(-0.1 <= time.time() - File.getTimeModified("folder/test.txt") < 0.1)
-        self.assertTrue(-0.1 <= time.time() - File.getTimeModified(File.getAbsolutePath("folder/test.txt")) < 0.1)
-        self.assertTrue(-0.1 <= time.time() - File.getTimeModified("folder") < 0.1)
-        self.assertTrue(-0.1 <= time.time() - File.getTimeModified(File.getAbsolutePath("folder")) < 0.1)
-        self.assertTrue(-0.1 <= time.time() - File.getTimeModified("Folder") < 0.1)
+        self.assertLess(time.time() - File.getTimeModified("folder/test.txt"), 0.3)
+        self.assertLess(time.time() - File.getTimeModified(File.getAbsolutePath("folder/test.txt")), 0.3)
+        self.assertLess(time.time() - File.getTimeModified("folder"), 0.3)
+        self.assertLess(time.time() - File.getTimeModified(File.getAbsolutePath("folder")), 0.3)
+        self.assertEqual(None, File.getTimeModified("Folder"))
 
     def test_getTimeCreated(self):
         File.write("folder/test.txt")
-        self.assertTrue(-0.1 <= time.time() - File.getTimeCreated("folder/test.txt") < 0.1)
-        self.assertTrue(-0.1 <= time.time() - File.getTimeCreated(File.getAbsolutePath("folder/test.txt")) < 0.1)
-        self.assertTrue(-0.1 <= time.time() - File.getTimeCreated("folder") < 0.1)
-        self.assertTrue(-0.1 <= time.time() - File.getTimeCreated(File.getAbsolutePath("folder")) < 0.1)
-        self.assertTrue(-0.1 <= time.time() - File.getTimeCreated("Folder") < 0.1)
+        self.assertLess(time.time() - File.getTimeCreated("folder/test.txt"), 0.3)
+        self.assertLess(time.time() - File.getTimeCreated(File.getAbsolutePath("folder/test.txt")), 0.3)
+        self.assertLess(time.time() - File.getTimeCreated("folder"), 0.3)
+        self.assertLess(time.time() - File.getTimeCreated(File.getAbsolutePath("folder")), 0.3)
+        self.assertEqual(None, File.getTimeModified("Folder"))
 
     def test_threads(self):
         threads = []

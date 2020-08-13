@@ -1,6 +1,6 @@
 language: python
 install: pip3 install generalfile
-script: travis_retry python -m unittest discover
+script: python -m unittest discover
 
 jobs:
   include:
