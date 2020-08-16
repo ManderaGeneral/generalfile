@@ -56,7 +56,7 @@ class PathTest(unittest.TestCase):
         self.assertRaises(AttributeError, Path("folder").addPath, Path("file.txt").getAbsolute())
         self.assertRaises(AttributeError, Path("folder").addPath, Path("file.txt").getAbsolute())
 
-        self.assertEqual(Path("folder").addPath("file.txt"), "folder/file.txt")
+        self.assertEqual(Path("folder").addPath("file.txt"), "folder/file.txt")  # HERE ** seperate tests for windows as it uses \?
         self.assertEqual(Path("folder").getAbsolute().addPath("file.txt").getRelative(), "folder/file.txt")
         self.assertEqual(Path("folder").addPath("folder2"), "folder/folder2")
         self.assertEqual(Path("folder/folder2").addPath("folder3/file.txt"), "folder/folder2/folder3/file.txt")
@@ -172,7 +172,7 @@ class PathTest(unittest.TestCase):
         self.assertEqual(Path("folder/file.txt").getParent(), "folder")
         self.assertEqual(Path("folder/file.txt").getParent(2), "")
         self.assertEqual(Path("folder/file.txt").getParent(2), File.getWorkingDir().getRelative())
-        self.assertEqual(Path("folder/file.txt").getParent(0), "folder/file.txt")
+        self.assertEqual(Path("folder/file.txt").getParent(0), "folder\\file.txt")
         self.assertEqual(Path("folder/file.txt").getParent(3), File.getWorkingDir().getParent(1))
 
 if __name__ == "__main__":

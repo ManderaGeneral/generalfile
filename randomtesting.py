@@ -19,9 +19,8 @@ File.openFolder("")
 
 File.write("hEllo/teSt.txt", overwrite=True)
 
-print(File.exists("hEllo"))
 
-# print(pathlib.Path(Path("hello").getAbsolute()).resolve(strict=True))
 
+print(pathlib.Path("hellos").resolve())
 
 

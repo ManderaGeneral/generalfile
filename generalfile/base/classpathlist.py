@@ -2,6 +2,9 @@
 Base component of generalfile
 """
 
+from generalfile.base.errors import *
+
+
 class PathList(list):
     """
     List that contains path with convenient methods.
@@ -73,7 +76,6 @@ class PathList(list):
         :rtype: tuple[bool]
         """
         return tuple(File.exists(path) for path in self)
-
 
 
 

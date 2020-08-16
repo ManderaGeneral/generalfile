@@ -5,6 +5,8 @@ Path is unaware and ignorant of environment.
 
 from generallibrary import VerInfo
 
+from generalfile.base.errors import *
+
 
 class Path(str):
     """
@@ -16,8 +18,8 @@ class Path(str):
         2. Slashes fixed in Path:__new__
         3. Path:identifier returns a comparable path (lowering all characters for starters)
     """
-    suffixDelimeter = "_"
-    partDelimeter = "\\" if VerInfo().windows else "/"
+    suffixDelimiter = "_"
+    pathDelimiter = VerInfo().pathDelimiter
 
     def __new__(cls, text=None):
         """
@@ -35,18 +37,19 @@ class Path(str):
             text = ""
 
         # Simple invalid characters testing for Windows
-        for character in "<>\"|?*":
+        for character in '<>"|?*':
             if character in text:
-                raise OSError(f"Windows: Invalid character '{character}' in '{text}'")
+                raise InvalidCharacterError(f"Windows: Invalid character '{character}' in '{text}'")
 
+        if cls.pathDelimiter == "\\":
+            text = text.replace("/", cls.pathDelimiter)
+        elif cls.pathDelimiter == "/":
+            text = text.replace("\\", cls.pathDelimiter)
 
-        if VerInfo().windows:
-            text = text.replace("/", cls.partDelimeter)
+        if not VerInfo().pathRootIsDelimiter and text.startswith(cls.pathDelimiter):
+            text = text[1:]
 
-            if text.startswith(cls.partDelimeter):
-                text = text[1:]
-
-        if text.endswith(cls.partDelimeter):
+        if text.endswith(cls.pathDelimiter):
             text = text[0:-1]
 
         return super().__new__(cls, text)
@@ -54,17 +57,17 @@ class Path(str):
     def __init__(self, _=None):
         super().__init__()
 
-        windows = VerInfo().windows
-
-        if windows:
+        verInfo = VerInfo()
+        if verInfo.pathRootHasColon:
             self.isAbsolute = ":" in self
+        elif verInfo.pathRootIsDelimiter:
+            self.isAbsolute = self.startswith(self.pathDelimiter)
         else:
-            self.isAbsolute = self.startswith(self.partDelimeter)
-
+            raise AttributeError("Cannot determine path root.")
 
 
         self.isRelative = not self.isAbsolute
-        self.partsList = self.split(self.partDelimeter)
+        self.partsList = self.split(self.pathDelimiter)
 
         # Catch some simple mistakes
 
@@ -96,10 +99,10 @@ class Path(str):
             self.filetype = splitDot[1]
             self.foldersList = self.partsList[0:len(self.partsList) - 1]
 
-            splitSuffix = splitDot[0].split(self.suffixDelimeter)
+            splitSuffix = splitDot[0].split(self.suffixDelimiter)
             self.filenamePure = splitSuffix[0]
 
-            if self.suffixDelimeter in self.filenameFull:
+            if self.suffixDelimiter in self.filenameFull:
                 self.suffix = splitSuffix[1]
 
         else:
@@ -270,7 +273,7 @@ class Path(str):
             suffixParts = [filenamePure]
             if suffix:
                 suffixParts.append(suffix)
-            filenamePureWithSuffix = self.suffixDelimeter.join(suffixParts)
+            filenamePureWithSuffix = self.suffixDelimiter.join(suffixParts)
             foldersList.append("{}.{}".format(filenamePureWithSuffix, filetype))
             return Path("/".join(foldersList))
 

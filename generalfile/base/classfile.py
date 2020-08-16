@@ -7,14 +7,17 @@ import shutil
 import json
 import pathlib
 
-from generallibrary.time import Timer, sleep
+from generallibrary import Timer, VerInfo
+
 from generalfile.extensions.classfiletsv import FileTSV
+from generalfile.base.errors import *
 
 class File(FileTSV):
     """
     File class exists so that FileTSV for example can inherit it.
     Method parameter 'path' takes a Path or a Str, Str is converted to Path.
     """
+    caseSensitive = VerInfo().caseSensitive
     timeoutSeconds = 5
     deadLockSeconds = 3
     def __init__(self):
@@ -58,13 +61,23 @@ class File(FileTSV):
         """
         path = Path.toPath(path)
         path = File.getAbsolutePath(path)
+
         try:
             resolved = pathlib.Path(path).resolve(strict=True)  # Returns path with correct cases
         except FileNotFoundError:
             return False
+        if path == resolved:
+            return True
+        elif not File.caseSensitive:
+            raise CaseSensitivityError(f"Same path with differing case not allowed: '{path}'")
 
-        return path == resolved
-        # return os.path.exists(path)
+        if File.caseSensitive:
+            pathList = File.getPaths(path)
+            for foundPath in pathList:
+                if foundPath.lower() == path.lower():
+                    raise CaseSensitivityError(f"Same path with differing case not allowed: '{path}'")
+
+        return False
 
     @staticmethod
     def getWorkingDir():
@@ -489,7 +502,7 @@ class File(FileTSV):
         return True
 
     @staticmethod
-    def getPaths(path = None, maxDepth=0):
+    def getPaths(path=None, maxDepth=0):
         """
         Get a PathList obj from a path containing absolute Paths to both files and folders inside path.
         PathList extends list class with some convenient Path functionality.
