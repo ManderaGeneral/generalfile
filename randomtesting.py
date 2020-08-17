@@ -14,13 +14,17 @@ from generalfile import File, Path
 # assert Path("folder/test.txt").setFilenamePure("foobar") == "folder/foobar.txt"
 
 
-File.setWorkingDir("test/tests")
-File.openFolder("")
-
-File.write("hEllo/teSt.txt", overwrite=True)
-
-
-
-print(pathlib.Path("hellos").resolve())
+# File.setWorkingDir("test/tests")
+# File.openFolder("")
+#
+# File.write("hEllo/teSt.txt", overwrite=True)
 
 
+
+# print(pathlib.Path("hellos").resolve())
+
+
+# HERE ** do something like this in test setUp
+Path.pathDelimiter = "#"
+
+print(Path("hello/there"))

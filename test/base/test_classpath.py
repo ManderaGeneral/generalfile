@@ -56,7 +56,7 @@ class PathTest(unittest.TestCase):
         self.assertRaises(AttributeError, Path("folder").addPath, Path("file.txt").getAbsolute())
         self.assertRaises(AttributeError, Path("folder").addPath, Path("file.txt").getAbsolute())
 
-        self.assertEqual(Path("folder").addPath("file.txt"), "folder/file.txt")  # HERE ** seperate tests for windows as it uses \?
+        self.assertEqual(Path("folder").addPath("file.txt"), "folder/file.txt")
         self.assertEqual(Path("folder").getAbsolute().addPath("file.txt").getRelative(), "folder/file.txt")
         self.assertEqual(Path("folder").addPath("folder2"), "folder/folder2")
         self.assertEqual(Path("folder/folder2").addPath("folder3/file.txt"), "folder/folder2/folder3/file.txt")

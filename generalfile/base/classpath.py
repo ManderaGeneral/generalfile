@@ -41,10 +41,8 @@ class Path(str):
             if character in text:
                 raise InvalidCharacterError(f"Windows: Invalid character '{character}' in '{text}'")
 
-        if cls.pathDelimiter == "\\":
-            text = text.replace("/", cls.pathDelimiter)
-        elif cls.pathDelimiter == "/":
-            text = text.replace("\\", cls.pathDelimiter)
+        text = text.replace("/", cls.pathDelimiter)
+        text = text.replace("\\", cls.pathDelimiter)
 
         if not VerInfo().pathRootIsDelimiter and text.startswith(cls.pathDelimiter):
             text = text[1:]

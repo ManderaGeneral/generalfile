@@ -56,7 +56,8 @@ class FileTest(unittest.TestCase):
         self.assertRaises(FileExistsError,      File.toPath, path="exists.txt",         requireFiletype=True,   requireExists=False)
         self.assertRaises(FileExistsError,      File.toPath, path="exists.txt",         requireFiletype="txt",  requireExists=False)
 
-        self.assertEqual(File.toPath("Exists.txt", requireExists=False), "Exists.txt")
+        with self.assertRaises(CaseSensitivityError):
+            File.toPath("Exists.txt", requireExists=False)
 
         path = Path("test")
         self.assertIsNot(File.toPath(path), path)
@@ -86,7 +87,10 @@ class FileTest(unittest.TestCase):
 
         File.createFolder("test")
         self.assertTrue(File.exists("test"))
-        self.assertTrue(File.exists("teSt"))
+
+        with self.assertRaises(CaseSensitivityError):
+            File.exists("teSt")
+
         File.delete("test")
         self.assertFalse(File.exists("test"))
 
@@ -109,9 +113,6 @@ class FileTest(unittest.TestCase):
         self.assertEqual(File.getAbsolutePath(path, "folder"), File.getWorkingDir().addPath("folder/folder/file.txt"))
         self.assertEqual(File.getAbsolutePath(File.getAbsolutePath(Path("test.txt")), "folder"), File.getAbsolutePath("test.txt"))
 
-        with self.assertRaises(CaseSensitivityError):
-            File.getAbsolutePath(path, "foldEr")
-
     def test_getRelativePath(self):
         self.assertRaises(Exception, File.getRelativePath, "test", "basePathWithFile.txt")
         self.assertRaises(AttributeError, File.getRelativePath, "folder/file.txt", "anotherFolder")
@@ -121,15 +122,12 @@ class FileTest(unittest.TestCase):
         self.assertEqual(File.getRelativePath(path, "folder"), "folder2/file.txt")
         self.assertEqual(File.getRelativePath(path, "folder/folder2"), "file.txt")
 
-        with self.assertRaises(CaseSensitivityError):
-            File.getRelativePath(path, "folder/foldEr2")
-
     def test_sameDestination(self):
         self.assertTrue(File.sameDestination("folder", "folder"))
-        self.assertTrue(File.sameDestination("Folder", "folder"))
-        self.assertTrue(File.sameDestination("Folder", "foldeR"))
+        self.assertFalse(File.sameDestination("Folder", "folder"))
+        self.assertFalse(File.sameDestination("Folder", "foldeR"))
         self.assertTrue(File.sameDestination("file.txt", "file.txt"))
-        self.assertTrue(File.sameDestination("File.txt", "file.txt"))
+        self.assertFalse(File.sameDestination("File.txt", "file.txt"))
         self.assertTrue(File.sameDestination("file.txt", "File.txt"))
         self.assertTrue(File.sameDestination(File.getAbsolutePath("file.txt"), File.getAbsolutePath("file.txt")))
         self.assertTrue(File.sameDestination("file.txt", File.getAbsolutePath("file.txt")))
@@ -141,9 +139,6 @@ class FileTest(unittest.TestCase):
         self.assertFalse(File.sameDestination(File.getAbsolutePath("folder"), "folder.txt"))
         self.assertFalse(File.sameDestination("folder/file.txt", "folder"))
         self.assertFalse(File.sameDestination(File.getAbsolutePath("folder", "folder"), "folder"))
-
-        with self.assertRaises(CaseSensitivityError):
-            File.getAbsolutePath("foldEr", "folder")
 
     def test__read_txt(self):
         File.write("test.txt")
@@ -270,8 +265,7 @@ class FileTest(unittest.TestCase):
         self.assertEqual(File.read("folder/exists.txt"), 1)
 
         File.copy("exists.txt", "folDer9")
-        with self.assertRaises(CaseSensitivityError):
-            File.read("folDer9/exists.txt")
+        self.assertEqual(File.read("folDer9/exists.txt"), 1)
 
         File.copy(File.getAbsolutePath("exists.txt"), File.getAbsolutePath("folder3"), overwrite=True)
         self.assertEqual(File.read("folder3/exists.txt"), 1)
@@ -284,10 +278,10 @@ class FileTest(unittest.TestCase):
         self.assertFalse(File.createFolder(""))
         self.assertTrue(File.createFolder("folder"))
         self.assertFalse(File.createFolder("folder"))
-        self.assertFalse(File.createFolder("Folder"))
         self.assertTrue(File.createFolder("folder/folder/folder/file.txt"))
         self.assertTrue(File.createFolder(File.getAbsolutePath("folder/folder/folder2")))
         self.assertTrue(File.createFolder(File.getAbsolutePath("folder/folder/Folder3")))
+        self.assertRaises(CaseSensitivityError, File.createFolder, "Folder")
 
     def test_clearFolder(self):
         File.write("folder/test.txt", 5)
@@ -298,8 +292,10 @@ class FileTest(unittest.TestCase):
 
         with self.assertRaises(CaseSensitivityError):
             File.clearFolder("Folder")
+        with self.assertRaises(CaseSensitivityError):
+            self.assertEqual(len(File.getPaths("folDer")), 0)
+
         self.assertTrue(File.clearFolder("folder"))
-        self.assertEqual(len(File.getPaths("folDer")), 0)
 
         File.write("folder/test.txt", 5)
         File.write("folder/folder2/tes2.txt", 3)
