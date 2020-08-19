@@ -5,9 +5,10 @@ Exceptions raised directly by function should be specific Exceptions
 Exceptions raised directly by indirect function should be generic Exception
 """
 import unittest
-import multiprocessing as mp
-import time
 
+import multiprocessing as mp
+
+import time
 
 from generalfile.base.classpath import Path
 from generalfile.base.classfile import File
@@ -15,10 +16,12 @@ from generalfile.base.errors import *
 
 from test.base.setUpWorkDir import SetUpWorkDir
 
+
 class FileTest(unittest.TestCase):
     def setUp(self):
         """Set working dir and clear folder"""
         SetUpWorkDir.activate()
+        Path.pathDelimiter = "/"
 
     def test_toPath(self):
         File.write("exists.txt")

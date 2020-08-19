@@ -9,6 +9,7 @@ import unittest
 from generalfile.base.classpath import Path
 from generalfile.base.classfile import File
 
+
 class PathTest(unittest.TestCase):
     def test_path(self):
         self.assertRaises(OSError, Path, "tes*t.txt")

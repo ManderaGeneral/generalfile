@@ -122,8 +122,8 @@ class Path(str):
     @staticmethod
     def toPath(path, requireFiletype = None):
         """
-        Makes sure we're using Path class.
-        Has built-in parameters to scrub.
+        Has built-in parameters to scrub when casting to Path, can take Path or Str.
+        Can simply use `Path(str)` instead.
 
         :param str path: Generic Path
         :param requireFiletype: True, False or filetype ("txt" or "tsv")

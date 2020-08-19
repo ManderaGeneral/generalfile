@@ -24,7 +24,8 @@ from generalfile import File, Path
 # print(pathlib.Path("hellos").resolve())
 
 
-# HERE ** do something like this in test setUp
 Path.pathDelimiter = "#"
 
 print(Path("hello/there"))
+
+

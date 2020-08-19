@@ -2,15 +2,20 @@
 Base component of generalfile
 """
 from send2trash import send2trash
+
 import os
+
 import shutil
+
 import json
+
 import pathlib
 
 from generallibrary import Timer, VerInfo
 
 from generalfile.extensions.classfiletsv import FileTSV
 from generalfile.base.errors import *
+
 
 class File(FileTSV):
     """
@@ -63,7 +68,7 @@ class File(FileTSV):
         path = File.getAbsolutePath(path)
 
         try:
-            resolved = pathlib.Path(path).resolve(strict=True)  # Returns path with correct cases
+            resolved = Path(str(pathlib.Path(path).resolve(strict=True)))  # Returns path with correct cases
         except FileNotFoundError:
             return False
         if path == resolved:
