@@ -8,16 +8,21 @@ import unittest
 
 from generalfile.base.classpath import Path
 from generalfile.base.classfile import File
+from generalfile.base.errors import *
 
 
 class PathTest(unittest.TestCase):
+    def setUp(self):
+        """Set path delimiter to '/' even for windows just for testing."""
+        Path.pathDelimiter = "/"
+
     def test_path(self):
-        self.assertRaises(OSError, Path, "tes*t.txt")
-        self.assertRaises(OSError, Path, "te<st")
-        self.assertRaises(OSError, Path, "te>st")
-        self.assertRaises(OSError, Path, "te\"st")
-        self.assertRaises(OSError, Path, "te|st")
-        self.assertRaises(OSError, Path, "te?st")
+        self.assertRaises(InvalidCharacterError, Path, "tes*t.txt")
+        self.assertRaises(InvalidCharacterError, Path, "te<st")
+        self.assertRaises(InvalidCharacterError, Path, "te>st")
+        self.assertRaises(InvalidCharacterError, Path, "te\"st")
+        self.assertRaises(InvalidCharacterError, Path, "te|st")
+        self.assertRaises(InvalidCharacterError, Path, "te?st")
         self.assertRaises(OSError, Path, "te:st")
         self.assertRaises(OSError, Path, "test.txt/test.txt")
         self.assertRaises(OSError, Path, "C:/folder/te:st.txt")
@@ -25,7 +30,7 @@ class PathTest(unittest.TestCase):
         self.assertRaises(OSError, Path, "AB:/folder/test.txt")
         self.assertRaises(OSError, Path, ":A/folder/test.txt")
 
-        self.assertEqual(Path("folder\\file.txt"), "folder/file.txt")
+        self.assertEqual(Path("folder/file.txt"), "folder/file.txt")
         self.assertEqual(Path("Folder/file.txt"), "Folder/file.txt")
         self.assertEqual(Path(""), "")
         self.assertEqual(Path("folder"), "folder")
@@ -130,7 +135,7 @@ class PathTest(unittest.TestCase):
         self.assertTrue(Path("folder/file.txt").startsWithPath("folder"))
         self.assertTrue(Path("file.txt").startsWithPath("file.txt"))
         self.assertTrue(Path("file_SUFFIX.txt").startsWithPath("file_SUFFIX.txt"))
-        self.assertTrue(Path("filE.txt").startsWithPath("file.txt"))
+        self.assertFalse(Path("filE.txt").startsWithPath("file.txt"))
         self.assertTrue(Path("file.txt").getAbsolute().startsWithPath(File.getWorkingDir()))
 
     def test_endsWithPath(self):
@@ -142,12 +147,13 @@ class PathTest(unittest.TestCase):
         self.assertTrue(Path("folder/file.txt").endsWithPath("file.txt"))
         self.assertTrue(Path("file.txt").endsWithPath("file.txt"))
         self.assertTrue(Path("file_SUFFIX.txt").endsWithPath("file_SUFFIX.txt"))
-        self.assertTrue(Path("filE.txt").endsWithPath("file.txt"))
-        self.assertTrue(Path("filE.txt").getAbsolute().endsWithPath("file.txt"))
+        self.assertFalse(Path("filE.txt").endsWithPath("file.txt"))
+        self.assertFalse(Path("filE.txt").getAbsolute().endsWithPath("file.txt"))
 
     def test_removeFromStart(self):
         self.assertEqual(Path("test.txt").removeFromStart("test.txt"), "")
-        self.assertEqual(Path("folder/test.txt").removeFromStart("Folder"), "test.txt")
+        self.assertEqual(Path("folder/test.txt").removeFromStart("Folder"), "folder/test.txt")
+        self.assertEqual(Path("folder/test.txt").removeFromStart("folder"), "test.txt")
         self.assertEqual(Path("folder/test.txt").removeFromStart("test"), "folder/test.txt")
         self.assertEqual(Path("folder/test.txt").getAbsolute().removeFromStart(File.getWorkingDir()), "folder/test.txt")
 
@@ -173,7 +179,7 @@ class PathTest(unittest.TestCase):
         self.assertEqual(Path("folder/file.txt").getParent(), "folder")
         self.assertEqual(Path("folder/file.txt").getParent(2), "")
         self.assertEqual(Path("folder/file.txt").getParent(2), File.getWorkingDir().getRelative())
-        self.assertEqual(Path("folder/file.txt").getParent(0), "folder\\file.txt")
+        self.assertEqual(Path("folder/file.txt").getParent(0), "folder/file.txt")
         self.assertEqual(Path("folder/file.txt").getParent(3), File.getWorkingDir().getParent(1))
 
 if __name__ == "__main__":

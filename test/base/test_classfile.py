@@ -19,7 +19,7 @@ from test.base.setUpWorkDir import SetUpWorkDir
 
 class FileTest(unittest.TestCase):
     def setUp(self):
-        """Set working dir and clear folder"""
+        """Set working dir and clear folder. Set path delimiter to '/' even for windows just for testing."""
         SetUpWorkDir.activate()
         Path.pathDelimiter = "/"
 
@@ -131,7 +131,7 @@ class FileTest(unittest.TestCase):
         self.assertFalse(File.sameDestination("Folder", "foldeR"))
         self.assertTrue(File.sameDestination("file.txt", "file.txt"))
         self.assertFalse(File.sameDestination("File.txt", "file.txt"))
-        self.assertTrue(File.sameDestination("file.txt", "File.txt"))
+        self.assertFalse(File.sameDestination("file.txt", "File.txt"))
         self.assertTrue(File.sameDestination(File.getAbsolutePath("file.txt"), File.getAbsolutePath("file.txt")))
         self.assertTrue(File.sameDestination("file.txt", File.getAbsolutePath("file.txt")))
         self.assertTrue(File.sameDestination(File.getAbsolutePath("file.txt"), "file.txt"))

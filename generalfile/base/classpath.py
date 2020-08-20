@@ -393,6 +393,9 @@ class Path(str):
     def __eq__(self, other):
         return str(self) == str(other)
 
+    def __hash__(self):
+        return super().__hash__()
+
 
 
 from generalfile.base.classfile import File

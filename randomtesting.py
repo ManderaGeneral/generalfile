@@ -24,8 +24,10 @@ from generalfile import File, Path
 # print(pathlib.Path("hellos").resolve())
 
 
-Path.pathDelimiter = "#"
 
-print(Path("hello/there"))
+x = Path("foobar")
+
+print(hash(x))
+# print(x.__hash__())
 
 

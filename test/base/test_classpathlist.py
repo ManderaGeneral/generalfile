@@ -12,6 +12,10 @@ from generalfile.base.classpathlist import PathList
 
 
 class PathListTest(unittest.TestCase):
+    def setUp(self):
+        """Set path delimiter to '/' even for windows just for testing."""
+        Path.pathDelimiter = "/"
+
     def test_pathList(self):
         self.assertRaises(TypeError, PathList, 1)
         self.assertRaises(TypeError, PathList, [1])

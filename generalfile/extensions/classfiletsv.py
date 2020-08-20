@@ -49,12 +49,14 @@ class FileTSV:
         useIndex = cls._indexIsNamed(df.index)
 
         df.to_csv(path, sep="\t", header=useHeader, index=useIndex)
+        # df.to_csv(str(path), sep="\t", header=useHeader, index=useIndex)
 
         return useHeader, useIndex
 
     @classmethod
     def _read_tsv_helper(cls, path, header, column):
         return pd.read_csv(path, sep="\t", header=header, index_col=column).convert_dtypes()
+        # return pd.read_csv(str(path), sep="\t", header=header, index_col=column).convert_dtypes()
 
     @classmethod
     def _read_tsv(cls, textIO, header=False, column=False):
