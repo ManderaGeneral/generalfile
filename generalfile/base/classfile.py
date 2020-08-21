@@ -71,6 +71,9 @@ class File(FileTSV):
             resolved = Path(str(pathlib.Path(path).resolve(strict=True)))  # Returns path with correct cases
         except FileNotFoundError:
             return False
+        except PermissionError:
+            return True
+
         if path == resolved:
             return True
         elif not File.caseSensitive:
@@ -251,7 +254,7 @@ class File(FileTSV):
         return default if read is None else read
 
     @classmethod
-    def write(cls, path, writeObj=None, overwrite=False, **kwargs):
+    def write(cls, path, writeObj=None, overwrite=False, debug=False, **kwargs):
         """
         Dynamic function that can write to any document if methods exist for that filetype.
 
@@ -318,6 +321,8 @@ class File(FileTSV):
                 break
             if timer.seconds() > File.timeoutSeconds:
                 raise TimeoutError(f"Couldn't open {pathLock} for writing")
+        if debug:
+            print(timer.seconds(), File.timeoutSeconds)
         return writeReturn
 
     @staticmethod

@@ -418,7 +418,7 @@ def threadTest(queue, i):
     :param mp.Queue queue:
     :param int i:
     """
-    queue.put(int(File.write("test.txt", i, overwrite=True)))
+    queue.put(int(File.write("test.txt", i, overwrite=True, debug=True)))
 
 if __name__ == "__main__":
     x = unittest.main()
