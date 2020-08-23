@@ -67,6 +67,9 @@ class PathTest(unittest.TestCase):
         self.assertEqual(Path("folder").addPath("folder2"), "folder/folder2")
         self.assertEqual(Path("folder/folder2").addPath("folder3/file.txt"), "folder/folder2/folder3/file.txt")
 
+        self.assertEqual(Path("folder").addPath(""), "folder")
+        self.assertEqual(Path("folder/file.txt").addPath(""), "folder/file.txt")
+
     def test_getPathWithoutFile(self):
         self.assertEqual(Path("test.txt").getPathWithoutFile(), "")
         self.assertEqual(Path("folder/test.txt").getPathWithoutFile(), "folder")

@@ -376,20 +376,20 @@ class FileTest(unittest.TestCase):
 
     def test_getTimeModified(self):
         File.write("folder/test.txt")
-        self.assertLess(time.time() - File.getTimeModified("folder/test.txt"), 0.3)
-        self.assertLess(time.time() - File.getTimeModified(File.getAbsolutePath("folder/test.txt")), 0.3)
-        self.assertLess(time.time() - File.getTimeModified("folder"), 0.3)
-        self.assertLess(time.time() - File.getTimeModified(File.getAbsolutePath("folder")), 0.3)
+        self.assertLess(time.time() - File.getTimeModified("folder/test.txt"), 1)
+        self.assertLess(time.time() - File.getTimeModified(File.getAbsolutePath("folder/test.txt")), 1)
+        self.assertLess(time.time() - File.getTimeModified("folder"), 1)
+        self.assertLess(time.time() - File.getTimeModified(File.getAbsolutePath("folder")), 1)
 
         with self.assertRaises(CaseSensitivityError):
             File.getTimeModified("Folder")
 
     def test_getTimeCreated(self):
         File.write("folder/test.txt")
-        self.assertLess(time.time() - File.getTimeCreated("folder/test.txt"), 0.3)
-        self.assertLess(time.time() - File.getTimeCreated(File.getAbsolutePath("folder/test.txt")), 0.3)
-        self.assertLess(time.time() - File.getTimeCreated("folder"), 0.3)
-        self.assertLess(time.time() - File.getTimeCreated(File.getAbsolutePath("folder")), 0.3)
+        self.assertLess(time.time() - File.getTimeCreated("folder/test.txt"), 1)
+        self.assertLess(time.time() - File.getTimeCreated(File.getAbsolutePath("folder/test.txt")), 1)
+        self.assertLess(time.time() - File.getTimeCreated("folder"), 1)
+        self.assertLess(time.time() - File.getTimeCreated(File.getAbsolutePath("folder")), 1)
 
         with self.assertRaises(CaseSensitivityError):
             File.getTimeModified("Folder")

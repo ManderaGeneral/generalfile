@@ -4,30 +4,31 @@ Random local testing
 
 import pathlib
 from generalfile import File, Path
-
-# File.write("newfolder/test.txt", "foobar")  # Automatically creates new folder
-# assert File.read("newfolder/test.txt") == "foobar"
-# File.delete("newfolder")  # Delete entire folder
-
-# assert File.getWorkingDir() == Path().getAbsolute()
-# assert Path("C:/folder/test.txt").getPathWithoutFile() == "C:/folder"
-# assert Path("folder/test.txt").setFilenamePure("foobar") == "folder/foobar.txt"
+import os
 
 
 # File.setWorkingDir("test/tests")
 # File.openFolder("")
-#
-# File.write("hEllo/teSt.txt", overwrite=True)
+
+# File.write("hello/foobar.txt", overwrite=True)
+
+
+# print(list(pathlib.Path("A:/programming").glob('*')))
+
+
+# print(os.path.abspath("A:/programming"))
+
+
+print(File.getPaths(""))
+
+# HERE ** Realized a folder can be named test.txt...
 
 
 
-# print(pathlib.Path("hellos").resolve())
 
+# x = Path("foobar")
 
-
-x = Path("foobar")
-
-print(hash(x))
+# print(hash(x))
 # print(x.__hash__())
 
 

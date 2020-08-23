@@ -23,7 +23,7 @@ class File(FileTSV):
     Method parameter 'path' takes a Path or a Str, Str is converted to Path.
     """
     caseSensitive = VerInfo().caseSensitive
-    timeoutSeconds = 5
+    timeoutSeconds = 12
     deadLockSeconds = 3
     def __init__(self):
         raise UserWarning("No need to instantiate File, all methods are static or classmethods")
@@ -66,26 +66,30 @@ class File(FileTSV):
         """
         path = Path.toPath(path)
         path = File.getAbsolutePath(path)
+        exists = False
 
-        try:
-            resolved = Path(str(pathlib.Path(path).resolve(strict=True)))  # Returns path with correct cases
-        except FileNotFoundError:
-            return False
-        except PermissionError:
-            return True
+        pathList = File.getPaths(path, includeBaseFolder=True)
+        for foundPath in pathList:
+            if foundPath == path:
+                exists = True
+            elif foundPath.lower() == path.lower():
+                raise CaseSensitivityError(f"Same path with differing case not allowed: '{path}'")
 
-        if path == resolved:
-            return True
-        elif not File.caseSensitive:
-            raise CaseSensitivityError(f"Same path with differing case not allowed: '{path}'")
+        return exists
 
-        if File.caseSensitive:
-            pathList = File.getPaths(path)
-            for foundPath in pathList:
-                if foundPath.lower() == path.lower():
-                    raise CaseSensitivityError(f"Same path with differing case not allowed: '{path}'")
-
-        return False
+        # try:
+        #     resolved = Path(str(pathlib.Path(path).resolve(strict=True)))  # Returns path with correct cases
+        # except FileNotFoundError:
+        #     return False
+        # except PermissionError:
+        #     return True
+        #
+        # if path == resolved:
+        #     return True
+        # elif not File.caseSensitive:
+        #     raise CaseSensitivityError(f"Same path with differing case not allowed: '{path}'")
+        #
+        # return False
 
     @staticmethod
     def getWorkingDir():
@@ -94,7 +98,7 @@ class File(FileTSV):
         :raises FileNotFoundError: If doesn't exist
         """
         path = Path(os.getcwd())
-        if not File.exists(path):
+        if not File.resolve(path):
             raise FileNotFoundError(f"Working dir {path} doesn't exist.")
         return path
 
@@ -389,7 +393,7 @@ class File(FileTSV):
                 raise FileExistsError(f"{destPath} probably contains an invalid name such as CON, PRN, NUL or AUX")
 
         elif path.isFolder and destPath.isFolder:
-            filePathList = File.getPaths(path).getFiles()
+            filePathList = File.getPaths(path, maxDepth=0).getFiles()
             relativePaths = filePathList.getRelative(path)
             absoluteDestPaths = relativePaths.getAbsolute(destPath)
             if not overwrite and any(absoluteDestPaths.exists()):
@@ -512,38 +516,75 @@ class File(FileTSV):
         return True
 
     @staticmethod
-    def getPaths(path=None, maxDepth=0):
+    def resolve(path):
+        """
+        Return whether the path exists with case sensitivity.
+        Doesn't raise CaseSensitivityError like `exists` does.
+        """
+        path = File.toPath(path)
+        path = File.getAbsolutePath(path)
+
+        timer = Timer()
+        while True:
+            try:
+                resolved = pathlib.Path(path).resolve(strict=True)
+            except FileNotFoundError:
+                return False
+            except PermissionError:
+                pass
+            else:
+                break
+            if timer.seconds() > File.timeoutSeconds:
+                raise TimeoutError(f"Couldn't resolve {path}")
+
+        return path == resolved
+
+    @staticmethod
+    def getPaths(path=None, maxDepth=1, includeBaseFolder=False):
         """
         Get a PathList obj from a path containing absolute Paths to both files and folders inside path.
         PathList extends list class with some convenient Path functionality.
 
         :param path: Path to folder. File is ignored. Default is Path("") which reads current work dir.
         :param maxDepth: Maximum folder depth, 0 means no limit.
+        :param includeBaseFolder: Whether to include given path or not.
         :return: PathList containing every absolute Paths in folder.
         """
         if path is None:
             path = Path("")
         path = File.toPath(path)
         path = path.getPathWithoutFile()
-        if not File.exists(path):
-            return PathList()
-
         path = File.getAbsolutePath(path)
+
+        # if not File.exists(path):
+        #     return PathList()
+
         pathFoldersLen = len(path.foldersList)
 
         folderPathsToSearch = PathList(path)
+
         pathList = PathList()
 
+        if not File.resolve(path):
+            return pathList
+
+        if includeBaseFolder:
+            pathList.append(path)
+
         while folderPathsToSearch:
-            folderPath = folderPathsToSearch[0]
-            for subPath in os.listdir(folderPath):
-                absoluteSubPath = folderPath.addPath(subPath)
-                pathList.append(absoluteSubPath)
-                if absoluteSubPath.isFile:
-                    continue
-                if maxDepth and len(absoluteSubPath.foldersList) - pathFoldersLen >= maxDepth:
-                    continue
-                folderPathsToSearch.append(absoluteSubPath)
+            try:
+                subPaths = os.listdir(folderPathsToSearch[0])
+            except FileNotFoundError:
+                pass
+            else:
+                for subPath in subPaths:
+                    absoluteSubPath = folderPathsToSearch[0].addPath(subPath)
+                    pathList.append(absoluteSubPath)
+                    if absoluteSubPath.isFile:
+                        continue
+                    if maxDepth and len(absoluteSubPath.foldersList) - pathFoldersLen >= maxDepth:
+                        continue
+                    folderPathsToSearch.append(absoluteSubPath)
 
             del folderPathsToSearch[0]
         return pathList
