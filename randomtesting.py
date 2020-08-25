@@ -1,6 +1,10 @@
 
-from pathlib import Path
+import generalfile
+import pathlib
+import mutapath
 
 
 
-print(Path(Path("hello.there.now")).stem)
+print(pathlib.Path("folder/file.txt.hi"))
+print(mutapath.Path("folder/file.txt"))
+print(generalfile.Path("folder/file.txt"))
