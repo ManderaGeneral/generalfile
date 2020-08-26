@@ -283,11 +283,46 @@ class FileTest(unittest.TestCase):
 
         self.assertEqual(2, len(Path("folder/test2.txt").get_paths()))
 
+    def test_time_created_and_modified(self):
+        import time
+        path = Path("test.txt")
+        methods = (path.time_created, path.time_modified)
 
+        for method in methods:
+            self.assertEqual(None, method())
 
+        path.write()
 
+        for method in methods:
+            self.assertGreater(time.time(), method())
+        self.assertEqual(methods[0](), methods[1]())
 
+        path.write("foobar", overwrite=True)
+        self.assertNotEqual(methods[0](), methods[1]())
 
+    def test_threads(self):
+        import multiprocessing as mp
+        threads = []
+        queue = mp.Queue()
+        count = 10
+        for i in range(count):
+            threads.append(mp.Process(target=threadTest, args=(queue, i)))
+        for thread in threads:
+            thread.start()
+
+        results = []
+        for i in range(count):
+            get = queue.get()
+            self.assertNotIn(get, results)
+            results.append(get)
+
+        self.assertEqual(len(results), count)
+
+def threadTest(queue, i):
+    queue.put(int(Path("test.txt").write(i, overwrite=True)))
+
+if __name__ == "__main__":
+    x = unittest.main()
 
 
 
