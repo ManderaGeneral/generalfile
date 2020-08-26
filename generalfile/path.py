@@ -67,6 +67,8 @@ class Path:
     def __repr__(self):
         return self.__str__()
 
+    def __truediv__(self, other):
+        return Path(self._path / str(other))
 
 
     def absolute(self):
@@ -124,16 +126,17 @@ class Path:
 
     def get_paths(self, depth=1, include_self=False, include_files=True, include_folders=True):
         """Get all paths that are next to this file or inside this folder."""
-        queued_folders = []
         if self.is_file():
-            queued_folders.append(self.parent())
+            queued_folders = [self.parent()]
         elif self.is_folder():
-            queued_folders.append(self)
+            queued_folders = [self]
+        else:
+            raise AttributeError(f"Path {self} is neither file nor folder.")
+
+        self_parts_len = len(queued_folders[0].parts())
 
         if include_self:
             yield self
-
-        parts_len = len(self.parts())
 
         while queued_folders:
             for path in queued_folders[0].get_paths_in_folder():
@@ -144,7 +147,9 @@ class Path:
                     if include_folders:
                         yield path
 
-                    if depth and len(absoluteSubPath.foldersList) - pathFoldersLen >= maxDepth:
+                    current_depth = len(path.parts()) - self_parts_len
+                    if not current_depth or current_depth <= depth:
+                        queued_folders.append(path)
 
             del queued_folders[0]
 
