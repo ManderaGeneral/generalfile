@@ -11,7 +11,7 @@ from generalfile.errors import *
 class FileTest(unittest.TestCase):
     def setUp(self):
         """Set working dir and clear folder. Set path delimiter to '/' for testing."""
-        Path.pathDelimiter = "/"
+        Path.path_delimiter = "/"
         setUpWorkDir()
 
     def test_path(self):
@@ -25,6 +25,10 @@ class FileTest(unittest.TestCase):
         self.assertEqual(Path("foo/bar"), Path("foo") / Path("bar"))
         self.assertEqual(Path("foo.txt/folder"), Path("foo.txt") / "folder")
         self.assertEqual(Path("folder/foo.txt"), Path("folder") / "foo.txt")
+
+    def test_parts(self):
+        path = Path("folder/folder2/test.txt")
+        self.assertEqual(["folder", "folder2", "test.txt"], path.parts())
 
     def test_name(self):
         path = Path("folder/test.txt")
