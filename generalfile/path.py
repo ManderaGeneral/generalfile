@@ -1,11 +1,34 @@
 
 import pathlib
 
+import appdirs
+
 import os
 
-from generallibrary import VerInfo
+import functools
+
+from generallibrary import VerInfo, Timer
 from generalfile.errors import *
 
+def decorator_require_state(is_file=None, is_folder=None, exists=None):
+    """Decorator to easily configure and see which state to require."""
+
+    def _decorator(func):
+        def _wrapper(self, *args, **kwargs):
+            """:param Path self:"""
+            if is_file is not None:
+                if self.is_file() != is_file:
+                    raise AttributeError(f"Path {self} is_file check didn't match.")
+            elif is_folder is not None:
+                if self.is_folder() != is_folder:
+                    raise AttributeError(f"Path {self} is_folder check didn't match.")
+            elif exists is not None:
+                if self.exists() != exists:
+                    raise AttributeError(f"Path {self} exists check didn't match.")
+
+            return func(self, *args, **kwargs)
+        return _wrapper
+    return _decorator
 
 class Path:
     """
@@ -15,8 +38,11 @@ class Path:
     Adds useful methods.
     """
     path_delimiter = VerInfo().pathDelimiter
+    path_delimiter_alternative = "^_^"
     _suffixIO = {"txt": ("txt", "md", ""), "tsv": ("tsv", "csv")}
     verInfo = VerInfo()
+    timeout_seconds = 12
+    dead_lock_seconds = 3
 
     def _scrub(self, str_path):
         str_path = self._replace_delimiters(str_path=str_path)
@@ -27,6 +53,7 @@ class Path:
     def _replace_delimiters(self, str_path):
         str_path = str_path.replace("/", self.path_delimiter)
         str_path = str_path.replace("\\", self.path_delimiter)
+        str_path = str_path.replace(self.path_delimiter_alternative, self.path_delimiter)
         return str_path
 
     def _invalid_characters(self, str_path):
@@ -60,6 +87,7 @@ class Path:
         str_path = self._scrub(str_path="" if path is None else str(path))
 
         self._path = pathlib.Path(str_path)
+        self._file_stream = None
 
     def __str__(self):
         return str(self._path)
@@ -70,30 +98,61 @@ class Path:
     def __truediv__(self, other):
         return Path(self._path / str(other))
 
-    @staticmethod
-    def decorator_require_state(is_file=None, is_folder=None, exists=None):
-        """Decorator to easily configure and see which state to require."""
+    def __eq__(self, other):
+        return str(self) == str(other)
 
-        def _decorator(func):
+    def __hash__(self):
+        return object.__hash__(self)
 
-            def _wrapper(self, *args, **kwargs):
-                """:param Path self:"""
-                if is_file is not None:
-                    if self.is_file() != is_file:
-                        raise AttributeError(f"Path {self} is_file check didn't match.")
-                elif is_folder is not None:
-                    if self.is_folder() != is_folder:
-                        raise AttributeError(f"Path {self} is_folder check didn't match.")
-                elif exists is not None:
-                    if self.exists() != exists:
-                        raise AttributeError(f"Path {self} exists check didn't match.")
+    def __enter__(self):
+        """ Creates a lock for folder or path with these steps:
+            Wait until unlocked.
+            Create lock.
+            Make sure only locked by self."""
 
-                return func(self, *args, **kwargs)
+        timer = Timer()
+        while timer.seconds() < self.timeout_seconds:
+            if not self._is_locked():
+                self._create_lock()
 
-            return _wrapper
+                all_locks = self._all_locks()
+                if all_locks == [self]:
+                    return
+                elif self in all_locks:
+                    self._remove_lock()
+                else:
+                    raise FileNotFoundError(f"Lock '{self}' failed to create.")
 
-        return _decorator
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self._remove_lock()
 
+
+
+
+
+
+
+
+
+        locks_path = self.get_lock_dir()
+        absolute = self.absolute()
+        timer = Timer()
+
+        locked = False
+        while not locked:
+            for lock in locks_path.get_paths_in_folder:
+                if absolute.startswith(lock):
+                    break
+            else:
+                locked = True
+
+            if timer.seconds() > self.timeout_seconds:
+                raise TimeoutError(f"Couldn't lock {self}.")
+
+
+    def get_alternative_str(self):
+        """Get path as a string using alternative delimiter."""
+        return self.path_delimiter_alternative.join(self.parts())
 
     def absolute(self):
         """Get new Path as absolute."""
@@ -143,11 +202,33 @@ class Path:
 
     # IO operations below
 
+    def is_file(self):
+        """Get whether this Path is a file."""
+        return self._path.is_file()
+
+    def is_folder(self):
+        """Get whether this Path is a folder."""
+        return self._path.is_dir()
+
+    def exists(self):
+        """Get whether this Path exists."""
+
+        path_list = self.get_paths(include_self=True)
+        exists = False
+        for foundPath in path_list:
+            if foundPath == self:
+                exists = True
+            elif str(foundPath).lower() == str(self).lower():
+                raise CaseSensitivityError(f"Same path with differing case not allowed: '{self}'")
+        return exists
+
+    @decorator_require_state(is_folder=True)
     def get_paths_in_folder(self):
         """Get a generator containing every child Path inside this folder."""
         for child in self._path.iterdir():
             yield Path(child)
 
+    @decorator_require_state(exists=True)
     def get_paths(self, depth=1, include_self=False, include_files=True, include_folders=True):
         """Get all paths that are next to this file or inside this folder."""
         if self.is_file():
@@ -174,23 +255,9 @@ class Path:
                     current_depth = len(path.parts()) - self_parts_len
                     if not current_depth or current_depth <= depth:
                         queued_folders.append(path)
-
             del queued_folders[0]
 
-
-    def exists(self):
-        """Get whether this Path exists."""
-        exists = False
-
-        path_list = self.get_paths(include_self=True)
-        for foundPath in path_list:
-            if foundPath == self:
-                exists = True
-            elif str(foundPath).lower() == str(self).lower():
-                raise CaseSensitivityError(f"Same path with differing case not allowed: '{self}'")
-
-        return exists
-
+    @decorator_require_state(is_file=False)
     def create_folder(self):
         """Create folder with this Path unless it exists"""
         if self.exists():
@@ -199,26 +266,32 @@ class Path:
             self._path.mkdir(parents=True, exist_ok=True)
             return True
 
-    def is_file(self):
-        """Get whether this Path is a file."""
-        return self._path.is_file()
+    @staticmethod
+    @functools.lru_cache()
+    def get_cache_dir():
+        """Get cache folder."""
+        return Path(appdirs.user_cache_dir())
 
-    def is_folder(self):
-        """Get whether this Path is a folder."""
-        return self._path.is_dir()
+    @staticmethod
+    @functools.lru_cache()
+    def get_lock_dir():
+        """Get lock folder inside cache folder."""
+        return Path.get_cache_dir() / "generalfile" / "locks"
 
-    @classmethod
-    def get_working_dir(cls):
-        """Get current working directory as a new Path."""
+    @staticmethod
+    def get_working_dir():
+        """Get current working folder as a new Path."""
         return Path(pathlib.Path.cwd())
 
     def set_working_dir(self):
-        """Set current working directory."""
+        """Set current working folder."""
         self.create_folder()
         os.chdir(str(self.absolute()))
 
     def delete(self):
         """."""
+        # with self.lock():
+
 
     def trash(self):
         """."""
