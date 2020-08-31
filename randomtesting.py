@@ -7,8 +7,12 @@ import time
 import os
 
 
-with open("test.txt", "x"):
-    time.sleep(2)
+
+
+
+
+# with open("test.txt", "x"):
+#     time.sleep(2)
 
 
 # print(list(generalfile.Path("randomtesting.py").get_paths()))

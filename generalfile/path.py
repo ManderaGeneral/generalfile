@@ -1,19 +1,16 @@
 
 import pathlib
-
 import appdirs
-
 import os
-
 import functools
+import shutil
+from send2trash import send2trash
 
-from generallibrary import VerInfo, Timer, initBases
-
+from generallibrary import VerInfo, Timer, initBases, deco_cache
 from generalfile.errors import *
 
-def decorator_require_state(is_file=None, is_folder=None, exists=None, quick_exists=None):
+def deco_require_state(is_file=None, is_folder=None, exists=None, quick_exists=None):
     """Decorator to easily configure and see which state to require."""
-
     def _decorator(func):
         def _wrapper(self, *args, **kwargs):
             """:param Path self:"""
@@ -33,6 +30,17 @@ def decorator_require_state(is_file=None, is_folder=None, exists=None, quick_exi
             return func(self, *args, **kwargs)
         return _wrapper
     return _decorator
+
+def deco_preserve_working_dir(function):
+    """Decorator to preserve working dir if given function changes it somehow."""
+    def _wrapper(*args, **kwargs):
+        """ :param Path self: """
+        working_dir_path = Path.get_working_dir()
+        result = function(*args, **kwargs)
+        if working_dir_path != Path.get_working_dir():
+            working_dir_path.set_working_dir()
+        return result
+    return _wrapper
 
 
 class ContextManager:
@@ -130,7 +138,7 @@ class FileOperations:
                     raise CaseSensitivityError(f"Same path with differing case not allowed: '{self}'")
             return exists
 
-    @decorator_require_state(is_folder=True)
+    @deco_require_state(is_folder=True)
     def get_paths_in_folder(self):
         """ Get a generator containing every child Path inside this folder, relative if possible.
 
@@ -138,7 +146,7 @@ class FileOperations:
         for child in self._path.iterdir():
             yield Path(child)
 
-    @decorator_require_state(quick_exists=True)
+    @deco_require_state(quick_exists=True)
     def get_paths(self, depth=0, include_self=False, include_files=True, include_folders=True):
         """ Get all paths that are next to this file or inside this folder.
 
@@ -174,7 +182,7 @@ class FileOperations:
                         queued_folders.append(path)
             del queued_folders[0]
 
-    @decorator_require_state(is_file=False)
+    # @deco_require_state(is_file=False)
     def create_folder(self):
         """ Create folder with this Path unless it exists
 
@@ -186,13 +194,13 @@ class FileOperations:
             return True
 
     @staticmethod
-    @functools.lru_cache()
+    @deco_cache()
     def get_cache_dir():
         """ Get cache folder. """
         return Path(appdirs.user_cache_dir())
 
     @staticmethod
-    @functools.lru_cache()
+    @deco_cache()
     def get_lock_dir():
         """ Get lock folder inside cache folder. """
         return Path.get_cache_dir() / "generalfile" / "locks"
@@ -209,28 +217,35 @@ class FileOperations:
         self.create_folder()
         os.chdir(str(self.absolute()))
 
-    # TODO
-
+    @deco_preserve_working_dir
     def delete(self):
-        """ :param Path self: """
+        """ Delete a file or folder.
+            :param Path self: """
         with self:
-            pass
+            if self.is_file():
+                os.remove(str(self))
+            elif self.is_folder():
+                shutil.rmtree(str(self))
 
-
+    @deco_preserve_working_dir
     def trash(self):
-        """ .
-
+        """ Trash a file or folder
             :param Path self: """
+        with self:
+            send2trash(str(self))
 
+    @deco_require_state(is_folder=True)
     def delete_folder_content(self):
-        """ .
-
+        """ Delete a file or folder
             :param Path self: """
+        self.delete()
+        self.create_folder()
 
+    @deco_require_state(is_folder=True)
     def trash_folder_content(self):
-        """ .
-
-            :param Path self: """
+        """ :param Path self: """
+        self.trash()
+        self.create_folder()
 
 
 class StrOperations:
