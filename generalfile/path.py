@@ -6,35 +6,34 @@ import functools
 import shutil
 from send2trash import send2trash
 
-from generallibrary import VerInfo, Timer, initBases, deco_cache
+from generallibrary import VerInfo, Timer, initBases, deco_cache, sleep
 from generalfile.errors import *
 
 def deco_require_state(is_file=None, is_folder=None, exists=None, quick_exists=None):
-    """Decorator to easily configure and see which state to require."""
+    """ Decorator to easily configure and see which state to require. """
     def _decorator(func):
         def _wrapper(self, *args, **kwargs):
             """:param Path self:"""
             if is_file is not None:
                 if self.is_file() != is_file:
-                    raise AttributeError(f"Path {self} is_file check didn't match.")
+                    raise AttributeError(f"Path {self} is_file check didn't match ({is_file}).")
             elif is_folder is not None:
                 if self.is_folder() != is_folder:
-                    raise AttributeError(f"Path {self} is_folder check didn't match.")
+                    raise AttributeError(f"Path {self} is_folder check didn't match ({is_folder}).")
             elif exists is not None:
                 if self.exists() != exists:
-                    raise AttributeError(f"Path {self} exists check didn't match.")
+                    raise AttributeError(f"Path {self} exists check didn't match ({exists}).")
             elif quick_exists is not None:
-                if self.exists(quick=True) != quick_exists:
-                    raise AttributeError(f"Path {self} quick exists check didn't match.")
+                if self.exists(quick=True) is not quick_exists:
+                    raise AttributeError(f"Path {self} quick exists check didn't match ({quick_exists}).")
 
             return func(self, *args, **kwargs)
         return _wrapper
     return _decorator
 
 def deco_preserve_working_dir(function):
-    """Decorator to preserve working dir if given function changes it somehow."""
+    """ Decorator to preserve working dir if given function changes it somehow. """
     def _wrapper(*args, **kwargs):
-        """ :param Path self: """
         working_dir_path = Path.get_working_dir()
         result = function(*args, **kwargs)
         if working_dir_path != Path.get_working_dir():
@@ -60,12 +59,12 @@ class ContextManager:
         while timer.seconds() < self.timeout_seconds:
             if not self._is_locked():
                 self._open_and_create_lock()
-
-                affecting_locks = self._affecting_locks()
+                affecting_locks = list(self._affecting_locks())
+                print(affecting_locks)
                 if affecting_locks == [self]:
                     return
                 elif self in affecting_locks:
-                    self._close_and_remove_lock()
+                    self._close_and_remove_lock()  # Remove and try again to respect other locks
                 else:
                     raise FileNotFoundError(f"Lock '{self}' failed to create.")
         raise TimeoutError(f"Couldn't lock '{self}' in time.")
@@ -76,14 +75,14 @@ class ContextManager:
 
     def _get_lock_str(self):
         """ :param Path self: """
-        return str(self.get_lock_dir() / self.absolute().get_alternative_str())
+        return str(self.get_lock_dir() / self.absolute().get_alternative_path())
 
     def _open_and_create_lock(self):
         """ :param Path self: """
         if self._file_stream is not None:
             raise AttributeError(f"A file stream is already opened for '{self}'.")
-
         self._file_stream = open(self._get_lock_str(), "x")
+        self._file_stream.write("hello")
 
     def _close_and_remove_lock(self):
         """ :param Path self: """
@@ -95,8 +94,10 @@ class ContextManager:
 
     def _affecting_locks(self):
         """ :param Path self: """
-        for path in self.get_lock_dir().get_paths_in_folder():
-            if self.startswith(path) or path.startswith(self):
+        self_absolute = self.absolute()
+        for alternative_path in self.get_lock_dir().get_paths_in_folder():
+            path = alternative_path.remove_start # HERE **
+            if self_absolute.startswith(path) or path.startswith(self):
                 yield path
 
     def _is_locked(self):
@@ -129,7 +130,10 @@ class FileOperations:
         if quick:
             return self._path.exists()
         else:
-            path_list = self.get_paths(include_self=True)
+            try:
+                path_list = self.get_paths(include_self=True)
+            except AttributeError:
+                return False
             exists = False
             for foundPath in path_list:
                 if foundPath == self:
@@ -137,6 +141,15 @@ class FileOperations:
                 elif str(foundPath).lower() == str(self).lower():
                     raise CaseSensitivityError(f"Same path with differing case not allowed: '{self}'")
             return exists
+
+    def without_file(self):
+        """ Get this path without it's name if it's a file, otherwise it returns itself.
+
+            :param Path self: """
+        if self.is_file():
+            return self.parent()
+        else:
+            return self
 
     @deco_require_state(is_folder=True)
     def get_paths_in_folder(self):
@@ -182,7 +195,6 @@ class FileOperations:
                         queued_folders.append(path)
             del queued_folders[0]
 
-    # @deco_require_state(is_file=False)
     def create_folder(self):
         """ Create folder with this Path unless it exists
 
@@ -192,6 +204,12 @@ class FileOperations:
         else:
             self._path.mkdir(parents=True, exist_ok=True)
             return True
+
+    def open_folder(self):
+        """ Open folder to view it manually.
+
+            :param Path self: """
+        os.startfile(str(self.without_file()))
 
     @staticmethod
     @deco_cache()
@@ -270,11 +288,17 @@ class StrOperations:
         """ :param Path self: """
         return object.__hash__(self)
 
-    def get_alternative_str(self):
-        """ Get path as a string using alternative delimiter.
+    def get_alternative_path(self):
+        """ Get path using alternative delimiter and alternative root for windows.
 
             :param Path self: """
-        return self.path_delimiter_alternative.join(self.parts())
+        return Path(self.path_delimiter_alternative.join(self.parts()).replace(":", self.windows_base_alternative))
+
+    def get_path_from_alternative(self):
+        """ Get path from an alternative representation.
+
+            :param Path self: """
+        return Path(str(self).replace(self.path_delimiter_alternative, self.path_delimiter).replace(self.windows_base_alternative, ":"))
 
     def absolute(self):
         """ Get new Path as absolute.
@@ -303,26 +327,23 @@ class StrOperations:
     def startswith(self, path):
         """ Get whether this Path starts with given string.
 
-            :param Path self: """
-        if self.is_absolute() is path.is_absolute():
-            return str(self).startswith(str(path))
-        else:
-            return str(self.absolute()).startswith(str(path.absolute()))
+            :param Path self:
+            :param str or Path path:"""
+        return str(self).startswith(str(Path(path)))
 
     def endswith(self, path):
         """ Get whether this Path ends with given string.
 
-            :param Path self: """
-        if self.is_absolute() is path.is_absolute():
-            return str(self).endswith(str(path))
-        else:
-            return str(self.absolute()).endswith(str(path.absolute()))
+            :param Path self:
+            :param str or Path path:"""
+        return str(self).endswith(str(Path(path)))
 
     def parent(self, index=0):
         """ Get any parent as a new Path.
             Doesn't convert to absolute path even if needed.
 
             :param Path self:
+            :param index: Which parent, 0 is direct parent.
             :raises IndexError: If index doesn't exist.  """
         strParent = str(self._path.parents[index])
         if strParent == ".":
@@ -335,6 +356,19 @@ class StrOperations:
             :param Path self: """
         return str(self).split(self.path_delimiter)
 
+    def name(self):
+        """ Get name of Path.
+
+            :param Path self: """
+        return self._path.name
+
+    def with_name(self, name):
+        """ Get a new Path with new name.
+
+            :param name: Name.
+            :param Path self: """
+        return Path(self._path.with_name(name))
+
     def stem(self):
         """ Get stem which is name without last suffix.
 
@@ -344,8 +378,22 @@ class StrOperations:
     def with_stem(self, stem):
         """ Get a new Path with new stem.
 
+            :param stem: Name without suffix.
             :param Path self: """
         return Path(self._path.with_stem(stem))
+
+    def suffix(self):
+        """ Get suffix which is name without stem.
+
+            :param Path self: """
+        return self._path.suffix
+
+    def with_suffix(self, suffix):
+        """ Get a new Path with new suffix.
+
+            :param suffix: Name without stem.
+            :param Path self: """
+        return Path(self._path.with_stem(suffix))
 
 @initBases
 class Path(ContextManager, FileOperations, StrOperations):
@@ -357,7 +405,8 @@ class Path(ContextManager, FileOperations, StrOperations):
     """
     verInfo = VerInfo()
     path_delimiter = verInfo.pathDelimiter
-    path_delimiter_alternative = "^_^"
+    path_delimiter_alternative = "&#47;"  # So that we can represent a nested path with a single filename
+    windows_base_alternative = "&#58;"  # Since we cannot have `:` as part of filename
     _suffixIO = {"txt": ("txt", "md", ""), "tsv": ("tsv", "csv")}
     timeout_seconds = 12
     dead_lock_seconds = 3
@@ -377,7 +426,7 @@ class Path(ContextManager, FileOperations, StrOperations):
     def _replace_delimiters(self, str_path):
         str_path = str_path.replace("/", self.path_delimiter)
         str_path = str_path.replace("\\", self.path_delimiter)
-        # str_path = str_path.replace(self.path_delimiter_alternative, self.path_delimiter)
+        # str_path = str_path.replace(self.path_delimiter_alternative, self.path_delimiter)  # Don't remember why I commented this
         return str_path
 
     def _invalid_characters(self, str_path):

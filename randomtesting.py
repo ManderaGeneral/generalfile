@@ -1,18 +1,19 @@
 
-import generalfile
+# import generalfile
+from generalfile import Path
 import pathlib
 import mutapath
 import appdirs
 import time
 import os
 
+Path.get_lock_dir().open_folder()
 
+Path.get_lock_dir().delete_folder_content()
 
+with Path("hello"):
+    time.sleep(3)
 
-
-
-# with open("test.txt", "x"):
-#     time.sleep(2)
 
 
 # print(list(generalfile.Path("randomtesting.py").get_paths()))
