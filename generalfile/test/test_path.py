@@ -55,28 +55,28 @@ class FileTest(unittest.TestCase):
         path = path.with_suffix(".tsv")
         self.assertEqual("folder/foobar.tsv", path)
 
-        path = path.with_suffix("csv")
+        path = path.with_suffix(".csv")
         self.assertEqual("folder/foobar.csv", path)
 
-        path = path.with_suffix("BACKUP", -2)
+        path = path.with_suffix(".BACKUP", -2)
         self.assertEqual("folder/foobar.BACKUP.csv", path)
 
-        path = path.with_suffix("test", -2)
+        path = path.with_suffix(".test", -2)
         self.assertEqual("folder/foobar.test.csv", path)
 
         path = path.with_suffix(None, 0)
         self.assertEqual("folder/foobar.csv", path)
 
-        path = path.with_suffix("foo", 2)
+        path = path.with_suffix(".foo", 2)
         self.assertEqual("folder/foobar.csv.foo", path)
 
-        path = path.with_suffix("bar", 3)
+        path = path.with_suffix(".bar", 3)
         self.assertEqual("folder/foobar.csv.foo.bar", path)
 
-        path = path.with_suffix("clamped", 5)
+        path = path.with_suffix(".clamped", 5)
         self.assertEqual("folder/foobar.csv.foo.bar.clamped", path)
 
-        path = path.with_suffix("clamped", -10)
+        path = path.with_suffix(".clamped", -10)
         self.assertEqual("folder/foobar.clamped.csv.foo.bar.clamped", path)
 
     def test_parent(self):
@@ -143,9 +143,6 @@ class FileTest(unittest.TestCase):
 
 
     def test_is_file_or_folder(self):
-        self.assertRaises(FileNotFoundError, Path("folder.txt").is_file)
-        self.assertRaises(FileNotFoundError, Path("folder.txt").is_folder)
-
         Path("folder.txt/file.txt").write()
         self.assertEqual(True, Path("folder.txt").is_folder())
         self.assertEqual(False, Path("folder.txt").is_file())
@@ -197,7 +194,7 @@ class FileTest(unittest.TestCase):
     def test_rename(self):
         Path("folder/test.txt").write()
 
-        Path("folder/test.txt").rename("hello.txt")
+        Path("folder/test.txt").rename("hello.txt", same_parent=True)
         self.assertTrue(Path("folder/hello.txt").exists())
         self.assertFalse(Path("folder/test.txt").exists())
 
@@ -205,11 +202,18 @@ class FileTest(unittest.TestCase):
         self.assertTrue(Path("folder2").exists())
         self.assertFalse(Path("folder").exists())
 
-        Path("folder2/hello.txt").rename("foo.txt")
-        self.assertTrue(Path("folder/foo.txt").exists())
+        Path("folder2/hello.txt").rename("foo.txt", same_parent=True)
+        self.assertTrue(Path("folder2/foo.txt").exists())
 
-        Path("folder2/hello.txt").rename("foo.TEST.txt")
+        Path("folder2/foo.txt").rename("foo.TEST.txt", same_parent=True)
         self.assertTrue(Path("folder2/foo.TEST.txt").exists())
+
+        Path("folder2/foo.TEST.txt").rename("hello/test.txt")
+        self.assertTrue(Path("folder2/hello/test.txt").exists())
+
+        Path("folder2/hello/test.txt").rename("hello")
+        self.assertTrue(Path("hello").is_file())
+
 
     def test_copy(self):
         Path("folder/test.txt").write()
@@ -275,17 +279,17 @@ class FileTest(unittest.TestCase):
         Path("folder/test2.txt").write()
         Path("folder/test3.txt").write()
 
-        self.assertEqual(2, len(Path().get_paths()))
-        self.assertEqual(3, len(Path().get_paths(include_self=True)))
+        self.assertEqual(2, len(list(Path().get_paths())))
+        self.assertEqual(3, len(list(Path().get_paths(include_self=True))))
 
-        self.assertEqual(2, len(Path("test.txt").get_paths()))
-        self.assertEqual(2, len(Path("test.txt").get_paths(include_self=True)))
+        self.assertEqual(1, len(list(Path("test.txt").get_paths())))
+        self.assertEqual(2, len(list(Path("test.txt").get_paths(include_self=True))))
 
-        self.assertEqual(3, len(Path().get_paths(depth=2)))
-        self.assertEqual(4, len(Path().get_paths(depth=2, include_self=True)))
-        self.assertEqual(4, len(Path().get_paths(depth=0, include_self=True)))
+        self.assertEqual(4, len(list(Path().get_paths(depth=2))))
+        self.assertEqual(5, len(list(Path().get_paths(depth=2, include_self=True))))
+        self.assertEqual(3, len(list(Path().get_paths(depth=0, include_self=True))))
 
-        self.assertEqual(2, len(Path("folder/test2.txt").get_paths()))
+        self.assertEqual(1, len(list(Path("folder/test2.txt").get_paths())))
 
     def test_time_created_and_modified(self):
         import time

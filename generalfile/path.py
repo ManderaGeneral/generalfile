@@ -2,11 +2,11 @@
 import pathlib
 import appdirs
 import os
-import functools
 import shutil
 from send2trash import send2trash
+import json
 
-from generallibrary import VerInfo, Timer, initBases, deco_cache, sleep
+from generallibrary import VerInfo, Timer, initBases, deco_cache
 from generalfile.errors import *
 
 def deco_require_state(is_file=None, is_folder=None, exists=None, quick_exists=None):
@@ -42,11 +42,20 @@ def deco_preserve_working_dir(function):
     return _wrapper
 
 
-class ContextManager:
-    """ Context manager methods for Path. """
+class _Lock:
+    def __init__(self, path, *other_paths):
+        pass
 
+class _ContextManager:
+    """ Context manager methods for Path. """
     def __init__(self):
         self._file_stream = None
+        self._owns_lock = False
+
+    def lock(self, *other_paths):
+        """ HERE ** Move dunder enter and dunder exit to _Lock so that we can define other paths that are allowed to have interfering
+            locks. Then use that for Path.rename """
+        return _Lock(self, *other_paths)
 
     def __enter__(self):
         """ Creates a lock for folder or path with these steps:
@@ -55,23 +64,31 @@ class ContextManager:
             Make sure only locked by self.
 
             :param Path self: """
+        if self._owns_lock:
+            return
+
+        self_absolute = self.absolute()
         timer = Timer()
         while timer.seconds() < self.timeout_seconds:
+
             if not self._is_locked():
                 self._open_and_create_lock()
                 affecting_locks = list(self._affecting_locks())
-                print(affecting_locks)
-                if affecting_locks == [self]:
+                if affecting_locks == [self_absolute]:
+                    self._owns_lock = True
                     return
-                elif self in affecting_locks:
+                elif self_absolute in affecting_locks:
                     self._close_and_remove_lock()  # Remove and try again to respect other locks
                 else:
                     raise FileNotFoundError(f"Lock '{self}' failed to create.")
+            else:
+                print(self_absolute, list(self._affecting_locks()))
         raise TimeoutError(f"Couldn't lock '{self}' in time.")
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         """ :param Path self: """
         self._close_and_remove_lock()
+        self._owns_lock = False
 
     def _get_lock_str(self):
         """ :param Path self: """
@@ -90,14 +107,14 @@ class ContextManager:
             raise AttributeError(f"A file stream is not opened for '{self}'.")
 
         self._file_stream.close()
-        Path(self._get_lock_str()).delete()
+        os.remove(self._get_lock_str())
 
     def _affecting_locks(self):
         """ :param Path self: """
         self_absolute = self.absolute()
         for alternative_path in self.get_lock_dir().get_paths_in_folder():
-            path = alternative_path.remove_start # HERE **
-            if self_absolute.startswith(path) or path.startswith(self):
+            path = alternative_path.remove_start(self.get_lock_dir()).get_path_from_alternative()
+            if self_absolute.startswith(path) or path.startswith(self_absolute):
                 yield path
 
     def _is_locked(self):
@@ -107,8 +124,62 @@ class ContextManager:
         return False
 
 
-class FileOperations:
+class _FileOperations:
     """ File operations methods for Path. """
+    _suffixIO = {"plain_text": ("txt", "md", ""), "spreadsheet": ("tsv", "csv")}
+    timeout_seconds = 5
+    dead_lock_seconds = 3
+
+    def write(self, content=None, overwrite=False):
+        """ Write to this Path.
+
+            :param Path self:
+            :param content:
+            :param overwrite: """
+        if not overwrite and self.exists():
+            raise FileExistsError(f"Path '{self}' already exists and overwrite is 'False'.")
+
+        with self:
+            self.parent().create_folder()
+
+            temp_path = self.with_suffix(".temp")
+            with open(str(temp_path), "w") as temp_file_stream:
+                temp_file_stream.write(json.dumps(content))
+
+            temp_path.rename(self, overwrite=True)
+
+    def read(self):
+        """ Write to this Path.
+
+            :param Path self: """
+        with self:
+            with open(str(self), "r") as file_stream:
+                return json.loads(file_stream.read())
+
+    @deco_require_state(exists=True)
+    def rename(self, new_path, overwrite=False, same_parent=False):
+        """ Rename this file or folder to anything.
+
+            :param Path self:
+            :param new_path:
+            :param overwrite:
+            :param same_parent: """
+        new_path = Path(new_path)
+        if same_parent:
+            new_path = self.without_file() / new_path
+
+        with self:
+            with new_path:
+                if self.is_file():
+                    new_path.create_folder()
+                else:
+                    new_path.parent().create_folder()
+
+                if overwrite:
+                    self._path.replace(str(new_path))
+                else:
+                    self._path.rename(str(new_path))
+
     def is_file(self):
         """ Get whether this Path is a file.
 
@@ -126,7 +197,6 @@ class FileOperations:
 
             :param Path self:
             :param quick: Whether to do a quick (case insensitive on windows) check. """
-
         if quick:
             return self._path.exists()
         else:
@@ -168,7 +238,6 @@ class FileOperations:
             :param include_files:
             :param include_folders:
             :param Path self: """
-
         if self.is_file():
             queued_folders = [self.parent()]
         elif self.is_folder():
@@ -243,7 +312,7 @@ class FileOperations:
             if self.is_file():
                 os.remove(str(self))
             elif self.is_folder():
-                shutil.rmtree(str(self))
+                shutil.rmtree(str(self), ignore_errors=True)
 
     @deco_preserve_working_dir
     def trash(self):
@@ -266,11 +335,11 @@ class FileOperations:
         self.create_folder()
 
 
-class StrOperations:
+class _StrOperations:
     """ String operations for Path. """
     def __str__(self):
         """ :param Path self: """
-        return str(self._path)
+        return self._str_path
 
     def __repr__(self):
         """ :param Path self: """
@@ -286,7 +355,7 @@ class StrOperations:
 
     def __hash__(self):
         """ :param Path self: """
-        return object.__hash__(self)
+        return hash(self._str_path)
 
     def get_alternative_path(self):
         """ Get path using alternative delimiter and alternative root for windows.
@@ -304,13 +373,22 @@ class StrOperations:
         """ Get new Path as absolute.
 
             :param Path self: """
-        return Path(self._path.absolute())
+        if self.is_absolute():
+            return self
+        else:
+            return Path(self._path.absolute())
 
-    def relative(self):
+    def relative(self, base=None):
         """ Get new Path as relative.
 
-            :param Path self: """
-        return Path(self._path.relative())
+            :param Path self:
+            :param base: Defaults to working dir. """
+        if self.is_relative() and base is None:
+            return self
+        else:
+            if base is None:
+                base = self.get_working_dir()
+            return Path(self._path.relative_to(str(base)))
 
     def is_absolute(self):
         """ Get whether this Path is absolute.
@@ -322,7 +400,7 @@ class StrOperations:
         """ Get whether this Path is relative.
 
             :param Path self: """
-        return self._path.is_relative()
+        return not self.is_absolute()
 
     def startswith(self, path):
         """ Get whether this Path starts with given string.
@@ -338,6 +416,28 @@ class StrOperations:
             :param str or Path path:"""
         return str(self).endswith(str(Path(path)))
 
+    def remove_start(self, path):
+        """ Remove a string from the start of this Path.
+
+            :param Path self:
+            :param str or Path path:"""
+        str_path = str(path)
+        if not self.startswith(str_path):
+            return self
+        else:
+            return Path(str(self)[len(str_path):])
+
+    def remove_end(self, path):
+        """ Remove a string from the end of this Path.
+
+            :param Path self:
+            :param str or Path path:"""
+        str_path = str(path)
+        if not self.endswith(str_path):
+            return self
+        else:
+            return Path(str(self)[:-len(str_path)])
+
     def parent(self, index=0):
         """ Get any parent as a new Path.
             Doesn't convert to absolute path even if needed.
@@ -351,7 +451,7 @@ class StrOperations:
         return Path(strParent)
 
     def parts(self):
-        """ Get list of parts building this Path as strings.
+        """ Get list of parts building this Path as list of strings.
 
             :param Path self: """
         return str(self).split(self.path_delimiter)
@@ -393,10 +493,10 @@ class StrOperations:
 
             :param suffix: Name without stem.
             :param Path self: """
-        return Path(self._path.with_stem(suffix))
+        return Path(self._path.with_suffix(suffix))
 
 @initBases
-class Path(ContextManager, FileOperations, StrOperations):
+class Path(_ContextManager, _FileOperations, _StrOperations):
     """
     Immutable cross-platform Path.
     Wrapper for pathlib.
@@ -407,15 +507,10 @@ class Path(ContextManager, FileOperations, StrOperations):
     path_delimiter = verInfo.pathDelimiter
     path_delimiter_alternative = "&#47;"  # So that we can represent a nested path with a single filename
     windows_base_alternative = "&#58;"  # Since we cannot have `:` as part of filename
-    _suffixIO = {"txt": ("txt", "md", ""), "tsv": ("tsv", "csv")}
-    timeout_seconds = 12
-    dead_lock_seconds = 3
 
     def __init__(self, path=None):
-        str_path = self._scrub(str_path="" if path is None else str(path))
-
-        self._path = pathlib.Path(str_path)
-        self._file_stream = None
+        self._str_path = self._scrub(str_path="" if path is None else str(path))
+        self._path = pathlib.Path(self._str_path)
 
     def _scrub(self, str_path):
         str_path = self._replace_delimiters(str_path=str_path)
