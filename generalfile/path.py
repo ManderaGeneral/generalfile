@@ -43,85 +43,81 @@ def deco_preserve_working_dir(function):
 
 
 class _Lock:
+    """ A one-time-use lock used by Path.lock.
+        """
     def __init__(self, path, *other_paths):
-        pass
-
-class _ContextManager:
-    """ Context manager methods for Path. """
-    def __init__(self):
-        self._file_stream = None
-        self._owns_lock = False
-
-    def lock(self, *other_paths):
-        """ HERE ** Move dunder enter and dunder exit to _Lock so that we can define other paths that are allowed to have interfering
-            locks. Then use that for Path.rename """
-        return _Lock(self, *other_paths)
+        self.path = Path(path).absolute()  # HERE ** Cannot actually do this cause we need to use original Path
+        self.other_paths = [Path(p).absolute() for p in other_paths]
 
     def __enter__(self):
         """ Creates a lock for folder or path with these steps:
             Wait until unlocked.
             Create lock.
-            Make sure only locked by self.
-
-            :param Path self: """
-        if self._owns_lock:
+            Make sure only locked by self."""
+        if self.path.owns_lock:
             return
 
-        self_absolute = self.absolute()
+        path_absolute = self.path.absolute()
         timer = Timer()
-        while timer.seconds() < self.timeout_seconds:
+        while timer.seconds() < self.path.timeout_seconds:
 
             if not self._is_locked():
                 self._open_and_create_lock()
                 affecting_locks = list(self._affecting_locks())
-                if affecting_locks == [self_absolute]:
-                    self._owns_lock = True
+                if affecting_locks == [path_absolute]:
+                    self.path.owns_lock = True
                     return
-                elif self_absolute in affecting_locks:
+                elif path_absolute in affecting_locks:
                     self._close_and_remove_lock()  # Remove and try again to respect other locks
                 else:
-                    raise FileNotFoundError(f"Lock '{self}' failed to create.")
+                    raise FileNotFoundError(f"Lock '{self.path}' failed to create.")
             else:
-                print(self_absolute, list(self._affecting_locks()))
-        raise TimeoutError(f"Couldn't lock '{self}' in time.")
+                print(path_absolute, list(self._affecting_locks()))
+        raise TimeoutError(f"Couldn't lock '{self.path}' in time.")
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        """ :param Path self: """
         self._close_and_remove_lock()
-        self._owns_lock = False
+        self.path.owns_lock = False
 
     def _get_lock_str(self):
-        """ :param Path self: """
-        return str(self.get_lock_dir() / self.absolute().get_alternative_path())
+        return str(self.path.get_lock_dir() / self.path.absolute().get_alternative_path())
 
     def _open_and_create_lock(self):
-        """ :param Path self: """
-        if self._file_stream is not None:
-            raise AttributeError(f"A file stream is already opened for '{self}'.")
-        self._file_stream = open(self._get_lock_str(), "x")
-        self._file_stream.write("hello")
+        if self.path.file_stream is not None:
+            raise AttributeError(f"A file stream is already opened for '{self.path}'.")
+        self.path.file_stream = open(self._get_lock_str(), "x")
+        self.path.file_stream.write("hello")
 
     def _close_and_remove_lock(self):
-        """ :param Path self: """
-        if self._file_stream is None:
-            raise AttributeError(f"A file stream is not opened for '{self}'.")
+        if self.path.file_stream is None:
+            raise AttributeError(f"A file stream is not opened for '{self.path}'.")
 
-        self._file_stream.close()
+        self.path.file_stream.close()
         os.remove(self._get_lock_str())
 
     def _affecting_locks(self):
-        """ :param Path self: """
-        self_absolute = self.absolute()
-        for alternative_path in self.get_lock_dir().get_paths_in_folder():
-            path = alternative_path.remove_start(self.get_lock_dir()).get_path_from_alternative()
-            if self_absolute.startswith(path) or path.startswith(self_absolute):
+        path_absolute = self.path.absolute()
+        for alternative_path in self.path.get_lock_dir().get_paths_in_folder():
+            path = alternative_path.remove_start(self.path.get_lock_dir()).get_path_from_alternative()
+            if path_absolute.startswith(path) or path.startswith(path_absolute):
                 yield path
 
     def _is_locked(self):
-        """ :param Path self: """
         for _ in self._affecting_locks():
             return True
         return False
+
+
+class _ContextManager:
+    """ Context manager methods for Path. """
+    def __init__(self):
+        self.file_stream = None
+        self.owns_lock = False
+
+    def lock(self, *other_paths):
+        """ Create a lock for this path.
+            Optionally supply additional paths to prevent them from interfering. """
+        return _Lock(self, *other_paths)
 
 
 class _FileOperations:
@@ -139,7 +135,7 @@ class _FileOperations:
         if not overwrite and self.exists():
             raise FileExistsError(f"Path '{self}' already exists and overwrite is 'False'.")
 
-        with self:
+        with self.lock():
             self.parent().create_folder()
 
             temp_path = self.with_suffix(".temp")
@@ -152,7 +148,7 @@ class _FileOperations:
         """ Write to this Path.
 
             :param Path self: """
-        with self:
+        with self.lock():
             with open(str(self), "r") as file_stream:
                 return json.loads(file_stream.read())
 
@@ -168,8 +164,8 @@ class _FileOperations:
         if same_parent:
             new_path = self.without_file() / new_path
 
-        with self:
-            with new_path:
+        with self.lock(new_path):
+            with new_path.lock(self):
                 if self.is_file():
                     new_path.create_folder()
                 else:
@@ -308,7 +304,7 @@ class _FileOperations:
     def delete(self):
         """ Delete a file or folder.
             :param Path self: """
-        with self:
+        with self.lock():
             if self.is_file():
                 os.remove(str(self))
             elif self.is_folder():
@@ -318,7 +314,7 @@ class _FileOperations:
     def trash(self):
         """ Trash a file or folder
             :param Path self: """
-        with self:
+        with self.lock():
             send2trash(str(self))
 
     @deco_require_state(is_folder=True)
