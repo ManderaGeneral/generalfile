@@ -44,28 +44,35 @@ def deco_preserve_working_dir(function):
 
 class _Lock:
     """ A one-time-use lock used by Path.lock.
-        """
-    def __init__(self, path, *other_paths):
-        self.path = Path(path).absolute()  # HERE ** Cannot actually do this cause we need to use original Path
-        self.other_paths = [Path(p).absolute() for p in other_paths]
-
-    def __enter__(self):
-        """ Creates a lock for folder or path with these steps:
+        Creates a lock for folder or path with these steps:
             Wait until unlocked.
             Create lock.
-            Make sure only locked by self."""
-        if self.path.owns_lock:
-            return
+            Make sure only locked by self. """
+    def __init__(self, path, *other_paths):
+        self.path = path
+        self.all_abs_paths = [Path(p).absolute() for p in other_paths + (path, )]
+        self.lock_file_stream = None
 
+    def __enter__(self):
+        if not self.path.owns_lock:
+            self._attempt_lock_creation()
+            self.path.owns_lock = True
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self._close_and_remove_lock()
+        self.path.owns_lock = False
+
+    def _get_lock_str(self):
+        return str(self.path.get_lock_dir() / self.path.absolute().get_alternative_path())
+
+    def _attempt_lock_creation(self):
         path_absolute = self.path.absolute()
         timer = Timer()
         while timer.seconds() < self.path.timeout_seconds:
-
             if not self._is_locked():
                 self._open_and_create_lock()
                 affecting_locks = list(self._affecting_locks())
                 if affecting_locks == [path_absolute]:
-                    self.path.owns_lock = True
                     return
                 elif path_absolute in affecting_locks:
                     self._close_and_remove_lock()  # Remove and try again to respect other locks
@@ -75,24 +82,18 @@ class _Lock:
                 print(path_absolute, list(self._affecting_locks()))
         raise TimeoutError(f"Couldn't lock '{self.path}' in time.")
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        self._close_and_remove_lock()
-        self.path.owns_lock = False
-
-    def _get_lock_str(self):
-        return str(self.path.get_lock_dir() / self.path.absolute().get_alternative_path())
-
     def _open_and_create_lock(self):
-        if self.path.file_stream is not None:
+        if self.lock_file_stream is not None:
             raise AttributeError(f"A file stream is already opened for '{self.path}'.")
-        self.path.file_stream = open(self._get_lock_str(), "x")
-        self.path.file_stream.write("hello")
+
+        self.lock_file_stream = open(self._get_lock_str(), "x")
+        self.lock_file_stream.write("hello")
 
     def _close_and_remove_lock(self):
-        if self.path.file_stream is None:
+        if self.lock_file_stream is None:
             raise AttributeError(f"A file stream is not opened for '{self.path}'.")
 
-        self.path.file_stream.close()
+        self.lock_file_stream.close()
         os.remove(self._get_lock_str())
 
     def _affecting_locks(self):
@@ -111,7 +112,6 @@ class _Lock:
 class _ContextManager:
     """ Context manager methods for Path. """
     def __init__(self):
-        self.file_stream = None
         self.owns_lock = False
 
     def lock(self, *other_paths):

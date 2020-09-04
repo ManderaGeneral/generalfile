@@ -9,14 +9,15 @@ import time
 import os
 from pprint import pprint
 
-
-Path.get_lock_dir().open_folder()
-
-setUpWorkDir()
+import random
 
 
-path = Path("folder/test.txt")
-path.write()
+
+
+# Path.get_lock_dir().open_folder()
+# setUpWorkDir()
+# path = Path("folder/test.txt")
+# path.write()
 # path.rename("hello.txt")
 
 
