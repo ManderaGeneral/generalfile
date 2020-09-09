@@ -42,6 +42,12 @@ def deco_preserve_working_dir(function):
     return _wrapper
 
 
+class _EmptyContext:  # HERE ** Put this in lib? Idea with `use_lock` for lock()
+    def __enter__(self):
+        pass
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        pass
+
 class _Lock:
     """ A one-time-use lock used by Path.lock.
         Creates a lock for folder or path with these steps:
@@ -114,10 +120,10 @@ class _ContextManager:
     def __init__(self):
         self.owns_lock = False
 
-    def lock(self, *other_paths):
+    def lock(self, *other_paths, use_lock):
         """ Create a lock for this path.
             Optionally supply additional paths to prevent them from interfering. """
-        return _Lock(self, *other_paths)
+        return _Lock(self, *other_paths) if use_lock else _EmptyContext()
 
 
 class _FileOperations:
@@ -301,10 +307,11 @@ class _FileOperations:
         os.chdir(str(self.absolute()))
 
     @deco_preserve_working_dir
-    def delete(self):
+    def delete(self, use_lock=True):
         """ Delete a file or folder.
+            :param use_lock:
             :param Path self: """
-        with self.lock():
+        with self.lock(use_lock=use_lock):
             if self.is_file():
                 os.remove(str(self))
             elif self.is_folder():
