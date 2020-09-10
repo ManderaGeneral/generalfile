@@ -42,18 +42,14 @@ def deco_preserve_working_dir(function):
     return _wrapper
 
 
-class _EmptyContext:  # HERE ** Put this in lib? Idea with `use_lock` for lock()
-    def __enter__(self):
-        pass
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        pass
-
 class _Lock:
     """ A one-time-use lock used by Path.lock.
         Creates a lock for folder or path with these steps:
             Wait until unlocked.
             Create lock.
-            Make sure only locked by self. """
+            Make sure only locked by self.
+        A lock is inactive if it can be removed, as there's no Lock holding it's file stream.
+        """
     def __init__(self, path, *other_paths):
         self.path = path
         self.all_abs_paths = [Path(p).absolute() for p in other_paths + (path, )]
@@ -115,18 +111,38 @@ class _Lock:
         return False
 
 
-class _ContextManager:
+class _EmptyContext:  # HERE ** Put this in lib? Idea with `use_lock` for lock()
+    def __enter__(self):
+        pass
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        pass
+
+
+class _Path_ContextManager:
     """ Context manager methods for Path. """
     def __init__(self):
         self.owns_lock = False
 
-    def lock(self, *other_paths, use_lock):
-        """ Create a lock for this path.
-            Optionally supply additional paths to prevent them from interfering. """
-        return _Lock(self, *other_paths) if use_lock else _EmptyContext()
+    @staticmethod
+    def _create_context_manager(path, *other_paths):
+        """ :param Path path: """
+        return _EmptyContext() if path.startswith(Path.get_lock_dir()) else _Lock(path, *other_paths)
+
+    def lock(self, *other_paths):
+        """ Create a lock for this path unless path is inside `lock dir`.
+            Optionally supply additional paths to prevent them from interfering as well as creating locks for them.
+
+            :param Path self: """
+        for path in other_paths:
+            paths_list = other_paths.copy()
+            paths_list[paths_list.index(path)] = self
+            self._create_context_manager(path, *paths_list)
+
+        return self._create_context_manager(self, *other_paths)
 
 
-class _FileOperations:
+
+class _Path_Operations:
     """ File operations methods for Path. """
     _suffixIO = {"plain_text": ("txt", "md", ""), "spreadsheet": ("tsv", "csv")}
     timeout_seconds = 5
@@ -170,17 +186,21 @@ class _FileOperations:
         if same_parent:
             new_path = self.without_file() / new_path
 
-        with self.lock(new_path):
-            with new_path.lock(self):
-                if self.is_file():
-                    new_path.create_folder()
-                else:
-                    new_path.parent().create_folder()
 
-                if overwrite:
-                    self._path.replace(str(new_path))
-                else:
-                    self._path.rename(str(new_path))
+
+
+        # with self.lock(new_path):
+        #     with new_path.lock(self):
+        with self.lock(new_path):
+            if self.is_file():
+                new_path.create_folder()
+            else:
+                new_path.parent().create_folder()
+
+            if overwrite:
+                self._path.replace(str(new_path))
+            else:
+                self._path.rename(str(new_path))
 
     def is_file(self):
         """ Get whether this Path is a file.
@@ -307,11 +327,10 @@ class _FileOperations:
         os.chdir(str(self.absolute()))
 
     @deco_preserve_working_dir
-    def delete(self, use_lock=True):
+    def delete(self):
         """ Delete a file or folder.
-            :param use_lock:
             :param Path self: """
-        with self.lock(use_lock=use_lock):
+        with self.lock():
             if self.is_file():
                 os.remove(str(self))
             elif self.is_folder():
@@ -338,7 +357,7 @@ class _FileOperations:
         self.create_folder()
 
 
-class _StrOperations:
+class _Path_Strings:
     """ String operations for Path. """
     def __str__(self):
         """ :param Path self: """
@@ -499,7 +518,7 @@ class _StrOperations:
         return Path(self._path.with_suffix(suffix))
 
 @initBases
-class Path(_ContextManager, _FileOperations, _StrOperations):
+class Path(_Path_ContextManager, _Path_Operations, _Path_Strings):
     """
     Immutable cross-platform Path.
     Wrapper for pathlib.

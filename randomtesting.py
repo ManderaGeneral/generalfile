@@ -11,11 +11,47 @@ from pprint import pprint
 
 import random
 
-class EmptyContext:
-    def __enter__(self):
-        pass
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        pass
+import functools
+
+class Test:
+    def __init__(self, a):
+        self.a = a
+
+    def foo(self):
+        return self.a.hi()
+
+class A:
+    @property
+    @functools.lru_cache()
+    def Test(self):
+        return Test(self)
+
+    def hi(self):
+        return 5
+
+# IDEAS FOR HOW TO SEPERATE E.G. TSV FROM PLAIN
+
+# Example: Path("hello.tsv").spreadsheet.write(pd.DataFrame())
+# Only create once, if needed
+# Reusable
+# No need for paranthesis
+
+# CONS: Hard to get list of options (spreadsheet / plain etc.)
+#           Very long solution -> Could put them all in yet another object ( Path("hello.tsv").methods.spreadsheet.write(pd.DataFrame()) )
+#           Inside Path.write/read we can list them all
+# PROS: Can write specific docstrings for each different write and read method
+#       All e.g. spreadsheet methods are inside that object
+a = A()
+print(id(a.Test))
+print(A().Test.foo())
+print(id(a.Test))
+
+
+
+
+
+
+
 
 
 
