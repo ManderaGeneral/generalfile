@@ -11,23 +11,27 @@ from pprint import pprint
 
 import random
 
-import functools
 
-class Test:
-    def __init__(self, a):
-        self.a = a
-
-    def foo(self):
-        return self.a.hi()
-
-class A:
-    @property
-    @functools.lru_cache()
-    def Test(self):
-        return Test(self)
-
-    def hi(self):
-        return 5
+# import functools
+# class Test:
+#     def __init__(self, a):
+#         self.a = a
+#
+#     def foo(self):
+#         return self.a.hi()
+#
+# class A:
+#     @property
+#     @functools.lru_cache()
+#     def Test(self):
+#         return Test(self)
+#
+#     def hi(self):
+#         return 5
+# a = A()
+# print(id(a.Test))
+# print(A().Test.foo())
+# print(id(a.Test))
 
 # IDEAS FOR HOW TO SEPERATE E.G. TSV FROM PLAIN
 
@@ -41,10 +45,6 @@ class A:
 #           Inside Path.write/read we can list them all
 # PROS: Can write specific docstrings for each different write and read method
 #       All e.g. spreadsheet methods are inside that object
-a = A()
-print(id(a.Test))
-print(A().Test.foo())
-print(id(a.Test))
 
 
 
@@ -55,11 +55,15 @@ print(id(a.Test))
 
 
 
+# Path().open_folder()
 # Path.get_lock_dir().open_folder()
-# setUpWorkDir()
-# path = Path("folder/test.txt")
-# path.write()
-# path.rename("hello.txt")
+
+
+setUpWorkDir()
+path = Path("folder/test.txt")
+path.write(5)
+path.rename("hello.txt")
+print(Path("hello.txt").read())
 
 
 

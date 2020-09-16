@@ -6,7 +6,7 @@ import shutil
 from send2trash import send2trash
 import json
 
-from generallibrary import VerInfo, Timer, initBases, deco_cache
+from generallibrary import VerInfo, Timer, initBases, deco_cache, EmptyContext
 from generalfile.errors import *
 
 def deco_require_state(is_file=None, is_folder=None, exists=None, quick_exists=None):
@@ -80,8 +80,8 @@ class _Lock:
                     self._close_and_remove_lock()  # Remove and try again to respect other locks
                 else:
                     raise FileNotFoundError(f"Lock '{self.path}' failed to create.")
-            else:
-                print(path_absolute, list(self._affecting_locks()))
+            # else:
+                # print(path_absolute, list(self._affecting_locks()))
         raise TimeoutError(f"Couldn't lock '{self.path}' in time.")
 
     def _open_and_create_lock(self):
@@ -111,13 +111,6 @@ class _Lock:
         return False
 
 
-class _EmptyContext:  # HERE ** Put this in lib? Idea with `use_lock` for lock()
-    def __enter__(self):
-        pass
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        pass
-
-
 class _Path_ContextManager:
     """ Context manager methods for Path. """
     def __init__(self):
@@ -126,20 +119,20 @@ class _Path_ContextManager:
     @staticmethod
     def _create_context_manager(path, *other_paths):
         """ :param Path path: """
-        return _EmptyContext() if path.startswith(Path.get_lock_dir()) else _Lock(path, *other_paths)
+        return EmptyContext() if path.startswith(Path.get_lock_dir()) else _Lock(path, *other_paths)
 
     def lock(self, *other_paths):
         """ Create a lock for this path unless path is inside `lock dir`.
-            Optionally supply additional paths to prevent them from interfering as well as creating locks for them.
+            Optionally supply additional paths to prevent them from interfering as well as creating locks for them too.
 
             :param Path self: """
+        other_paths = list(other_paths)
         for path in other_paths:
             paths_list = other_paths.copy()
-            paths_list[paths_list.index(path)] = self
+            paths_list[paths_list.index(path)] = self  # Replace ´path´ with self
             self._create_context_manager(path, *paths_list)
 
         return self._create_context_manager(self, *other_paths)
-
 
 
 class _Path_Operations:
@@ -174,6 +167,13 @@ class _Path_Operations:
             with open(str(self), "r") as file_stream:
                 return json.loads(file_stream.read())
 
+    def _same_parent(self, new_path, same_parent):
+        new_path = Path(new_path)
+        if same_parent:
+            new_path = self.without_file() / new_path
+        return new_path
+
+
     @deco_require_state(exists=True)
     def rename(self, new_path, overwrite=False, same_parent=False):
         """ Rename this file or folder to anything.
@@ -182,25 +182,57 @@ class _Path_Operations:
             :param new_path:
             :param overwrite:
             :param same_parent: """
-        new_path = Path(new_path)
-        if same_parent:
-            new_path = self.without_file() / new_path
+        new_path = self._same_parent(new_path=new_path, same_parent=same_parent)
 
-
-
-
-        # with self.lock(new_path):
-        #     with new_path.lock(self):
         with self.lock(new_path):
-            if self.is_file():
-                new_path.create_folder()
-            else:
-                new_path.parent().create_folder()
+            new_path.parent().create_folder()
 
             if overwrite:
                 self._path.replace(str(new_path))
             else:
                 self._path.rename(str(new_path))
+
+    @deco_require_state(exists=True)
+    def copy(self, new_path, overwrite=False, same_parent=False):
+        """ Copy this file or folder to anything.
+
+            :param Path self:
+            :param new_path:
+            :param overwrite:
+            :param same_parent: """
+        new_path = self._same_parent(new_path=new_path, same_parent=same_parent)
+
+        with self.lock(new_path):
+            new_path.parent().create_folder()
+
+            # HERE **
+            # if path.canBeFile:
+            #     if destPath.canBeFile:
+            #         if path.filetype != destPath.filetype:
+            #             raise AttributeError("Filetypes don't match")
+            #     elif destPath.isFolder:
+            #         destPath = destPath.addPath(path.filenameFull)
+            #     if File.exists(destPath):
+            #         if not overwrite:
+            #             raise FileExistsError("Not allowed to overwrite")
+            #
+            #     File.createFolder(destPath)
+            #     try:
+            #         shutil.copy(path, destPath, follow_symlinks=False)
+            #     except FileNotFoundError:
+            #         raise FileExistsError(f"{destPath} probably contains an invalid name such as CON, PRN, NUL or AUX")
+            #
+            # elif path.isFolder and destPath.isFolder:
+            #     filePathList = File.getPaths(path, maxDepth=0).getFiles()
+            #     relativePaths = filePathList.getRelative(path)
+            #     absoluteDestPaths = relativePaths.getAbsolute(destPath)
+            #     if not overwrite and any(absoluteDestPaths.exists()):
+            #         raise FileExistsError("Atleast one file exists and not allowed to overwrite")
+            #
+            #     for path1, path2 in zip(filePathList, absoluteDestPaths):
+            #         File.copy(path=path1, destPath=path2, overwrite=overwrite)
+            # else:
+            #     raise NotADirectoryError("Cannot copy folder to file")
 
     def is_file(self):
         """ Get whether this Path is a file.
