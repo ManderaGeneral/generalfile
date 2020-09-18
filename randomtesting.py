@@ -9,6 +9,8 @@ import time
 import os
 from pprint import pprint
 
+import shutil
+
 import random
 
 
@@ -60,11 +62,16 @@ import random
 
 
 setUpWorkDir()
-path = Path("folder/test.txt")
-path.write(5)
-path.rename("hello.txt")
-print(Path("hello.txt").read())
+# path = Path("folder/test.txt")
+# path.write(5)
+# path.rename("hello.txt")
+# print(Path("hello.txt").read())
 
+
+Path("test.txt").write()
+
+
+shutil.copy("test.txt", "test2.txt", follow_symlinks=False)
 
 
 # print(pathlib.Path("folder/hello.txt"))

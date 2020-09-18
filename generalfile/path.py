@@ -173,7 +173,6 @@ class _Path_Operations:
             new_path = self.without_file() / new_path
         return new_path
 
-
     @deco_require_state(exists=True)
     def rename(self, new_path, overwrite=False, same_parent=False):
         """ Rename this file or folder to anything.
@@ -193,17 +192,29 @@ class _Path_Operations:
                 self._path.rename(str(new_path))
 
     @deco_require_state(exists=True)
-    def copy(self, new_path, overwrite=False, same_parent=False):
+    def copy(self, new_path, overwrite=False, new_name=None):
         """ Copy this file or folder to anything.
+
 
             :param Path self:
             :param new_path:
             :param overwrite:
-            :param same_parent: """
+            :param new_name: """
         new_path = self._same_parent(new_path=new_path, same_parent=same_parent)
 
         with self.lock(new_path):
             new_path.parent().create_folder()
+
+            if self.is_folder() and new_path.is_file():
+                raise NotADirectoryError("Cannot copy folder to file")
+
+
+            # if self.is_file():
+
+
+
+
+
 
             # HERE **
             # if path.canBeFile:
