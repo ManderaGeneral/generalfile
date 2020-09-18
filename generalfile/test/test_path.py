@@ -280,17 +280,17 @@ class FileTest(unittest.TestCase):
         Path("folder/test2.txt").write()
         Path("folder/test3.txt").write()
 
-        self.assertEqual(2, len(list(Path().get_paths())))
-        self.assertEqual(3, len(list(Path().get_paths(include_self=True))))
+        self.assertEqual(2, len(list(Path().get_paths_recursive())))
+        self.assertEqual(3, len(list(Path().get_paths_recursive(include_self=True))))
 
-        self.assertEqual(1, len(list(Path("test.txt").get_paths())))
-        self.assertEqual(2, len(list(Path("test.txt").get_paths(include_self=True))))
+        self.assertEqual(1, len(list(Path("test.txt").get_paths_recursive())))
+        self.assertEqual(2, len(list(Path("test.txt").get_paths_recursive(include_self=True))))
 
-        self.assertEqual(4, len(list(Path().get_paths(depth=2))))
-        self.assertEqual(5, len(list(Path().get_paths(depth=2, include_self=True))))
-        self.assertEqual(3, len(list(Path().get_paths(depth=0, include_self=True))))
+        self.assertEqual(4, len(list(Path().get_paths_recursive(depth=2))))
+        self.assertEqual(5, len(list(Path().get_paths_recursive(depth=2, include_self=True))))
+        self.assertEqual(3, len(list(Path().get_paths_recursive(depth=0, include_self=True))))
 
-        self.assertEqual(1, len(list(Path("folder/test2.txt").get_paths())))
+        self.assertEqual(1, len(list(Path("folder/test2.txt").get_paths_recursive())))
 
     def test_time_created_and_modified(self):
         import time

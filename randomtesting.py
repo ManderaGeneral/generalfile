@@ -55,23 +55,34 @@ import random
 
 
 
-
+setUpWorkDir()
 
 # Path().open_folder()
 # Path.get_lock_dir().open_folder()
 
 
-setUpWorkDir()
+
+Path("test.txt").write(5)
+Path("fold/test.txt").write(2)
+
+
+shutil.move("test.txt", "fold/test.txt")
+
+
+# shutil.copy("test.txt", "test2.txt", follow_symlinks=False)
+
+
 # path = Path("folder/test.txt")
 # path.write(5)
+
 # path.rename("hello.txt")
 # print(Path("hello.txt").read())
 
 
-Path("test.txt").write()
 
 
-shutil.copy("test.txt", "test2.txt", follow_symlinks=False)
+# Path("test.txt").write()
+# shutil.copy("test.txt", "test2.txt", follow_symlinks=False)
 
 
 # print(pathlib.Path("folder/hello.txt"))

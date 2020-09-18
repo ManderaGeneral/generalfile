@@ -157,7 +157,7 @@ class _Path_Operations:
             with open(str(temp_path), "w") as temp_file_stream:
                 temp_file_stream.write(json.dumps(content))
 
-            temp_path.rename(self, overwrite=True)
+            temp_path.rename(self.name(), overwrite=True)
 
     def read(self):
         """ Write to this Path.
@@ -167,83 +167,78 @@ class _Path_Operations:
             with open(str(self), "r") as file_stream:
                 return json.loads(file_stream.read())
 
-    def _same_parent(self, new_path, same_parent):
-        new_path = Path(new_path)
-        if same_parent:
-            new_path = self.without_file() / new_path
-        return new_path
-
     @deco_require_state(exists=True)
-    def rename(self, new_path, overwrite=False, same_parent=False):
-        """ Rename this file or folder to anything.
+    def rename(self, name=None, stem=None, suffix=None, overwrite=False):
+        """ Rename this single file or folder to anything.
 
             :param Path self:
-            :param new_path:
+            :param name:
+            :param stem:
+            :param suffix:
             :param overwrite:
-            :param same_parent: """
-        new_path = self._same_parent(new_path=new_path, same_parent=same_parent)
+            :return: """
+        new_path = self
+        for key, value in {"stem": stem, "suffix": suffix, "name": name}.items():
+            if value is not None:
+                new_path = getattr(new_path, f"with_{key}")(value)
+        if new_path == self:
+            return
 
         with self.lock(new_path):
-            new_path.parent().create_folder()
-
             if overwrite:
                 self._path.replace(str(new_path))
             else:
                 self._path.rename(str(new_path))
 
     @deco_require_state(exists=True)
-    def copy(self, new_path, overwrite=False, new_name=None):
-        """ Copy this file or folder to anything.
-
+    def _copy_or_move(self, target_folder_path, overwrite=False, copy=False):
+        """ Copy this file or files inside given folder to anything except it's own parent.
 
             :param Path self:
-            :param new_path:
+            :param target_folder_path:
             :param overwrite:
-            :param new_name: """
-        new_path = self._same_parent(new_path=new_path, same_parent=same_parent)
+            :param copy: """
+        target_folder_path = Path(target_folder_path)
+        if target_folder_path.is_file():
+            raise NotADirectoryError("parent_path cannot be a file")
 
-        with self.lock(new_path):
-            new_path.parent().create_folder()
-
-            if self.is_folder() and new_path.is_file():
-                raise NotADirectoryError("Cannot copy folder to file")
-
-
-            # if self.is_file():
+        self_parent_path = self.parent() if self.is_file() else self
+        if self_parent_path == target_folder_path:
+            return
 
 
+        filepaths = (self,) if self.is_file() else self.get_paths_recursive(include_folders=False)
+        target_filepaths = [target_folder_path / path.absolute().relative(self_parent_path) for path in filepaths]
+
+        if not overwrite and any([target.exists(quick=True) for target in target_filepaths]):
+            raise FileExistsError("Atleast one target filepath exists, cannot copy")
+
+        with self.lock(target_folder_path):
+            for path, target in zip(filepaths, target_filepaths):
+                target.parent().create_folder()
+
+                if copy:
+                    shutil.copy(str(path), str(target), follow_symlinks=False)  # Can clobber
+                else:
+                    shutil.move(str(path), str(target))  # Can clobber if full target path is specified like we do
+    # HERE ** See that this copy and move works
 
 
+    def copy(self, target_folder_path, overwrite=False):
+        """ Copy this file or files inside given folder to anything except it's own parent.
 
+            :param Path self:
+            :param target_folder_path:
+            :param overwrite: """
+        return self._copy_or_move(target_folder_path=target_folder_path, overwrite=overwrite, copy=True)
 
-            # HERE **
-            # if path.canBeFile:
-            #     if destPath.canBeFile:
-            #         if path.filetype != destPath.filetype:
-            #             raise AttributeError("Filetypes don't match")
-            #     elif destPath.isFolder:
-            #         destPath = destPath.addPath(path.filenameFull)
-            #     if File.exists(destPath):
-            #         if not overwrite:
-            #             raise FileExistsError("Not allowed to overwrite")
-            #
-            #     File.createFolder(destPath)
-            #     try:
-            #         shutil.copy(path, destPath, follow_symlinks=False)
-            #     except FileNotFoundError:
-            #         raise FileExistsError(f"{destPath} probably contains an invalid name such as CON, PRN, NUL or AUX")
-            #
-            # elif path.isFolder and destPath.isFolder:
-            #     filePathList = File.getPaths(path, maxDepth=0).getFiles()
-            #     relativePaths = filePathList.getRelative(path)
-            #     absoluteDestPaths = relativePaths.getAbsolute(destPath)
-            #     if not overwrite and any(absoluteDestPaths.exists()):
-            #         raise FileExistsError("Atleast one file exists and not allowed to overwrite")
-            #
-            #     for path1, path2 in zip(filePathList, absoluteDestPaths):
-            #         File.copy(path=path1, destPath=path2, overwrite=overwrite)
-            # else:
-            #     raise NotADirectoryError("Cannot copy folder to file")
+    def move(self, target_folder_path, overwrite=False):
+        """ Copy this file or files inside given folder to anything except it's own parent.
+
+            :param Path self:
+            :param target_folder_path:
+            :param overwrite: """
+        return self._copy_or_move(target_folder_path=target_folder_path, overwrite=overwrite, copy=False)
 
     def is_file(self):
         """ Get whether this Path is a file.
@@ -266,7 +261,7 @@ class _Path_Operations:
             return self._path.exists()
         else:
             try:
-                path_list = self.get_paths(include_self=True)
+                path_list = self.get_paths_recursive(include_self=True)
             except AttributeError:
                 return False
             exists = False
@@ -295,7 +290,7 @@ class _Path_Operations:
             yield Path(child)
 
     @deco_require_state(quick_exists=True)
-    def get_paths(self, depth=0, include_self=False, include_files=True, include_folders=True):
+    def get_paths_recursive(self, depth=0, include_self=False, include_files=True, include_folders=True):
         """ Get all paths that are next to this file or inside this folder.
 
             :param depth: Depth of -1 is limitless recursive searching. Depth of 0 which is default searches only first level.
@@ -522,17 +517,17 @@ class _Path_Strings:
         return str(self).split(self.path_delimiter)
 
     def name(self):
-        """ Get name of Path.
+        """ Get name of Path which is stem + suffix.
 
             :param Path self: """
         return self._path.name
 
     def with_name(self, name):
-        """ Get a new Path with new name.
+        """ Get a new Path with new name which is stem + suffix.
 
             :param name: Name.
             :param Path self: """
-        return Path(self._path.with_name(name))
+        return Path(self._path.with_name(str(name)))
 
     def stem(self):
         """ Get stem which is name without last suffix.
@@ -541,11 +536,11 @@ class _Path_Strings:
         return self._path.stem
 
     def with_stem(self, stem):
-        """ Get a new Path with new stem.
+        """ Get a new Path with new stem which is name without last suffix.
 
             :param stem: Name without suffix.
             :param Path self: """
-        return Path(self._path.with_stem(stem))
+        return Path(self._path.with_stem(str(stem)))
 
     def suffix(self):
         """ Get suffix which is name without stem.
@@ -554,11 +549,11 @@ class _Path_Strings:
         return self._path.suffix
 
     def with_suffix(self, suffix):
-        """ Get a new Path with new suffix.
+        """ Get a new Path with new suffix which is name without stem.
 
             :param suffix: Name without stem.
             :param Path self: """
-        return Path(self._path.with_suffix(suffix))
+        return Path(self._path.with_suffix(str(suffix)))
 
 @initBases
 class Path(_Path_ContextManager, _Path_Operations, _Path_Strings):
