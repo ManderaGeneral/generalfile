@@ -215,7 +215,6 @@ class FileTest(unittest.TestCase):
         Path("hello/test.txt").rename("foobar")
         self.assertTrue(Path("foobar").is_file())
 
-
     def test_copy(self):
         Path("folder/test.txt").write()
         Path("folder/test2.txt").write()
@@ -229,6 +228,21 @@ class FileTest(unittest.TestCase):
         self.assertEqual(False, Path("test2.txt").exists())
 
         Path("folder").copy(Path(), overwrite=True)
+        self.assertEqual(True, Path("test2.txt").exists())
+
+    def test_move(self):
+        Path("folder/test.txt").write()
+        Path("folder/test2.txt").write()
+
+        Path("folder").move("folder2")
+        self.assertEqual(True, Path("folder2/test.txt").exists())
+        self.assertEqual(True, Path("folder2/test2.txt").exists())
+
+        Path("folder/test.txt").move("")
+        self.assertEqual(True, Path("test.txt").exists())
+        self.assertEqual(False, Path("test2.txt").exists())
+
+        Path("folder").move(Path(), overwrite=True)
         self.assertEqual(True, Path("test2.txt").exists())
 
     def test_create_folder(self):

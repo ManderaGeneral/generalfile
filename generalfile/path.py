@@ -191,23 +191,22 @@ class _Path_Operations:
                 self._path.rename(str(new_path))
 
     @deco_require_state(exists=True)
-    def _copy_or_move(self, target_folder_path, overwrite=False, copy=False):
-        """ Copy this file or files inside given folder to anything except it's own parent.
-
-            :param Path self:
-            :param target_folder_path:
-            :param overwrite:
-            :param copy: """
+    def _copy_or_move(self, target_folder_path, overwrite, method):
+        """ :param Path self: """
         target_folder_path = Path(target_folder_path)
         if target_folder_path.is_file():
             raise NotADirectoryError("parent_path cannot be a file")
 
-        self_parent_path = self.parent() if self.is_file() else self
+        self_parent_path = self.absolute().parent() if self.is_file() else self.absolute()
         if self_parent_path == target_folder_path:
             return
 
 
-        filepaths = (self,) if self.is_file() else self.get_paths_recursive(include_folders=False)
+        if self.is_file():
+            filepaths = (self,)
+        else:
+            filepaths = tuple(self.get_paths_recursive(include_self=True))
+
         target_filepaths = [target_folder_path / path.absolute().relative(self_parent_path) for path in filepaths]
 
         if not overwrite and any([target.exists(quick=True) for target in target_filepaths]):
@@ -215,30 +214,35 @@ class _Path_Operations:
 
         with self.lock(target_folder_path):
             for path, target in zip(filepaths, target_filepaths):
-                target.parent().create_folder()
 
-                if copy:
+                if path.is_file():
+
+                    target.parent().create_folder()
+
+                if method == "copy":
                     shutil.copy(str(path), str(target), follow_symlinks=False)  # Can clobber
-                else:
+                elif method == "move":
                     shutil.move(str(path), str(target))  # Can clobber if full target path is specified like we do
-    # HERE ** See that this copy and move works
+
+            if self.is_folder():
+                self.delete()
 
 
     def copy(self, target_folder_path, overwrite=False):
-        """ Copy this file or files inside given folder to anything except it's own parent.
+        """ Copy files inside given folder or file to anything except it's own parent.
 
             :param Path self:
             :param target_folder_path:
             :param overwrite: """
-        return self._copy_or_move(target_folder_path=target_folder_path, overwrite=overwrite, copy=True)
+        return self._copy_or_move(target_folder_path=target_folder_path, overwrite=overwrite, method="copy")
 
     def move(self, target_folder_path, overwrite=False):
-        """ Copy this file or files inside given folder to anything except it's own parent.
+        """ Move files inside given folder or file to anything except it's own parent.
 
             :param Path self:
             :param target_folder_path:
             :param overwrite: """
-        return self._copy_or_move(target_folder_path=target_folder_path, overwrite=overwrite, copy=False)
+        return self._copy_or_move(target_folder_path=target_folder_path, overwrite=overwrite, method="move")
 
     def is_file(self):
         """ Get whether this Path is a file.
@@ -290,10 +294,10 @@ class _Path_Operations:
             yield Path(child)
 
     @deco_require_state(quick_exists=True)
-    def get_paths_recursive(self, depth=0, include_self=False, include_files=True, include_folders=True):
+    def get_paths_recursive(self, depth=-1, include_self=False, include_files=True, include_folders=True):
         """ Get all paths that are next to this file or inside this folder.
 
-            :param depth: Depth of -1 is limitless recursive searching. Depth of 0 which is default searches only first level.
+            :param depth: Depth of -1 is limitless recursive searching. Depth of 0 searches only first level.
             :param include_self:
             :param include_files:
             :param include_folders:
@@ -448,7 +452,7 @@ class _Path_Strings:
         else:
             if base is None:
                 base = self.get_working_dir()
-            return Path(self._path.relative_to(str(base)))
+            return Path() if self == base else Path(self._path.relative_to(str(base)))
 
     def is_absolute(self):
         """ Get whether this Path is absolute.

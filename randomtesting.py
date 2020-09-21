@@ -54,19 +54,38 @@ import random
 
 
 
+# Path.get_lock_dir().open_folder()
 
 setUpWorkDir()
 
 # Path().open_folder()
-# Path.get_lock_dir().open_folder()
 
 
 
-Path("test.txt").write(5)
-Path("fold/test.txt").write(2)
+Path("fold/hello/test.txt").write(5)
+Path("test.txt").write(1)
+Path("fold/hello/another/test2.txt").write(5)
+
+# Path("fold/hello").create_folder()
+
+# Path("new/test").create_folder()
+
+# shutil.copy("fold/hello/test.txt", ".")  # Folders work perfectly, unless folder of file exists... So we cannot use this
+
+shutil.move("fold/hello", ".")
 
 
-shutil.move("test.txt", "fold/test.txt")
+# Path("fold/test2.txt").write(2)
+
+# Path("fold/test2.txt").move("foobar")
+
+# Path("fold").move("foobar")
+
+
+
+# print(tuple(Path("fold").get_paths_recursive(include_folders=True, include_self=True)))
+
+
 
 
 # shutil.copy("test.txt", "test2.txt", follow_symlinks=False)
