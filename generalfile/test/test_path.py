@@ -222,6 +222,7 @@ class FileTest(unittest.TestCase):
         Path("folder").copy("folder2")
         self.assertEqual(True, Path("folder2/test.txt").exists())
         self.assertEqual(True, Path("folder2/test2.txt").exists())
+        self.assertEqual(True, Path("folder/test2.txt").exists())
 
         Path("folder/test.txt").copy("")
         self.assertEqual(True, Path("test.txt").exists())
@@ -231,19 +232,26 @@ class FileTest(unittest.TestCase):
         self.assertEqual(True, Path("test2.txt").exists())
 
     def test_move(self):
-        Path("folder/test.txt").write()
+        Path("folder/test.txt").write(5)
         Path("folder/test2.txt").write()
 
         Path("folder").move("folder2")
+        self.assertEqual(False, Path("folder").exists())
         self.assertEqual(True, Path("folder2/test.txt").exists())
         self.assertEqual(True, Path("folder2/test2.txt").exists())
 
-        Path("folder/test.txt").move("")
+        Path("folder2/test.txt").move("")
         self.assertEqual(True, Path("test.txt").exists())
         self.assertEqual(False, Path("test2.txt").exists())
+        self.assertEqual(False, Path("folder2/test.txt").exists())
 
+        Path("folder/test.txt").write(2)
+        with self.assertRaises(FileExistsError):
+            Path("folder").move(Path())
+
+        self.assertEqual(5, Path("test.txt").read())
         Path("folder").move(Path(), overwrite=True)
-        self.assertEqual(True, Path("test2.txt").exists())
+        self.assertEqual(2, Path("test.txt").read())
 
     def test_create_folder(self):
         path = Path("folder/folder2.txt")

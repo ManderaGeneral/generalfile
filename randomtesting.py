@@ -1,5 +1,4 @@
 
-# import generalfile
 from generalfile import Path
 from generalfile.test.setUpWorkDir import setUpWorkDir
 import pathlib
@@ -11,7 +10,40 @@ from pprint import pprint
 
 import shutil
 
+from distutils.dir_util import copy_tree
+
 import random
+
+from generallibrary import sleep
+
+
+
+
+
+# setUpWorkDir()
+
+# Path.get_lock_dir().open_folder()
+# Path().open_folder()
+
+
+
+# Path("fold/hello/test.txt").write(5)
+# Path("test.txt").write(1)
+# Path("fold/hello/another/test2.txt").write(2)
+
+
+
+# Path("hi.txt").write()
+# print(Path("hi.txt").seconds_since_creation())
+
+with Path("test").lock():
+    print(5)
+
+
+
+# TODO: Replace dots in lock paths too
+# TODO: Dryer: os.remove should only be exist inside Path.delete for example - Add parameter to methods that lock to not lock
+
 
 
 # import functools
@@ -50,64 +82,3 @@ import random
 
 
 
-
-
-
-
-# Path.get_lock_dir().open_folder()
-
-setUpWorkDir()
-
-# Path().open_folder()
-
-
-
-Path("fold/hello/test.txt").write(5)
-Path("test.txt").write(1)
-Path("fold/hello/another/test2.txt").write(5)
-
-# Path("fold/hello").create_folder()
-
-# Path("new/test").create_folder()
-
-# shutil.copy("fold/hello/test.txt", ".")  # Folders work perfectly, unless folder of file exists... So we cannot use this
-
-shutil.move("fold/hello", ".")
-
-
-# Path("fold/test2.txt").write(2)
-
-# Path("fold/test2.txt").move("foobar")
-
-# Path("fold").move("foobar")
-
-
-
-# print(tuple(Path("fold").get_paths_recursive(include_folders=True, include_self=True)))
-
-
-
-
-# shutil.copy("test.txt", "test2.txt", follow_symlinks=False)
-
-
-# path = Path("folder/test.txt")
-# path.write(5)
-
-# path.rename("hello.txt")
-# print(Path("hello.txt").read())
-
-
-
-
-# Path("test.txt").write()
-# shutil.copy("test.txt", "test2.txt", follow_symlinks=False)
-
-
-# print(pathlib.Path("folder/hello.txt"))
-
-# print(list(generalfile.Path("randomtesting.py").get_paths()))
-# print(appdirs.user_cache_dir())
-# print(pathlib.Path("folder/file.txt.hi"))
-# print(mutapath.Path("folder/file.txt"))
-# print(generalfile.Path("folder/file.txt"))

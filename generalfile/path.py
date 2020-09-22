@@ -5,9 +5,12 @@ import os
 import shutil
 from send2trash import send2trash
 import json
+from distutils.dir_util import copy_tree
+import time
 
 from generallibrary import VerInfo, Timer, initBases, deco_cache, EmptyContext
 from generalfile.errors import *
+
 
 def deco_require_state(is_file=None, is_folder=None, exists=None, quick_exists=None):
     """ Decorator to easily configure and see which state to require. """
@@ -56,22 +59,24 @@ class _Lock:
         self.lock_file_stream = None
 
     def __enter__(self):
-        if not self.path.owns_lock:
-            self._attempt_lock_creation()
-            self.path.owns_lock = True
+        self._attempt_lock_creation()
+        self.path.owns_lock = True
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self._close_and_remove_lock()
         self.path.owns_lock = False
 
-    def _get_lock_str(self):
-        return str(self.path.get_lock_dir() / self.path.absolute().get_alternative_path())
+    def _get_lock_path(self):
+        return self.path.get_lock_dir() / self.path.absolute().get_alternative_path()
 
     def _attempt_lock_creation(self):
         path_absolute = self.path.absolute()
         timer = Timer()
         while timer.seconds() < self.path.timeout_seconds:
-            if not self._is_locked():
+            if self._is_locked():
+                if self._get_lock_path().seconds_since_creation() > self.path.dead_lock_seconds:
+                    os.remove(str(self._get_lock_path()))
+            else:
                 self._open_and_create_lock()
                 affecting_locks = list(self._affecting_locks())
                 if affecting_locks == [path_absolute]:
@@ -88,7 +93,7 @@ class _Lock:
         if self.lock_file_stream is not None:
             raise AttributeError(f"A file stream is already opened for '{self.path}'.")
 
-        self.lock_file_stream = open(self._get_lock_str(), "x")
+        self.lock_file_stream = open(str(self._get_lock_path()), "x")
         self.lock_file_stream.write("hello")
 
     def _close_and_remove_lock(self):
@@ -96,7 +101,7 @@ class _Lock:
             raise AttributeError(f"A file stream is not opened for '{self.path}'.")
 
         self.lock_file_stream.close()
-        os.remove(self._get_lock_str())
+        os.remove(str(self._get_lock_path()))
 
     def _affecting_locks(self):
         path_absolute = self.path.absolute()
@@ -119,7 +124,10 @@ class _Path_ContextManager:
     @staticmethod
     def _create_context_manager(path, *other_paths):
         """ :param Path path: """
-        return EmptyContext() if path.startswith(Path.get_lock_dir()) else _Lock(path, *other_paths)
+        if path.startswith(Path.get_lock_dir()) or path.owns_lock:  # If path is inside lock dir OR path already owns lock
+            return EmptyContext()
+        else:
+            return _Lock(path, *other_paths)
 
     def lock(self, *other_paths):
         """ Create a lock for this path unless path is inside `lock dir`.
@@ -205,26 +213,26 @@ class _Path_Operations:
         if self.is_file():
             filepaths = (self,)
         else:
-            filepaths = tuple(self.get_paths_recursive(include_self=True))
+            filepaths = tuple(self.get_paths_in_folder())
 
         target_filepaths = [target_folder_path / path.absolute().relative(self_parent_path) for path in filepaths]
-
         if not overwrite and any([target.exists(quick=True) for target in target_filepaths]):
             raise FileExistsError("Atleast one target filepath exists, cannot copy")
 
         with self.lock(target_folder_path):
+            target_folder_path.create_folder()
             for path, target in zip(filepaths, target_filepaths):
 
-                if path.is_file():
-
-                    target.parent().create_folder()
-
                 if method == "copy":
-                    shutil.copy(str(path), str(target), follow_symlinks=False)  # Can clobber
+                    if path.is_file():
+                        shutil.copy(str(path), str(target), follow_symlinks=False)  # Can clobber
+                    else:
+                        copy_tree(str(path), str(target))
+
                 elif method == "move":
                     shutil.move(str(path), str(target))  # Can clobber if full target path is specified like we do
 
-            if self.is_folder():
+            if method == "move" and self.is_folder():
                 self.delete()
 
 
@@ -397,6 +405,17 @@ class _Path_Operations:
         """ :param Path self: """
         self.trash()
         self.create_folder()
+
+    @deco_require_state(exists=True)
+    def seconds_since_creation(self):
+        """ :param Path self: """
+        return time.time() - os.path.getctime(str(self))
+
+    @deco_require_state(exists=True)
+    def seconds_since_modified(self):
+        """ :param Path self: """
+        return time.time() - os.path.getmtime(str(self))
+
 
 
 class _Path_Strings:
