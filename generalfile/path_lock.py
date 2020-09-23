@@ -31,10 +31,17 @@ class _Lock:
         timer = Timer()
         while timer.seconds() < self.path.timeout_seconds:
             if self._is_locked():
-                if self._get_lock_path().seconds_since_creation() > self.path.dead_lock_seconds:
-                    self._get_lock_path().delete()
+                try:
+                    seconds_since_creation = self._get_lock_path().seconds_since_modified()
+                except:
+                    pass
+                else:
+                    if seconds_since_creation > self.path.dead_lock_seconds:
+                        self._get_lock_path().delete()
             else:
-                self._open_and_create_lock()
+                if not self._open_and_create_lock():
+                    continue
+
                 affecting_locks = list(self._affecting_locks())
                 if affecting_locks == [path_absolute]:
                     return
@@ -50,8 +57,13 @@ class _Lock:
         if self.lock_file_stream is not None:
             raise AttributeError(f"A file stream is already opened for '{self.path}'.")
 
-        self.lock_file_stream = open(str(self._get_lock_path()), "x")
+        try:
+            self.lock_file_stream = open(str(self._get_lock_path()), "x")
+        except FileExistsError:
+            return False
+
         self.lock_file_stream.write("hello")
+        return True
 
     def _close_and_remove_lock(self):
         if self.lock_file_stream is None:

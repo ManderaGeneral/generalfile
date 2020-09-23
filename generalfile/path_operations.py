@@ -22,7 +22,7 @@ class _Path_Operations:
     def write(self, content=None, overwrite=False):
         """ Write to this Path.
 
-            :param Path self:
+            :param generalfile.Path self:
             :param content:
             :param overwrite: """
         if not overwrite and self.exists():
@@ -33,14 +33,17 @@ class _Path_Operations:
 
             temp_path = self.with_suffix(".temp")
             with open(str(temp_path), "w") as temp_file_stream:
-                temp_file_stream.write(json.dumps(content))
+                content_json = json.dumps(content)
+                temp_file_stream.write(content_json)
 
             temp_path.rename(self.name(), overwrite=True)
+
+        return content_json
 
     def read(self):
         """ Write to this Path.
 
-            :param Path self: """
+            :param generalfile.Path self: """
         with self.lock():
             with open(str(self), "r") as file_stream:
                 return json.loads(file_stream.read())
@@ -49,7 +52,7 @@ class _Path_Operations:
     def rename(self, name=None, stem=None, suffix=None, overwrite=False):
         """ Rename this single file or folder to anything.
 
-            :param Path self:
+            :param generalfile.Path self:
             :param name:
             :param stem:
             :param suffix:
@@ -70,7 +73,7 @@ class _Path_Operations:
 
     @deco_require_state(exists=True)
     def _copy_or_move(self, target_folder_path, overwrite, method):
-        """ :param Path self: """
+        """ :param generalfile.Path self: """
         target_folder_path = self.Path(target_folder_path)
         if target_folder_path.is_file():
             raise NotADirectoryError("parent_path cannot be a file")
@@ -109,7 +112,7 @@ class _Path_Operations:
     def copy(self, target_folder_path, overwrite=False):
         """ Copy files inside given folder or file to anything except it's own parent.
 
-            :param Path self:
+            :param generalfile.Path self:
             :param target_folder_path:
             :param overwrite: """
         return self._copy_or_move(target_folder_path=target_folder_path, overwrite=overwrite, method="copy")
@@ -117,7 +120,7 @@ class _Path_Operations:
     def move(self, target_folder_path, overwrite=False):
         """ Move files inside given folder or file to anything except it's own parent.
 
-            :param Path self:
+            :param generalfile.Path self:
             :param target_folder_path:
             :param overwrite: """
         return self._copy_or_move(target_folder_path=target_folder_path, overwrite=overwrite, method="move")
@@ -125,19 +128,19 @@ class _Path_Operations:
     def is_file(self):
         """ Get whether this Path is a file.
 
-            :param Path self: """
+            :param generalfile.Path self: """
         return self._path.is_file()
 
     def is_folder(self):
         """ Get whether this Path is a folder.
 
-            :param Path self: """
+            :param generalfile.Path self: """
         return self._path.is_dir()
 
     def exists(self, quick=False):
         """ Get whether this Path exists.
 
-            :param Path self:
+            :param generalfile.Path self:
             :param quick: Whether to do a quick (case insensitive on windows) check. """
         if quick:
             return self._path.exists()
@@ -157,7 +160,7 @@ class _Path_Operations:
     def without_file(self):
         """ Get this path without it's name if it's a file, otherwise it returns itself.
 
-            :param Path self: """
+            :param generalfile.Path self: """
         if self.is_file():
             return self.parent()
         else:
@@ -167,7 +170,7 @@ class _Path_Operations:
     def get_paths_in_folder(self):
         """ Get a generator containing every child Path inside this folder, relative if possible.
 
-            :param Path self: """
+            :param generalfile.Path self: """
         for child in self._path.iterdir():
             yield self.Path(child)
 
@@ -179,7 +182,7 @@ class _Path_Operations:
             :param include_self:
             :param include_files:
             :param include_folders:
-            :param Path self: """
+            :param generalfile.Path self: """
         if self.is_file():
             queued_folders = [self.parent()]
         elif self.is_folder():
@@ -209,7 +212,7 @@ class _Path_Operations:
     def create_folder(self):
         """ Create folder with this Path unless it exists
 
-            :param Path self: """
+            :param generalfile.Path self: """
         if self.exists():
             return False
         else:
@@ -219,7 +222,7 @@ class _Path_Operations:
     def open_folder(self):
         """ Open folder to view it manually.
 
-            :param Path self: """
+            :param generalfile.Path self: """
         os.startfile(str(self.without_file()))
 
     @classmethod
@@ -248,14 +251,14 @@ class _Path_Operations:
     def set_working_dir(self):
         """ Set current working folder.
 
-            :param Path self: """
+            :param generalfile.Path self: """
         self.create_folder()
         os.chdir(str(self.absolute()))
 
     @deco_preserve_working_dir
     def delete(self):
         """ Delete a file or folder.
-            :param Path self: """
+            :param generalfile.Path self: """
         with self.lock():
             if self.is_file():
                 os.remove(str(self))
@@ -265,30 +268,35 @@ class _Path_Operations:
     @deco_preserve_working_dir
     def trash(self):
         """ Trash a file or folder
-            :param Path self: """
+            :param generalfile.Path self: """
         with self.lock():
             send2trash(str(self))
 
     @deco_require_state(is_folder=True)
     def delete_folder_content(self):
         """ Delete a file or folder
-            :param Path self: """
+            :param generalfile.Path self: """
         self.delete()
         self.create_folder()
 
     @deco_require_state(is_folder=True)
     def trash_folder_content(self):
-        """ :param Path self: """
+        """ :param generalfile.Path self: """
         self.trash()
         self.create_folder()
 
-    @deco_require_state(exists=True)
+    @deco_require_state(is_file=True)
     def seconds_since_creation(self):
-        """ :param Path self: """
+        """ Get time in seconds since file was created.
+            NOTE: Doesn't seem to update very quickly for windows (7).
+
+            :param generalfile.Path self: """
         return time.time() - os.path.getctime(str(self))
 
-    @deco_require_state(exists=True)
+    @deco_require_state(is_file=True)
     def seconds_since_modified(self):
-        """ :param Path self: """
+        """ Get time in seconds since file was modified.
+
+            :param generalfile.Path self: """
         return time.time() - os.path.getmtime(str(self))
 

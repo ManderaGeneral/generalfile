@@ -3,7 +3,7 @@ def deco_require_state(is_file=None, is_folder=None, exists=None, quick_exists=N
     """ Decorator to easily configure and see which state to require. """
     def _decorator(func):
         def _wrapper(self, *args, **kwargs):
-            """:param Path self:"""
+            """:param generalfile.Path self:"""
             if is_file is not None:
                 if self.is_file() != is_file:
                     raise AttributeError(f"Path {self} is_file check didn't match ({is_file}).")

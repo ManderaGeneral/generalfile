@@ -40,8 +40,20 @@ class FileTest(unittest.TestCase):
     def test_stem(self):
         path = Path("folder/test.txt")
         self.assertEqual("test", path.stem())
-
         self.assertEqual("folder/foobar.txt", path.with_stem("foobar"))
+
+        path = Path("folder/test.foo.txt.bar")
+        self.assertEqual("test.foo.txt", path.stem())
+        self.assertEqual("folder/foo.bar", path.with_stem("foo"))
+
+    def test_true_stem(self):
+        path = Path("folder/test.txt")
+        self.assertEqual("test", path.stem())
+        self.assertEqual("folder/foobar.txt", path.with_true_stem("foobar"))
+
+        path = Path("folder/test.foo.txt.bar")
+        self.assertEqual("test", path.true_stem())
+        self.assertEqual("folder/yo.foo.txt.bar", path.with_true_stem("yo"))
 
     def test_suffixes(self):
         path = Path("folder/test.hello.txt")
@@ -59,25 +71,31 @@ class FileTest(unittest.TestCase):
         self.assertEqual("folder/test.csv", path)
 
         path = path.with_suffix(".BACKUP", -2)
-        self.assertEqual("folder/foobar.BACKUP.csv", path)
+        self.assertEqual("folder/test.BACKUP.csv", path)
 
         path = path.with_suffix(".test", -2)
-        self.assertEqual("folder/foobar.test.csv", path)
+        self.assertEqual("folder/test.test.csv", path)
 
         path = path.with_suffix(None, 0)
-        self.assertEqual("folder/foobar.csv", path)
+        self.assertEqual("folder/test.csv", path)
 
         path = path.with_suffix(".foo", 2)
-        self.assertEqual("folder/foobar.csv.foo", path)
+        self.assertEqual("folder/test.csv.foo", path)
 
         path = path.with_suffix(".bar", 3)
-        self.assertEqual("folder/foobar.csv.foo.bar", path)
+        self.assertEqual("folder/test.csv.foo.bar", path)
 
         path = path.with_suffix(".clamped", 5)
-        self.assertEqual("folder/foobar.csv.foo.bar.clamped", path)
+        self.assertEqual("folder/test.csv.foo.bar.clamped", path)
 
         path = path.with_suffix(".clamped", -10)
-        self.assertEqual("folder/foobar.clamped.csv.foo.bar.clamped", path)
+        self.assertEqual("folder/test.clamped.csv.foo.bar.clamped", path)
+
+        path = path.with_suffix(None, 10)
+        self.assertEqual("folder/test.clamped.csv.foo.bar", path)
+
+        path = path.with_suffix(None, -10)
+        self.assertEqual("folder/test.csv.foo.bar", path)
 
     def test_parent(self):
         path = Path("folder/foobar/test.txt")

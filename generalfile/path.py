@@ -63,7 +63,7 @@ class Path(_Path_ContextManager, _Path_Operations, _Path_Strings):
             str_path = str_path[0:-1]
         return str_path
 
-Path.Path = Path
+setattr(Path, "Path", Path)
 
 
 
