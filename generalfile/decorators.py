@@ -3,7 +3,7 @@ def deco_require_state(is_file=None, is_folder=None, exists=None, quick_exists=N
     """ Decorator to easily configure and see which state to require. """
     def _decorator(func):
         def _wrapper(self, *args, **kwargs):
-            """:param generalfile.Path self:"""
+            """:param Path self:"""
             if is_file is not None:
                 if self.is_file() != is_file:
                     raise AttributeError(f"Path {self} is_file check didn't match ({is_file}).")
@@ -31,26 +31,4 @@ def deco_preserve_working_dir(function):
         return result
     return _wrapper
 
-
-
-
-def deco_return_if_removed(content):
-    """ Decorator to return whether path exists to be removed or not. """
-    def _decorator(function):
-        def _wrapper(*args, **kwargs):
-            path = args[0]
-            if not path.exists(quick=True):
-                return False
-
-            if content:
-                for _ in path.get_paths_in_folder():
-                    break
-                else:
-                    return False  # Folder is empty
-
-            function(*args, **kwargs)
-            return True
-
-        return _wrapper
-    return _decorator
 

@@ -10,92 +10,38 @@ import time
 from generallibrary import deco_cache
 
 from generalfile.errors import *
-from generalfile.decorators import deco_require_state, deco_preserve_working_dir, deco_return_if_removed
+from generalfile.decorators import deco_require_state, deco_preserve_working_dir
 
 
-class _Context:
-    def __init__(self, path):
-        self.path = path
-        self.temp_path = self.path.with_suffix(".temp")
-        self.lock = self.path.lock()
-
-    def __enter__(self):
-        self.lock.__enter__()
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        self.lock.__exit__(exc_type, exc_val, exc_tb)
-
-
-class WriteContext(_Context):
-    """ A context manager used for every write method. """
-    def __init__(self, path, overwrite=False):
-        super().__init__(path)
-        self.overwrite = overwrite
-
-    def __enter__(self):
-        if not self.overwrite and self.path.exists():
-            raise FileExistsError(f"Path '{self.path}' already exists and overwrite is 'False'.")
-
-        super().__enter__()
-        self.path.parent().create_folder()
-        return self.temp_path
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        self.temp_path.rename(self.path.name(), overwrite=True)
-        super().__exit__(exc_type, exc_val, exc_tb)
-
-
-class ReadContext(_Context):
-    """ A context manager used for every read method. """
-    def __init__(self, path):
-        super().__init__(path)
-
-    def __enter__(self):
-        super().__enter__()
-        return self.path
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        super().__exit__(exc_type, exc_val, exc_tb)
-
-
-class AppendContext(_Context):
-    """ A context manager used for every append method. """
-    def __init__(self, path):
-        super().__init__(path)
-
-    def __enter__(self):
-        super().__enter__()
-        self.path.copy(self.temp_path)
-        return self.temp_path
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        self.temp_path.rename(self.path.name(), overwrite=True)
-        super().__exit__(exc_type, exc_val, exc_tb)
-
-
-class Path_Operations:
+class _Path_Operations:
     """ File operations methods for Path. """
     _suffixIO = {"plain_text": ("txt", "md", ""), "spreadsheet": ("tsv", "csv")}
     timeout_seconds = 5
     dead_lock_seconds = 3
 
     def write(self, content=None, overwrite=False):
-        """ Write to this Path with JSON.
+        """ Write to this Path.
 
-            :param generalfile.Path self:
-            :param any content: Serializable by JSON
-            :param overwrite: Whether to allow overwriting or not. """
-        content_json = json.dumps(content)
-        with WriteContext(self, overwrite=overwrite) as write_path:
-            with open(str(write_path), "w") as stream:
-                stream.write(content_json)
-            return content_json
+            :param Path self:
+            :param content:
+            :param overwrite: """
+        if not overwrite and self.exists():
+            raise FileExistsError(f"Path '{self}' already exists and overwrite is 'False'.")
+
+        with self.lock():
+            self.parent().create_folder()
+
+            temp_path = self.with_suffix(".temp")
+            with open(str(temp_path), "w") as temp_file_stream:
+                temp_file_stream.write(json.dumps(content))
+
+            temp_path.rename(self.name(), overwrite=True)
 
     def read(self):
-        """ Read this Path with JSON.
+        """ Write to this Path.
 
-            :param generalfile.Path self: """
-        with ReadContext(self):
+            :param Path self: """
+        with self.lock():
             with open(str(self), "r") as file_stream:
                 return json.loads(file_stream.read())
 
@@ -103,14 +49,12 @@ class Path_Operations:
     def rename(self, name=None, stem=None, suffix=None, overwrite=False):
         """ Rename this single file or folder to anything.
 
-            TODO: Can we not just change signature to rename(self, new_path, overwrite=False) ?
-                Then just require parents to be same and just use path's with_* methods.
-
-            :param generalfile.Path self:
+            :param Path self:
             :param name:
             :param stem:
             :param suffix:
-            :param overwrite: """
+            :param overwrite:
+            :return: """
         new_path = self
         for key, value in {"stem": stem, "suffix": suffix, "name": name}.items():
             if value is not None:
@@ -125,35 +69,8 @@ class Path_Operations:
                 self._path.rename(str(new_path))
 
     @deco_require_state(exists=True)
-    def copy(self, new_path, overwrite=False):
-        """
-        Copy a file or folder next to itself with a new name.
-        If target exists then it is removed first, so it cannot add to existing folders, use `copy_to_folder` for that.
-
-        :param generalfile.Path self:
-        :param generalfile.Path new_path:
-        :param overwrite:
-        :return:
-        """
-        new_path = self.with_name(self.Path(new_path).name())
-
-        with self.lock(new_path):
-            if new_path.exists():
-                if overwrite:
-                    new_path.delete()
-                else:
-                    raise AttributeError(f"Target path '{new_path}' exists but overwrite is `False`.")
-            self._copy_file_or_folder(new_path=new_path)
-
-    def _copy_file_or_folder(self, new_path):
-        if self.is_file():
-            shutil.copy(str(self), str(new_path), follow_symlinks=False)  # Can clobber
-        else:
-            copy_tree(str(self), str(new_path))
-
-    @deco_require_state(exists=True)
     def _copy_or_move(self, target_folder_path, overwrite, method):
-        """ :param generalfile.Path self: """
+        """ :param Path self: """
         target_folder_path = self.Path(target_folder_path)
         if target_folder_path.is_file():
             raise NotADirectoryError("parent_path cannot be a file")
@@ -161,6 +78,7 @@ class Path_Operations:
         self_parent_path = self.absolute().parent() if self.is_file() else self.absolute()
         if self_parent_path == target_folder_path:
             return
+
 
         if self.is_file():
             filepaths = (self,)
@@ -176,7 +94,10 @@ class Path_Operations:
             for path, target in zip(filepaths, target_filepaths):
 
                 if method == "copy":
-                    self.__class__._copy_file_or_folder(path, target)  # Same as path._copy_file_or_folder(target)
+                    if path.is_file():
+                        shutil.copy(str(path), str(target), follow_symlinks=False)  # Can clobber
+                    else:
+                        copy_tree(str(path), str(target))
 
                 elif method == "move":
                     shutil.move(str(path), str(target))  # Can clobber if full target path is specified like we do
@@ -184,10 +105,11 @@ class Path_Operations:
             if method == "move" and self.is_folder():
                 self.delete()
 
-    def copy_to_folder(self, target_folder_path, overwrite=False):
-        """ Copy file or files inside given folder to anything except it's own parent, use `copy` for that.
 
-            :param generalfile.Path self:
+    def copy(self, target_folder_path, overwrite=False):
+        """ Copy files inside given folder or file to anything except it's own parent.
+
+            :param Path self:
             :param target_folder_path:
             :param overwrite: """
         return self._copy_or_move(target_folder_path=target_folder_path, overwrite=overwrite, method="copy")
@@ -195,7 +117,7 @@ class Path_Operations:
     def move(self, target_folder_path, overwrite=False):
         """ Move files inside given folder or file to anything except it's own parent.
 
-            :param generalfile.Path self:
+            :param Path self:
             :param target_folder_path:
             :param overwrite: """
         return self._copy_or_move(target_folder_path=target_folder_path, overwrite=overwrite, method="move")
@@ -203,19 +125,19 @@ class Path_Operations:
     def is_file(self):
         """ Get whether this Path is a file.
 
-            :param generalfile.Path self: """
+            :param Path self: """
         return self._path.is_file()
 
     def is_folder(self):
         """ Get whether this Path is a folder.
 
-            :param generalfile.Path self: """
+            :param Path self: """
         return self._path.is_dir()
 
     def exists(self, quick=False):
         """ Get whether this Path exists.
 
-            :param generalfile.Path self:
+            :param Path self:
             :param quick: Whether to do a quick (case insensitive on windows) check. """
         if quick:
             return self._path.exists()
@@ -235,7 +157,7 @@ class Path_Operations:
     def without_file(self):
         """ Get this path without it's name if it's a file, otherwise it returns itself.
 
-            :param generalfile.Path self: """
+            :param Path self: """
         if self.is_file():
             return self.parent()
         else:
@@ -245,7 +167,7 @@ class Path_Operations:
     def get_paths_in_folder(self):
         """ Get a generator containing every child Path inside this folder, relative if possible.
 
-            :param generalfile.Path self: """
+            :param Path self: """
         for child in self._path.iterdir():
             yield self.Path(child)
 
@@ -257,7 +179,7 @@ class Path_Operations:
             :param include_self:
             :param include_files:
             :param include_folders:
-            :param generalfile.Path self: """
+            :param Path self: """
         if self.is_file():
             queued_folders = [self.parent()]
         elif self.is_folder():
@@ -287,7 +209,7 @@ class Path_Operations:
     def create_folder(self):
         """ Create folder with this Path unless it exists
 
-            :param generalfile.Path self: """
+            :param Path self: """
         if self.exists():
             return False
         else:
@@ -297,7 +219,7 @@ class Path_Operations:
     def open_folder(self):
         """ Open folder to view it manually.
 
-            :param generalfile.Path self: """
+            :param Path self: """
         os.startfile(str(self.without_file()))
 
     @classmethod
@@ -326,16 +248,14 @@ class Path_Operations:
     def set_working_dir(self):
         """ Set current working folder.
 
-            :param generalfile.Path self: """
+            :param Path self: """
         self.create_folder()
         os.chdir(str(self.absolute()))
 
     @deco_preserve_working_dir
-    @deco_return_if_removed(content=False)
     def delete(self):
         """ Delete a file or folder.
-
-            :param generalfile.Path self: """
+            :param Path self: """
         with self.lock():
             if self.is_file():
                 os.remove(str(self))
@@ -343,42 +263,32 @@ class Path_Operations:
                 shutil.rmtree(str(self), ignore_errors=True)
 
     @deco_preserve_working_dir
-    @deco_return_if_removed(content=False)
     def trash(self):
-        """ Trash a file or folder.
-
-            :param generalfile.Path self: """
+        """ Trash a file or folder
+            :param Path self: """
         with self.lock():
             send2trash(str(self))
 
-    @deco_return_if_removed(content=True)
+    @deco_require_state(is_folder=True)
     def delete_folder_content(self):
-        """ Delete a file or folder and then create an empty folder in it's place.
-
-            :param generalfile.Path self: """
+        """ Delete a file or folder
+            :param Path self: """
         self.delete()
         self.create_folder()
 
-    @deco_return_if_removed(content=True)
+    @deco_require_state(is_folder=True)
     def trash_folder_content(self):
-        """ Trash a file or folder and then create an empty folder in it's place.
-
-            :param generalfile.Path self: """
+        """ :param Path self: """
         self.trash()
         self.create_folder()
 
-    @deco_require_state(is_file=True)
+    @deco_require_state(exists=True)
     def seconds_since_creation(self):
-        """ Get time in seconds since file was created.
-            NOTE: Doesn't seem to update very quickly for windows (7).
-
-            :param generalfile.Path self: """
+        """ :param Path self: """
         return time.time() - os.path.getctime(str(self))
 
-    @deco_require_state(is_file=True)
+    @deco_require_state(exists=True)
     def seconds_since_modified(self):
-        """ Get time in seconds since file was modified.
-
-            :param generalfile.Path self: """
+        """ :param Path self: """
         return time.time() - os.path.getmtime(str(self))
 

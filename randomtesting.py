@@ -1,6 +1,6 @@
 
 from generalfile import Path
-from generalfile.test.setUpWorkDir import setUpWorkDir
+from generalfile.test.setup_workdir import setup_workdir
 import pathlib
 import mutapath
 import appdirs
@@ -18,8 +18,6 @@ from generallibrary import sleep
 
 
 
-
-
 # setUpWorkDir()
 
 # Path.get_lock_dir().open_folder()
@@ -33,15 +31,16 @@ from generallibrary import sleep
 
 
 
-Path("hi.txt").write()
-print(Path("hi.txt").seconds_since_creation())
+# Path("hi.txt").write()
+# print(Path("hi.txt").seconds_since_creation())
 
-with Path("test").lock():
-    print(5)
+# with Path("test").lock():
+#     print(5)
 
 
+# print(pathlib.Path("test.txt.ehllo").with_suffix(".foo"))
 
-# TODO: Dryer: os.remove should only be exist inside Path.delete for example - Add parameter to methods that lock to not lock
+
 # TODO: Get tests working
 # TODO: Make sure we have all functionality that generalfile has
 # TODO: Decide on where to put e.g. CSV functionality

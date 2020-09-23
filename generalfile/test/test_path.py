@@ -2,7 +2,7 @@
 import unittest
 
 from generalfile import Path
-from generalfile.test.setUpWorkDir import setUpWorkDir
+from generalfile.test.setup_workdir import setup_workdir
 from generalfile.errors import *
 
 
@@ -12,7 +12,7 @@ class FileTest(unittest.TestCase):
     def setUp(self):
         """Set working dir and clear folder. Set path delimiter to '/' for testing."""
         Path.path_delimiter = "/"
-        setUpWorkDir()
+        setup_workdir()
 
     def test_path(self):
         self.assertRaises(InvalidCharacterError, Path, "hello:there")
@@ -53,10 +53,10 @@ class FileTest(unittest.TestCase):
         self.assertEqual(".txt", path.suffix())
 
         path = path.with_suffix(".tsv")
-        self.assertEqual("folder/foobar.tsv", path)
+        self.assertEqual("folder/test.tsv", path)
 
         path = path.with_suffix(".csv")
-        self.assertEqual("folder/foobar.csv", path)
+        self.assertEqual("folder/test.csv", path)
 
         path = path.with_suffix(".BACKUP", -2)
         self.assertEqual("folder/foobar.BACKUP.csv", path)
@@ -194,26 +194,28 @@ class FileTest(unittest.TestCase):
     def test_rename(self):
         Path("folder/test.txt").write()
 
-        Path("folder/test.txt").rename("hello.txt", same_parent=True)
+        Path("folder/test.txt").rename(name="hello.txt")
         self.assertTrue(Path("folder/hello.txt").exists())
         self.assertFalse(Path("folder/test.txt").exists())
 
-        Path("folder").rename("folder2")
+        Path("folder").rename(name="folder2")
         self.assertTrue(Path("folder2").exists())
         self.assertFalse(Path("folder").exists())
 
-        Path("folder2/hello.txt").rename("foo.txt", same_parent=True)
+        Path("folder2/hello.txt").rename(name="foo.txt")
         self.assertTrue(Path("folder2/foo.txt").exists())
 
-        Path("folder2/foo.txt").rename("foo.TEST.txt", same_parent=True)
+        Path("folder2/foo.txt").rename(name="foo.TEST.txt")
         self.assertTrue(Path("folder2/foo.TEST.txt").exists())
 
-        Path("folder2/foo.TEST.txt").rename("hello/test.txt")
-        self.assertFalse(Path("folder2/hello/test.txt").exists())
-        self.assertTrue(Path("hello/test.txt").exists())
+        Path("folder2/foo.TEST.txt").rename(name="foobar")
+        self.assertTrue(Path("folder2/foobar").is_file())
 
-        Path("hello/test.txt").rename("foobar")
-        self.assertTrue(Path("foobar").is_file())
+        Path("folder2/foobar").rename(suffix=".test")
+        self.assertTrue(Path("folder2/foobar.test").exists())
+
+        Path("folder2/foobar.test").rename(stem="hello")
+        self.assertTrue(Path("folder2/hello.test").exists())
 
     def test_copy(self):
         Path("folder/test.txt").write()
@@ -302,14 +304,15 @@ class FileTest(unittest.TestCase):
         Path("folder/test2.txt").write()
         Path("folder/test3.txt").write()
 
-        self.assertEqual(2, len(list(Path().get_paths_recursive())))
-        self.assertEqual(3, len(list(Path().get_paths_recursive(include_self=True))))
+        self.assertEqual(2, len(list(Path().get_paths_recursive(depth=0))))
+        self.assertEqual(3, len(list(Path().get_paths_recursive(depth=0, include_self=True))))
 
-        self.assertEqual(1, len(list(Path("test.txt").get_paths_recursive())))
-        self.assertEqual(2, len(list(Path("test.txt").get_paths_recursive(include_self=True))))
+        self.assertEqual(1, len(list(Path("test.txt").get_paths_recursive(depth=0))))
+        self.assertEqual(2, len(list(Path("test.txt").get_paths_recursive(depth=0, include_self=True))))
 
         self.assertEqual(4, len(list(Path().get_paths_recursive(depth=2))))
         self.assertEqual(5, len(list(Path().get_paths_recursive(depth=2, include_self=True))))
+        self.assertEqual(5, len(list(Path().get_paths_recursive(depth=-1, include_self=True))))
         self.assertEqual(3, len(list(Path().get_paths_recursive(depth=0, include_self=True))))
 
         self.assertEqual(1, len(list(Path("folder/test2.txt").get_paths_recursive())))
