@@ -33,17 +33,18 @@ from generallibrary import sleep
 
 
 
-# Path("hi.txt").write()
-# print(Path("hi.txt").seconds_since_creation())
+Path("hi.txt").write()
+print(Path("hi.txt").seconds_since_creation())
 
 with Path("test").lock():
     print(5)
 
 
 
-# TODO: Replace dots in lock paths too
 # TODO: Dryer: os.remove should only be exist inside Path.delete for example - Add parameter to methods that lock to not lock
-
+# TODO: Get tests working
+# TODO: Make sure we have all functionality that generalfile has
+# TODO: Decide on where to put e.g. CSV functionality
 
 
 # import functools

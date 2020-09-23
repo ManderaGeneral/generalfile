@@ -440,17 +440,27 @@ class _Path_Strings:
         """ :param Path self: """
         return hash(self._str_path)
 
+    def get_replaced_alternative_characters(self):
+        """ :param Path self: """
+        return {self.path_delimiter: "&#47;", ":": "&#58", ".": "&#46;"}
+
     def get_alternative_path(self):
         """ Get path using alternative delimiter and alternative root for windows.
 
             :param Path self: """
-        return Path(self.path_delimiter_alternative.join(self.parts()).replace(":", self.windows_base_alternative))
+        path = str(self)
+        for char, alternative in self.get_replaced_alternative_characters().items():
+            path = path.replace(char, alternative)
+        return Path(path)
 
     def get_path_from_alternative(self):
         """ Get path from an alternative representation.
 
             :param Path self: """
-        return Path(str(self).replace(self.path_delimiter_alternative, self.path_delimiter).replace(self.windows_base_alternative, ":"))
+        path = str(self)
+        for char, alternative in self.get_replaced_alternative_characters().items():
+            path = path.replace(alternative, char)
+        return Path(path)
 
     def absolute(self):
         """ Get new Path as absolute.
@@ -588,8 +598,6 @@ class Path(_Path_ContextManager, _Path_Operations, _Path_Strings):
     """
     verInfo = VerInfo()
     path_delimiter = verInfo.pathDelimiter
-    path_delimiter_alternative = "&#47;"  # So that we can represent a nested path with a single filename
-    windows_base_alternative = "&#58;"  # Since we cannot have `:` as part of filename
 
     def __init__(self, path=None):
         self._str_path = self._scrub(str_path="" if path is None else str(path))
