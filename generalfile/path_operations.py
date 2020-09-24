@@ -10,7 +10,7 @@ import time
 from generallibrary import deco_cache
 
 from generalfile.errors import *
-from generalfile.decorators import deco_require_state, deco_preserve_working_dir
+from generalfile.decorators import deco_require_state, deco_preserve_working_dir, deco_return_if_removed
 
 
 class _Path_Operations:
@@ -256,8 +256,10 @@ class _Path_Operations:
         os.chdir(str(self.absolute()))
 
     @deco_preserve_working_dir
+    @deco_return_if_removed(content=False)
     def delete(self):
         """ Delete a file or folder.
+
             :param generalfile.Path self: """
         with self.lock():
             if self.is_file():
@@ -266,22 +268,27 @@ class _Path_Operations:
                 shutil.rmtree(str(self), ignore_errors=True)
 
     @deco_preserve_working_dir
+    @deco_return_if_removed(content=False)
     def trash(self):
-        """ Trash a file or folder
+        """ Trash a file or folder.
+
             :param generalfile.Path self: """
         with self.lock():
             send2trash(str(self))
 
-    @deco_require_state(is_folder=True)
+    @deco_return_if_removed(content=True)
     def delete_folder_content(self):
-        """ Delete a file or folder
+        """ Delete a file or folder and then create an empty folder in it's place.
+
             :param generalfile.Path self: """
         self.delete()
         self.create_folder()
 
-    @deco_require_state(is_folder=True)
+    @deco_return_if_removed(content=True)
     def trash_folder_content(self):
-        """ :param generalfile.Path self: """
+        """ Trash a file or folder and then create an empty folder in it's place.
+
+            :param generalfile.Path self: """
         self.trash()
         self.create_folder()
 

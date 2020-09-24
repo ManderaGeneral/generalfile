@@ -32,3 +32,25 @@ def deco_preserve_working_dir(function):
     return _wrapper
 
 
+
+
+def deco_return_if_removed(content):
+    """ Decorator to return whether path exists to be removed or not. """
+    def _decorator(function):
+        def _wrapper(*args, **kwargs):
+            path = args[0]
+            if not path.exists(quick=True):
+                return False
+
+            if content:
+                for _ in path.get_paths_in_folder():
+                    break
+                else:
+                    return False  # Folder is empty
+
+            function(*args, **kwargs)
+            return True
+
+        return _wrapper
+    return _decorator
+

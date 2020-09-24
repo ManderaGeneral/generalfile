@@ -34,16 +34,23 @@ class _Path_Strings:
         """ Get path using alternative delimiter and alternative root for windows.
 
             :param generalfile.Path self: """
-        path = str(self)
+        path = str(self.absolute())
         for char, alternative in self.get_replaced_alternative_characters().items():
             path = path.replace(char, alternative)
         return self.Path(path)
 
-    def get_path_from_alternative(self):
-        """ Get path from an alternative representation.
+    def get_lock_path(self):
+        """ Get absolute lock path pointing to actual lock.
 
             :param generalfile.Path self: """
-        path = str(self)
+        return self.get_lock_dir() / self.absolute().get_alternative_path()
+
+    def get_path_from_alternative(self):
+        """ Get path from an alternative representation with or without leading lock dir.
+
+            :param generalfile.Path self: """
+
+        path = str(self.remove_start(self.get_lock_dir()))
         for char, alternative in self.get_replaced_alternative_characters().items():
             path = path.replace(alternative, char)
         return self.Path(path)

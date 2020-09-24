@@ -20,7 +20,7 @@ from generallibrary import sleep
 
 # setUpWorkDir()
 
-# Path.get_lock_dir().open_folder()
+Path.get_lock_dir().open_folder()
 # Path().open_folder()
 
 
