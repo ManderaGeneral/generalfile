@@ -20,7 +20,7 @@ from generallibrary import sleep
 
 # setUpWorkDir()
 
-Path.get_lock_dir().open_folder()
+# Path.get_lock_dir().open_folder()
 # Path().open_folder()
 
 
@@ -28,6 +28,7 @@ Path.get_lock_dir().open_folder()
 # Path("fold/hello/test.txt").write(5)
 # Path("test.txt").write(1)
 # Path("fold/hello/another/test2.txt").write(2)
+
 
 
 
@@ -41,8 +42,14 @@ Path.get_lock_dir().open_folder()
 # print(pathlib.Path("test.txt.ehllo").with_suffix(".foo"))
 
 
+# Path("hello.tsv").spreadsheet.write(False)
 
-# TODO: Get tests working
+class Test:
+    def __init__(self):
+        self.a = ...
+        print(self.a)
+Test()
+
 # TODO: Make sure we have all functionality that generalfile has
 # TODO: Decide on where to put e.g. CSV functionality
 

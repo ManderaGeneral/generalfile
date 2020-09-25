@@ -13,11 +13,35 @@ from generalfile.errors import *
 from generalfile.decorators import deco_require_state, deco_preserve_working_dir, deco_return_if_removed
 
 
+# HERE ** Working!! Do the same for read then for spreadsheet too
+class _Write_Stream:
+    def __init__(self, path, overwrite=False):
+        self.path = path
+        self.overwrite = overwrite
+        self.lock = self.path.lock()
+
+    def __enter__(self):
+        if not self.overwrite and self.path.exists():
+            raise FileExistsError(f"Path '{self.path}' already exists and overwrite is 'False'.")
+
+        self.lock.__enter__()
+        self.path.parent().create_folder()
+        self.temp_path = self.path.with_suffix(".temp")
+        return self.temp_path
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.temp_path.rename(self.path.name(), overwrite=True)
+        self.lock.__exit__(exc_type, exc_val, exc_tb)
+
 class _Path_Operations:
     """ File operations methods for Path. """
     _suffixIO = {"plain_text": ("txt", "md", ""), "spreadsheet": ("tsv", "csv")}
     timeout_seconds = 5
     dead_lock_seconds = 3
+
+    def get_write_stream_path(self, overwrite):
+        """ Get a context manager for every write method to make it DRY. """
+        return _Write_Stream(self, overwrite)
 
     def write(self, content=None, overwrite=False):
         """ Write to this Path.
@@ -25,20 +49,11 @@ class _Path_Operations:
             :param generalfile.Path self:
             :param content:
             :param overwrite: """
-        if not overwrite and self.exists():
-            raise FileExistsError(f"Path '{self}' already exists and overwrite is 'False'.")
-
-        with self.lock():
-            self.parent().create_folder()
-
-            temp_path = self.with_suffix(".temp")
-            with open(str(temp_path), "w") as temp_file_stream:
-                content_json = json.dumps(content)
-                temp_file_stream.write(content_json)
-
-            temp_path.rename(self.name(), overwrite=True)
-
-        return content_json
+        content_json = json.dumps(content)
+        with self.get_write_stream_path(overwrite) as stream_path:
+            with open(str(stream_path), "w") as stream:
+                stream.write(content_json)
+            return content_json
 
     def read(self):
         """ Write to this Path.
@@ -107,7 +122,6 @@ class _Path_Operations:
 
             if method == "move" and self.is_folder():
                 self.delete()
-
 
     def copy(self, target_folder_path, overwrite=False):
         """ Copy files inside given folder or file to anything except it's own parent.
