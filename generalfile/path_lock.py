@@ -93,7 +93,7 @@ class _Lock:
         return False
 
 
-class _Path_ContextManager:
+class Path_ContextManager:
     """ Context manager methods for Path. """
     def __init__(self):
         self.owns_lock = False

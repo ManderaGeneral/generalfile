@@ -7,7 +7,7 @@ import appdirs
 import time
 import os
 from pprint import pprint
-
+import pandas as pd
 import shutil
 
 from distutils.dir_util import copy_tree
@@ -18,37 +18,20 @@ from generallibrary import sleep
 
 
 
-# setUpWorkDir()
 
 # Path.get_lock_dir().open_folder()
+
+
+
+setup_workdir()
+
 # Path().open_folder()
+Path("hello.tsv").spreadsheet.write(pd.DataFrame([[1, 2, 3], [1, 2, 3]]))
+print(Path("hello.tsv").spreadsheet.read())
 
+Path("hello.tsv").spreadsheet.append([[4, 5, 6]])
+print(Path("hello.tsv").spreadsheet.read())
 
-
-# Path("fold/hello/test.txt").write(5)
-# Path("test.txt").write(1)
-# Path("fold/hello/another/test2.txt").write(2)
-
-
-
-
-# Path("hi.txt").write()
-# print(Path("hi.txt").seconds_since_creation())
-
-# with Path("test").lock():
-#     print(5)
-
-
-# print(pathlib.Path("test.txt.ehllo").with_suffix(".foo"))
-
-
-# Path("hello.tsv").spreadsheet.write(False)
-
-class Test:
-    def __init__(self):
-        self.a = ...
-        print(self.a)
-Test()
 
 # TODO: Make sure we have all functionality that generalfile has
 # TODO: Decide on where to put e.g. CSV functionality

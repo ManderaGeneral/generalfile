@@ -5,14 +5,14 @@ import pathlib
 from generallibrary import VerInfo, initBases
 
 from generalfile.errors import *
-from generalfile.path_lock import _Path_ContextManager
-from generalfile.path_operations import _Path_Operations
-from generalfile.path_strings import _Path_Strings
-from generalfile.path_optional import _Path_Optional
+from generalfile.path_lock import Path_ContextManager
+from generalfile.path_operations import Path_Operations
+from generalfile.path_strings import Path_Strings
+from generalfile.optional_dependencies.path_spreadsheet import Path_Spreadsheet
 
 
 @initBases
-class Path(_Path_ContextManager, _Path_Operations, _Path_Strings, _Path_Optional):
+class Path(Path_ContextManager, Path_Operations, Path_Strings, Path_Spreadsheet):
     """
     Immutable cross-platform Path.
     Wrapper for pathlib.

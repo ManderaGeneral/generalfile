@@ -1,6 +1,6 @@
 
 
-class _Path_Strings:
+class Path_Strings:
     """ String operations for Path. """
     def __str__(self):
         """ :param generalfile.Path self: """

@@ -13,45 +13,81 @@ from generalfile.errors import *
 from generalfile.decorators import deco_require_state, deco_preserve_working_dir, deco_return_if_removed
 
 
-# HERE ** Working!! Do the same for read then for spreadsheet too
-class _Write_Stream:
-    def __init__(self, path, overwrite=False):
+class _Context:
+    def __init__(self, path):
         self.path = path
-        self.overwrite = overwrite
+        self.temp_path = self.path.with_suffix(".temp")
         self.lock = self.path.lock()
+
+    def __enter__(self):
+        self.lock.__enter__()
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.lock.__exit__(exc_type, exc_val, exc_tb)
+
+
+class WriteContext(_Context):
+    """ A context manager used for every write method. """
+    def __init__(self, path, overwrite=False):
+        super().__init__(path)
+        self.overwrite = overwrite
 
     def __enter__(self):
         if not self.overwrite and self.path.exists():
             raise FileExistsError(f"Path '{self.path}' already exists and overwrite is 'False'.")
 
-        self.lock.__enter__()
+        super().__enter__()
         self.path.parent().create_folder()
-        self.temp_path = self.path.with_suffix(".temp")
         return self.temp_path
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.temp_path.rename(self.path.name(), overwrite=True)
-        self.lock.__exit__(exc_type, exc_val, exc_tb)
+        super().__exit__(exc_type, exc_val, exc_tb)
 
-class _Path_Operations:
+
+class ReadContext(_Context):
+    """ A context manager used for every read method. """
+    def __init__(self, path):
+        super().__init__(path)
+
+    def __enter__(self):
+        super().__enter__()
+        return self.path
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        super().__exit__(exc_type, exc_val, exc_tb)
+
+
+class AppendContext(_Context):
+    """ A context manager used for every append method. """
+    def __init__(self, path):
+        super().__init__(path)
+
+    def __enter__(self):
+        super().__enter__()
+        self.path.copy_to_folder()
+        return self.temp_path
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.temp_path.rename(self.path.name(), overwrite=True)
+        super().__exit__(exc_type, exc_val, exc_tb)
+
+
+class Path_Operations:
     """ File operations methods for Path. """
     _suffixIO = {"plain_text": ("txt", "md", ""), "spreadsheet": ("tsv", "csv")}
     timeout_seconds = 5
     dead_lock_seconds = 3
 
-    def get_write_stream_path(self, overwrite):
-        """ Get a context manager for every write method to make it DRY. """
-        return _Write_Stream(self, overwrite)
-
     def write(self, content=None, overwrite=False):
         """ Write to this Path.
 
             :param generalfile.Path self:
-            :param content:
-            :param overwrite: """
+            :param any content: Serializable by JSON
+            :param overwrite: Whether to allow overwriting or not. """
         content_json = json.dumps(content)
-        with self.get_write_stream_path(overwrite) as stream_path:
-            with open(str(stream_path), "w") as stream:
+        with WriteContext(self, overwrite=overwrite) as write_path:
+            with open(str(write_path), "w") as stream:
                 stream.write(content_json)
             return content_json
 
@@ -59,7 +95,7 @@ class _Path_Operations:
         """ Write to this Path.
 
             :param generalfile.Path self: """
-        with self.lock():
+        with ReadContext(self):
             with open(str(self), "r") as file_stream:
                 return json.loads(file_stream.read())
 
@@ -67,12 +103,14 @@ class _Path_Operations:
     def rename(self, name=None, stem=None, suffix=None, overwrite=False):
         """ Rename this single file or folder to anything.
 
+            TODO: Can we not just change signature to rename(self, new_path, overwrite=False) ?
+                Then just require parents to be same and just use path's with_* methods.
+
             :param generalfile.Path self:
             :param name:
             :param stem:
             :param suffix:
-            :param overwrite:
-            :return: """
+            :param overwrite: """
         new_path = self
         for key, value in {"stem": stem, "suffix": suffix, "name": name}.items():
             if value is not None:
@@ -86,6 +124,11 @@ class _Path_Operations:
             else:
                 self._path.rename(str(new_path))
 
+    def copy(self, new_path, overwrite=False):
+        # HERE ** Create a method to copy a file to it's own parent folder, only changing name
+        # Use this for AppendContext class
+        pass
+
     @deco_require_state(exists=True)
     def _copy_or_move(self, target_folder_path, overwrite, method):
         """ :param generalfile.Path self: """
@@ -96,7 +139,6 @@ class _Path_Operations:
         self_parent_path = self.absolute().parent() if self.is_file() else self.absolute()
         if self_parent_path == target_folder_path:
             return
-
 
         if self.is_file():
             filepaths = (self,)
@@ -123,7 +165,7 @@ class _Path_Operations:
             if method == "move" and self.is_folder():
                 self.delete()
 
-    def copy(self, target_folder_path, overwrite=False):
+    def copy_to_folder(self, target_folder_path, overwrite=False):
         """ Copy files inside given folder or file to anything except it's own parent.
 
             :param generalfile.Path self:
