@@ -1,2 +1,5 @@
 
-from generalfile.base.classfile import File, Path, PathList
+from generalfile.path import Path
+from generalfile.errors import *
+
+Path.get_lock_dir().create_folder()
