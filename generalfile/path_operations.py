@@ -65,7 +65,7 @@ class AppendContext(_Context):
 
     def __enter__(self):
         super().__enter__()
-        self.path.copy_to_folder()
+        self.path.copy(self.temp_path)
         return self.temp_path
 
     def __exit__(self, exc_type, exc_val, exc_tb):
@@ -80,7 +80,7 @@ class Path_Operations:
     dead_lock_seconds = 3
 
     def write(self, content=None, overwrite=False):
-        """ Write to this Path.
+        """ Write to this Path with JSON.
 
             :param generalfile.Path self:
             :param any content: Serializable by JSON
@@ -92,7 +92,7 @@ class Path_Operations:
             return content_json
 
     def read(self):
-        """ Write to this Path.
+        """ Read this Path with JSON.
 
             :param generalfile.Path self: """
         with ReadContext(self):
@@ -124,10 +124,32 @@ class Path_Operations:
             else:
                 self._path.rename(str(new_path))
 
+    @deco_require_state(exists=True)
     def copy(self, new_path, overwrite=False):
-        # HERE ** Create a method to copy a file to it's own parent folder, only changing name
-        # Use this for AppendContext class
-        pass
+        """
+        Copy a file or folder next to itself with a new name.
+        If target exists then it is removed first, so it cannot add to existing folders, use `copy_to_folder` for that.
+
+        :param generalfile.Path self:
+        :param generalfile.Path new_path:
+        :param overwrite:
+        :return:
+        """
+        new_path = self.with_name(self.Path(new_path).name())
+
+        with self.lock(new_path):
+            if new_path.exists():
+                if overwrite:
+                    new_path.delete()
+                else:
+                    raise AttributeError(f"Target path '{new_path}' exists but overwrite is `False`.")
+            self._copy_file_or_folder(new_path=new_path)
+
+    def _copy_file_or_folder(self, new_path):
+        if self.is_file():
+            shutil.copy(str(self), str(new_path), follow_symlinks=False)  # Can clobber
+        else:
+            copy_tree(str(self), str(new_path))
 
     @deco_require_state(exists=True)
     def _copy_or_move(self, target_folder_path, overwrite, method):
@@ -154,10 +176,7 @@ class Path_Operations:
             for path, target in zip(filepaths, target_filepaths):
 
                 if method == "copy":
-                    if path.is_file():
-                        shutil.copy(str(path), str(target), follow_symlinks=False)  # Can clobber
-                    else:
-                        copy_tree(str(path), str(target))
+                    self.__class__._copy_file_or_folder(path, target)  # Same as path._copy_file_or_folder(target)
 
                 elif method == "move":
                     shutil.move(str(path), str(target))  # Can clobber if full target path is specified like we do
@@ -166,7 +185,7 @@ class Path_Operations:
                 self.delete()
 
     def copy_to_folder(self, target_folder_path, overwrite=False):
-        """ Copy files inside given folder or file to anything except it's own parent.
+        """ Copy file or files inside given folder to anything except it's own parent, use `copy` for that.
 
             :param generalfile.Path self:
             :param target_folder_path:

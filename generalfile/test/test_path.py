@@ -6,14 +6,14 @@ from generalfile.test.setup_workdir import setup_workdir
 from generalfile.errors import *
 
 
-
-
-class FileTest(unittest.TestCase):
+class PathTest(unittest.TestCase):
     def setUp(self):
         """Set working dir and clear folder. Set path delimiter to '/' for testing."""
         Path.path_delimiter = "/"
         setup_workdir()
 
+
+class FileTest(PathTest):
     def test_path(self):
         self.assertRaises(InvalidCharacterError, Path, "hello:there")
         self.assertRaises(InvalidCharacterError, Path, "hello<")
@@ -236,6 +236,17 @@ class FileTest(unittest.TestCase):
         self.assertTrue(Path("folder2/hello.test").exists())
 
     def test_copy(self):
+        Path("folder/test.txt").write()
+        Path("folder/test.txt").copy("foo.txt")
+        self.assertEqual(True, Path("folder/foo.txt").exists())
+
+        Path("folder").copy("new")
+        self.assertEqual(True, Path("new/foo.txt").exists())
+
+        Path("new/foo.txt").copy("new/bar.txt")
+        self.assertEqual(True, Path("new/bar.txt").exists())
+
+    def test_copy_to_folder(self):
         Path("folder/test.txt").write()
         Path("folder/test2.txt").write()
 

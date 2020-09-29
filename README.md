@@ -2,6 +2,7 @@
 File manager for intuitive cross-platform compatability with gathered useful functionality.
 Generalfile operates on the middle ground of all relevant operating systems.
 E.g. Windows being case insensitive -> Don't allow paths with same name but differeing case.
+
 Uses a race condition safe lock mechanism for all file operations.
 
 ## Installation

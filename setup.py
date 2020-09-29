@@ -14,9 +14,9 @@ setup(
     long_description_content_type="text/markdown",
     author='Rickard "Mandera" Abraham',
     url="https://github.com/Mandera/generalfile",
-    version="1.0.4",
+    version="2.0.0",
     description=(
-        "Easily manage files."
+        "Easily manage files cross platform."
     ),
     packages=find_packages(),
     install_requires=["generallibrary", "send2trash", "wheel", "appdirs"],
@@ -24,6 +24,8 @@ setup(
     classifiers=[
         "Operating System :: Microsoft :: Windows :: Windows 7",
         "Operating System :: Microsoft :: Windows :: Windows 10",
+        "Operating System :: POSIX :: Linux",
+        "Operating System :: MacOS",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Development Status :: 2 - Pre-Alpha",

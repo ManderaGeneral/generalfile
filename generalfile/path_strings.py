@@ -159,7 +159,8 @@ class Path_Strings:
         """ Get a new Path with new name which is stem + suffix.
 
             :param name: Name.
-            :param generalfile.Path self: """
+            :param generalfile.Path self:
+            :rtype: generalfile.Path """
         return self.Path(self._path.with_name(str(name)))
 
     def stem(self):
@@ -172,7 +173,8 @@ class Path_Strings:
         """ Get a new Path with new stem which is name without last suffix.
 
             :param stem: New stem.
-            :param generalfile.Path self: """
+            :param generalfile.Path self:
+            :rtype: generalfile.Path """
         return self.Path(self.with_name(f"{stem}{self.suffix()}"))
 
     def true_stem(self):
@@ -185,7 +187,8 @@ class Path_Strings:
         """ Get a new Path with new stem which is name without any suffixes.
 
             :param true_stem: New true stem.
-            :param generalfile.Path self: """
+            :param generalfile.Path self:
+            :rtype: generalfile.Path """
         return self.Path(self.with_name(f"{true_stem}{''.join(self.suffixes())}"))
 
     def suffix(self):
@@ -201,7 +204,8 @@ class Path_Strings:
 
             :param generalfile.Path self:
             :param suffix: New suffix, can be `None`.
-            :param index: Suffix index to alter. """
+            :param index: Suffix index to alter.
+            :rtype: generalfile.Path """
 
         suffixes = self.suffixes()
 
@@ -236,5 +240,6 @@ class Path_Strings:
         """ Get a new Path with a new list of suffixes.
 
             :param list or tuple suffixes: New list of suffixes.
-            :param generalfile.Path self: """
+            :param generalfile.Path self:
+            :rtype: generalfile.Path """
         return self.Path(self.with_name(f"{self.true_stem()}{''.join(suffixes)}"))
