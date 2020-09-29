@@ -20,7 +20,7 @@ setup(
     ),
     packages=find_packages(),
     install_requires=["generallibrary", "send2trash", "wheel", "appdirs"],
-    extras_require={"spreadsheet": "pandas"},
+    extras_require={"spreadsheet": "pandas"},  # Add to travis' `pip install`
     classifiers=[
         "Operating System :: Microsoft :: Windows :: Windows 7",
         "Operating System :: Microsoft :: Windows :: Windows 10",
