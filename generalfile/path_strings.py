@@ -69,7 +69,8 @@ class Path_Strings:
         if self.is_absolute():
             return self
         else:
-            return self.Path(self._path.absolute())
+            return self.get_working_dir() / self
+            # return self.Path(self._path.absolute())
 
     def relative(self, base=None):
         """ Get new Path as relative.

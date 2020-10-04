@@ -60,7 +60,7 @@ class _Lock:
             raise AttributeError(f"A file stream is already opened for '{self.path}'.")
 
         try:
-            self.lock_file_stream = open(str(self.path.get_lock_path()), "x")
+            self.lock_file_stream = open(str(self.path.get_lock_path()), "w")
         except FileExistsError:
             return False
 
@@ -82,7 +82,7 @@ class _Lock:
         path_absolute = self.path.absolute()
         for alternative_path in self.path.get_lock_dir().get_paths_in_folder():
 
-            path = alternative_path.get_path_from_alternative()  # HERE **
+            path = alternative_path.get_path_from_alternative()
             if path_absolute.startswith(path) or path.startswith(path_absolute):
                 yield path
 

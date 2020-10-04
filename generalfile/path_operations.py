@@ -78,6 +78,7 @@ class Path_Operations:
     _suffixIO = {"plain_text": ("txt", "md", ""), "spreadsheet": ("tsv", "csv")}
     timeout_seconds = 5
     dead_lock_seconds = 3
+    _working_dir = None
 
     def write(self, content=None, overwrite=False):
         """ Write to this Path with JSON.
@@ -319,16 +320,29 @@ class Path_Operations:
     @classmethod
     def get_working_dir(cls):
         """ Get current working folder as a new Path.
+            Falls back to last seen working_dir if it doesn't exist. (Only seems to raise Error on posix)
 
             :param generalfile.Path cls: """
-        return cls.Path(pathlib.Path.cwd())
+        # return cls.Path(pathlib.Path.cwd())
+
+        try:
+            working_dir = cls.Path(pathlib.Path.cwd())
+        except FileNotFoundError as e:
+            if cls._working_dir is None:
+                raise e
+            else:
+                return cls._working_dir
+        else:
+            cls._working_dir = working_dir
+            return working_dir
 
     def set_working_dir(self):
         """ Set current working folder.
 
             :param generalfile.Path self: """
         self.create_folder()
-        os.chdir(str(self.absolute()))
+        self._working_dir = self.absolute()
+        os.chdir(str(self._working_dir))
 
     @deco_preserve_working_dir
     @deco_return_if_removed(content=False)
@@ -351,6 +365,7 @@ class Path_Operations:
         with self.lock():
             send2trash(str(self))
 
+    @deco_preserve_working_dir
     @deco_return_if_removed(content=True)
     def delete_folder_content(self):
         """ Delete a file or folder and then create an empty folder in it's place.
@@ -359,6 +374,7 @@ class Path_Operations:
         self.delete()
         self.create_folder()
 
+    @deco_preserve_working_dir
     @deco_return_if_removed(content=True)
     def trash_folder_content(self):
         """ Trash a file or folder and then create an empty folder in it's place.
