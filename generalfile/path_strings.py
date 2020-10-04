@@ -22,6 +22,10 @@ class Path_Strings:
         """ :param generalfile.Path self: """
         return hash(str(self))
 
+    def __getitem__(self, item):
+        """ :param generalfile.Path self: """
+        return self.Path(self._str_path.__getitem__(item))
+
     def get_replaced_alternative_characters(self):
         """ :param generalfile.Path self: """
         return {
@@ -33,7 +37,8 @@ class Path_Strings:
     def get_alternative_path(self):
         """ Get path using alternative delimiter and alternative root for windows.
 
-            :param generalfile.Path self: """
+            :param generalfile.Path self:
+            :rtype: generalfile.Path """
         path = str(self.absolute())
         for char, alternative in self.get_replaced_alternative_characters().items():
             path = path.replace(char, alternative)
@@ -48,7 +53,8 @@ class Path_Strings:
     def get_path_from_alternative(self):
         """ Get path from an alternative representation with or without leading lock dir.
 
-            :param generalfile.Path self: """
+            :param generalfile.Path self:
+            :rtype: generalfile.Path """
 
         path = str(self.remove_start(self.get_lock_dir()))
         for char, alternative in self.get_replaced_alternative_characters().items():
@@ -58,7 +64,8 @@ class Path_Strings:
     def absolute(self):
         """ Get new Path as absolute.
 
-            :param generalfile.Path self: """
+            :param generalfile.Path self:
+            :rtype: generalfile.Path """
         if self.is_absolute():
             return self
         else:
@@ -93,42 +100,55 @@ class Path_Strings:
 
             :param generalfile.Path self:
             :param str or Path path:"""
-        return str(self).startswith(str(self.Path(path)))
+        path = self.Path(path)
+        return str(self).startswith(str(path))
 
     def endswith(self, path):
         """ Get whether this Path ends with given string.
 
             :param generalfile.Path self:
             :param str or Path path:"""
-        return str(self).endswith(str(self.Path(path)))
+        path = self.Path(path)
+        return str(self).endswith(str(path))
 
     def remove_start(self, path):
         """ Remove a string from the start of this Path.
 
             :param generalfile.Path self:
             :param str or Path path:"""
+        path = self.Path(path)
         str_path = str(path)
         if not self.startswith(str_path):
             return self
         else:
-            return self.Path(str(self)[len(str_path):])
+            new_path = self.Path(str(self)[len(str_path):])
+            if str(new_path).startswith(path.path_delimiter):
+                return new_path[1:]
+            else:
+                return new_path
 
     def remove_end(self, path):
         """ Remove a string from the end of this Path.
 
             :param generalfile.Path self:
             :param str or Path path:"""
+        path = self.Path(path)
         str_path = str(path)
         if not self.endswith(str_path):
             return self
         else:
-            return self.Path(str(self)[:-len(str_path)])
+            new_path = self.Path(str(self)[:-len(str_path)])
+            if str(new_path).endswith(path.path_delimiter):
+                return new_path[:-1]
+            else:
+                return new_path
 
     def same_destination(self, path):
         """ See if two paths point to the same destination.
 
             :param generalfile.Path self:
             :param str or Path path:"""
+        path = self.Path(path)
         return self.absolute() == path.absolute()
 
     def parent(self, index=0):

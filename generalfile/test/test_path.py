@@ -133,6 +133,9 @@ class FileTest(PathTest):
         self.assertEqual(Path("test.txt"), Path("folder/test.txt").remove_start("folder"))
         self.assertEqual(Path("folder/test.txt"), Path("folder/test.txt").remove_start("test"))
 
+        if Path.verInfo.pathRootIsDelimiter:
+            self.assertEqual(Path("test.txt"), Path("folder/test.txt").remove_start("folder"))
+
     def test_remove_end(self):
         self.assertEqual(Path(), Path("test.txt").remove_end("test.txt"))
         self.assertEqual(Path("test"), Path("test.txt").remove_end(".txt"), "test")
@@ -195,6 +198,7 @@ class FileTest(PathTest):
         path = Path("folder")
         self.assertEqual(True, path.same_destination(Path() / "folder"))
         self.assertEqual(True, path.same_destination(path.absolute()))
+        self.assertEqual(True, path.same_destination("folder"))
 
     def test_write(self):
         self.assertEqual('"foobar"', Path("test.txt").write("foobar"))

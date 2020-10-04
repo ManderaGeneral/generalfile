@@ -131,7 +131,7 @@ class Path_Operations:
         If target exists then it is removed first, so it cannot add to existing folders, use `copy_to_folder` for that.
 
         :param generalfile.Path self:
-        :param generalfile.Path new_path:
+        :param generalfile.Path or str new_path:
         :param overwrite:
         :return:
         """

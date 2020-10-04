@@ -82,7 +82,7 @@ class _Lock:
         path_absolute = self.path.absolute()
         for alternative_path in self.path.get_lock_dir().get_paths_in_folder():
 
-            path = alternative_path.get_path_from_alternative()
+            path = alternative_path.get_path_from_alternative()  # HERE **
             if path_absolute.startswith(path) or path.startswith(path_absolute):
                 yield path
 
