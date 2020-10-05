@@ -158,7 +158,8 @@ class Path_Strings:
 
             :param generalfile.Path self:
             :param index: Which parent, 0 is direct parent.
-            :raises IndexError: If index doesn't exist.  """
+            :raises IndexError: If index doesn't exist.
+            :rtype: generalfile.Path """
         strParent = str(self._path.parents[index])
         if strParent == ".":
             strParent = ""

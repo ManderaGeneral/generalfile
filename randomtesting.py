@@ -18,11 +18,16 @@ from generalfile.test.setup_workdir import setup_workdir
 # print(__file__)
 # print(Path(__file__) / "tests")
 
+setup_workdir()
 
-path = Path("hello").absolute()
-path.set_working_dir()
-path.delete_folder_content()
-print(Path.get_working_dir())
+Path("hello.txt").write("asdf")
+
+print(Path("hello.txt").seconds_since_modified())
+
+# path = Path("hello").absolute()
+# path.set_working_dir()
+# path.delete_folder_content()
+# print(Path.get_working_dir())
 
 
 # TODO: get_working_dir raises error cus it doesn't exist in test_absolute

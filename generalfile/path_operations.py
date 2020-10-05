@@ -16,7 +16,7 @@ from generalfile.decorators import deco_require_state, deco_preserve_working_dir
 class _Context:
     def __init__(self, path):
         self.path = path
-        self.temp_path = self.path.with_suffix(".temp")
+        self.temp_path = self.path.with_suffix(".tmp")
         self.lock = self.path.lock()
 
     def __enter__(self):
@@ -33,6 +33,7 @@ class WriteContext(_Context):
         self.overwrite = overwrite
 
     def __enter__(self):
+        """ :rtype: generalfile.Path """
         if not self.overwrite and self.path.exists():
             raise FileExistsError(f"Path '{self.path}' already exists and overwrite is 'False'.")
 
@@ -88,8 +89,15 @@ class Path_Operations:
             :param overwrite: Whether to allow overwriting or not. """
         content_json = json.dumps(content)
         with WriteContext(self, overwrite=overwrite) as write_path:
+            # write_path = write_path.absolute()
+            # try:
             with open(str(write_path), "w") as stream:
                 stream.write(content_json)
+                # stream.flush()
+                # os.fsync(stream.fileno())
+            # except Exception as e:
+            #     print(write_path, write_path.absolute(), write_path.get_working_dir())
+            #     raise e
             return content_json
 
     def read(self):
