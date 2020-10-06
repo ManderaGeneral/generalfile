@@ -36,12 +36,12 @@ class WriteContext(_Context):
         """ :rtype: generalfile.Path """
         if not self.overwrite and self.path.exists():
             raise FileExistsError(f"Path '{self.path}' already exists and overwrite is 'False'.")
-
         super().__enter__()
         self.path.parent().create_folder()
         return self.temp_path
 
     def __exit__(self, exc_type, exc_val, exc_tb):
+        print(self.temp_path.owns_lock)
         self.temp_path.rename(self.path.name(), overwrite=True)
         super().__exit__(exc_type, exc_val, exc_tb)
 
@@ -379,8 +379,8 @@ class Path_Operations:
         """ Delete a file or folder and then create an empty folder in it's place.
 
             :param generalfile.Path self: """
-        self.delete()
-        self.create_folder()
+        for path in self.get_paths_in_folder():
+            path.delete()
 
     @deco_preserve_working_dir
     @deco_return_if_removed(content=True)
@@ -388,8 +388,8 @@ class Path_Operations:
         """ Trash a file or folder and then create an empty folder in it's place.
 
             :param generalfile.Path self: """
-        self.trash()
-        self.create_folder()
+        for path in self.get_paths_in_folder():
+            path.trash()
 
     @deco_require_state(is_file=True)
     def seconds_since_creation(self):

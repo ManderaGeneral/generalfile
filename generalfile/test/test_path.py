@@ -371,10 +371,11 @@ class FileTest(PathTest):
         # self.assertNotEqual(methods[0](), methods[1]())
 
     def test_threads(self):
+        from generallibrary import sleep
         import multiprocessing as mp
         threads = []
         queue = mp.Queue()
-        count = 10
+        count = 2
         for i in range(count):
             threads.append(mp.Process(target=threadTest, args=(queue, i)))
         for thread in threads:

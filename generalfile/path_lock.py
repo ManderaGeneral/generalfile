@@ -60,11 +60,11 @@ class _Lock:
             raise AttributeError(f"A file stream is already opened for '{self.path}'.")
 
         try:
-            self.lock_file_stream = open(str(self.path.get_lock_path()), "w")
+            self.lock_file_stream = open(str(self.path.get_lock_path()), "w")  # HERE ** Has to be X, fix owns_lock after
         except FileExistsError:
             return False
 
-        self.lock_file_stream.write("hello")
+        self.lock_file_stream.write("foo")
         return True
 
     def _close_and_remove_lock(self):
@@ -72,7 +72,7 @@ class _Lock:
             raise AttributeError(f"A file stream is not opened for '{self.path}'.")
 
         self.lock_file_stream.close()
-        self.path.get_lock_path().delete()
+        # self.path.get_lock_path().delete()
 
     def _affecting_locks(self):
         """ Returns absolute paths in list pointing to path it's locking.
@@ -101,9 +101,12 @@ class Path_ContextManager:
     @staticmethod
     def _create_context_manager(path, *other_paths):
         """ :param Path path: """
+        print(path)
         if path.startswith(path.get_lock_dir()) or path.owns_lock:  # If path is inside lock dir OR path already owns lock
+            print("fake")
             return EmptyContext()
         else:
+            print("real")
             return _Lock(path, *other_paths)  # Create real lock
 
     def lock(self, *other_paths):

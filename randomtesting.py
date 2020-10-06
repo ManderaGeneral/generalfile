@@ -4,31 +4,23 @@ from generalfile import Path
 from generalfile.test.setup_workdir import setup_workdir
 
 
-# print(Path.get_lock_dir())
-
-# with Path("helo").lock():
-# with Path("/helo.txt").lock():
-
-
-# with Path("/home/Mandera/python/generalfile/test/tests").lock():
-#     print(5)
 
 # setup_workdir()
+# Path("hello.txt").write("asdf")
 
-# print(__file__)
-# print(Path(__file__) / "tests")
-
-setup_workdir()
-
-Path("hello.txt").write("asdf")
-
-print(Path("hello.txt").seconds_since_modified())
-
-# path = Path("hello").absolute()
-# path.set_working_dir()
-# path.delete_folder_content()
-# print(Path.get_working_dir())
+# print(Path("hello.txt").seconds_since_modified())
 
 
-# TODO: get_working_dir raises error cus it doesn't exist in test_absolute
+
+with Path("hello").lock():
+    with Path("hello").lock():
+        print(5)
+
+a = open("test.txt", "x")
+b = open("test.txt", "x")
+
+a.close()
+b.close()
+
+
 # TODO: Doesn't seem to able to remove dead locks
