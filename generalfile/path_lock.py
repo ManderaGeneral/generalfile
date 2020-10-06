@@ -10,18 +10,19 @@ class _Lock:
             Make sure only locked by self.
         A lock is inactive if it can be removed, as there's no Lock holding it's file stream.
         """
-    def __init__(self, path, *other_paths):
+    def __init__(self, path):
         self.path = path
-        self.all_abs_paths = [path.Path(p).absolute() for p in other_paths + (path, )]
         self.lock_file_stream = None
 
     def __enter__(self):
         self._attempt_lock_creation()
-        self.path.owns_lock = True
+
+        self.path.locked_paths.append(self.path)
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self._close_and_remove_lock()
-        self.path.owns_lock = False
+
+        self.path.locked_paths.remove(self.path)
 
     def _attempt_lock_creation(self):
         path_absolute = self.path.absolute()
@@ -60,7 +61,7 @@ class _Lock:
             raise AttributeError(f"A file stream is already opened for '{self.path}'.")
 
         try:
-            self.lock_file_stream = open(str(self.path.get_lock_path()), "w")  # HERE ** Has to be X, fix owns_lock after
+            self.lock_file_stream = open(str(self.path.get_lock_path()), "x")
         except FileExistsError:
             return False
 
@@ -72,7 +73,7 @@ class _Lock:
             raise AttributeError(f"A file stream is not opened for '{self.path}'.")
 
         self.lock_file_stream.close()
-        # self.path.get_lock_path().delete()
+        self.path.get_lock_path().delete(error=False)
 
     def _affecting_locks(self):
         """ Returns absolute paths in list pointing to path it's locking.
@@ -87,29 +88,32 @@ class _Lock:
                 yield path
 
     def _is_locked_externally(self, affecting_locks=None):
-        for path in self._affecting_locks() if affecting_locks is None else affecting_locks:
-            if path not in self.all_abs_paths:
+        """ See if this lock's path is locked by an external process. """
+        if affecting_locks is None:
+            affecting_locks = self._affecting_locks()
+
+        for path in affecting_locks:
+            if path not in self.path.locked_paths:
                 return True
         return False
 
 
 class Path_ContextManager:
     """ Context manager methods for Path. """
-    def __init__(self):
-        self.owns_lock = False
+
+    locked_paths = []
 
     @staticmethod
     def _create_context_manager(path, *other_paths):
         """ :param Path path: """
-        print(path)
-        if path.startswith(path.get_lock_dir()) or path.owns_lock:  # If path is inside lock dir OR path already owns lock
-            print("fake")
-            return EmptyContext()
+        path_is_lock = path.startswith(path.get_lock_dir())
+        path_already_locked_by_this_process = path in path.locked_paths
+        if path_is_lock or path_already_locked_by_this_process:
+            return EmptyContext()  # Create fake lock
         else:
-            print("real")
             return _Lock(path, *other_paths)  # Create real lock
 
-    def lock(self, *other_paths):
+    def lock(self, *other_paths):  # HERE ** remove args
         """ Create a lock for this path unless path is inside `lock dir`.
             Optionally supply additional paths to prevent them from interfering as well as creating locks for them too.
 
