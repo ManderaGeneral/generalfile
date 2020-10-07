@@ -27,7 +27,9 @@ class Path_Strings:
         return self.Path(self._str_path.__getitem__(item))
 
     def get_replaced_alternative_characters(self):
-        """ :param generalfile.Path self: """
+        """ Get a dictionary of all characters that are replaced for the alternative path.
+
+            :param generalfile.Path self: """
         return {
             self.path_delimiter: "&#47;",
             ":": "&#58",

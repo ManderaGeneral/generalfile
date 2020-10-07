@@ -1,16 +1,10 @@
 
-from generalfile import Path
 
-from generalfile.test.setup_workdir import setup_workdir
+from generallibrary import getLocalFeaturesAsMD
 
-
-
-# setup_workdir()
+from generalfile import *
 
 
+# getLocalFeaturesAsMD(locals(), "generalfile")
+getLocalFeaturesAsMD({k: getattr(Path, k, None) for k in dir(Path)}, "generalfile")
 
-
-
-
-# TODO: Add locked_paths to Path cls, remove _is_locked_externally, remove owns_lock, remove *args for lock()
-# TODO: Doesn't seem to able to remove dead locks

@@ -116,6 +116,8 @@ class Path_ContextManager:
     def lock(self, *other_paths):
         """ Create a lock for this path unless path is inside `lock dir`.
             Optionally supply additional paths to create locks for them too.
+            Locks are stored in a list Path's cls, so only locks outside of this scope are respected.
+            That allows us to automatically create fake recursive locks, where all obey the first outer lock.
 
             :param generalfile.Path self: """
         return self._create_context_manager(self.absolute(), *other_paths)

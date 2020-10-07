@@ -134,8 +134,7 @@ class Path_Operations:
 
     @deco_require_state(exists=True)
     def copy(self, new_path, overwrite=False):
-        """
-        Copy a file or folder next to itself with a new name.
+        """ Copy a file or folder next to itself with a new name.
         If target exists then it is removed first, so it cannot add to existing folders, use `copy_to_folder` for that.
 
         :param generalfile.Path self:

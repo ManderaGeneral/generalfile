@@ -14,13 +14,13 @@ setup(
     long_description_content_type="text/markdown",
     author='Rickard "Mandera" Abraham',
     url="https://github.com/Mandera/generalfile",
-    version="2.0.0",
+    version="2.1.0",
     description=(
         "Easily manage files cross platform."
     ),
     packages=find_packages(),
     install_requires=["generallibrary", "send2trash", "wheel", "appdirs"],
-    extras_require={"spreadsheet": "pandas"},  # Add to travis' `pip install`
+    extras_require={"spreadsheet": "pandas"},  # [ahsdkjlfhaslkjhdash]
     classifiers=[
         "Operating System :: Microsoft :: Windows :: Windows 7",
         "Operating System :: Microsoft :: Windows :: Windows 10",
