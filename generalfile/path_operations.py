@@ -41,7 +41,6 @@ class WriteContext(_Context):
         return self.temp_path
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        print(self.temp_path.owns_lock)
         self.temp_path.rename(self.path.name(), overwrite=True)
         super().__exit__(exc_type, exc_val, exc_tb)
 
@@ -354,15 +353,20 @@ class Path_Operations:
 
     @deco_preserve_working_dir
     @deco_return_if_removed(content=False)
-    def delete(self):
+    def delete(self, error=True):  # TODO: Add this error parameter for more methods
         """ Delete a file or folder.
 
+            :param error:
             :param generalfile.Path self: """
         with self.lock():
-            if self.is_file():
-                os.remove(str(self))
-            elif self.is_folder():
-                shutil.rmtree(str(self), ignore_errors=True)
+            try:
+                if self.is_file():
+                    os.remove(str(self))
+                elif self.is_folder():
+                    shutil.rmtree(str(self), ignore_errors=True)
+            except Exception as e:
+                if error:
+                    raise e
 
     @deco_preserve_working_dir
     @deco_return_if_removed(content=False)
