@@ -14,7 +14,7 @@ setup(
     long_description_content_type="text/markdown",
     author='Rickard "Mandera" Abraham',
     url="https://github.com/Mandera/generalfile",
-    version="2.1.1",
+    version="2.1.2",
     description=(
         "Easily manage files cross platform."
     ),
