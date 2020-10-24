@@ -82,3 +82,7 @@ Path("newfolder").delete()  # Delete entire folder
 with Path("foo/bar.txt").lock():  # Recursively lock a file or even a folder which doesn't have to exist.
     pass  # The lock is created in a seperate cache folder, so you're free to do whatever you want in here
 ```
+
+## TODO
+ * Optional dependency: .npy for Numpy
+ * Tell user to `pip install generalfile[spreadsheet]` instead of `requires pandas` - Probably update generallibrary

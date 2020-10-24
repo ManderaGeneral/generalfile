@@ -328,7 +328,8 @@ class Path_Operations:
         """ Get current working folder as a new Path.
             Falls back to last seen working_dir if it doesn't exist. (Only seems to raise Error on posix)
 
-            :param generalfile.Path cls: """
+            :param generalfile.Path cls:
+            :rtype: generalfile.Path """
         # return cls.Path(pathlib.Path.cwd())
 
         try:
