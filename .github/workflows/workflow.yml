@@ -14,7 +14,7 @@ jobs:
         echo a
 
   bar:
-    needs: foo.first
+    needs: foo/first
     runs-on: ubuntu-latest
     steps:
     - name: second
