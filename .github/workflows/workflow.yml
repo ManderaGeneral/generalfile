@@ -8,17 +8,15 @@ jobs:
 
   foo:
     runs-on: ubuntu-latest
-    outputs:
-      status: ${{ steps.first.conclusion }}
     steps:
       - id: first
         run: |
-          exit random
+          echo '::set-output name=HELLO::there'
 
   bar:
     needs: foo
     runs-on: ubuntu-latest
-    if: needs.foo.outputs.status == 'success'
+    if: needs.foo.outputs.HELLO == 'there'
     steps:
     - name: second
       run: |
