@@ -13,7 +13,7 @@ jobs:
     steps:
       - id: first
         run: |
-          echo a
+          exit random
 
   bar:
     needs: foo
