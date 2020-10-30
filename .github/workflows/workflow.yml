@@ -27,14 +27,10 @@ jobs:
           git config --global user.email "rickard.abraham@gmail.com"
           git config --global user.name Mandera
 
-      - name: Clone shared repo
-        run: |
-          cd ..
-          git clone https://Mandera:${{ secrets.GIT_PASSWORD }}@github.com/ManderaGeneral/shared.git
-
       - name: Merge
         run: |
           cd ..
+          git clone https://Mandera:${{ secrets.GIT_PASSWORD }}@github.com/ManderaGeneral/shared.git
           cp -r shared/generalasterisk/. ${{ github.event.repository.name }}
           cd ${{ github.event.repository.name }}
 
