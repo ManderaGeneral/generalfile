@@ -5,6 +5,8 @@ on:
     branches: master
 
 jobs:
+  runs-on: ubuntu-latest
+
   foo:
     outputs:
       status: ${{ steps.first.conclusion }}
