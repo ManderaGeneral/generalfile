@@ -48,7 +48,7 @@ jobs:
 
   unittest:
     needs: sharedmerge
-    if: needs.sharedmerge.outputs.changed == "false" && !contains(github.event.head_commit.message, "[CI SKIP]")
+    if: needs.sharedmerge.outputs.changed == 'false' && !contains(github.event.head_commit.message, '[CI SKIP]')
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
