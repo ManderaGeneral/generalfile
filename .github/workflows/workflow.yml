@@ -14,10 +14,10 @@ jobs:
         echo a
 
   bar:
-    needs: foo
+    needs: foo.first
     runs-on: ubuntu-latest
     steps:
-    - name: first
+    - name: second
       run: |
         echo b
 
