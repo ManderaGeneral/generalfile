@@ -6,16 +6,16 @@ on:
 
 jobs:
   foo:
-    runs-on: ubuntu-latest
+    outputs:
+      status: ${{ steps.first.conclusion }}
     steps:
-    - if: "0"
-      name: first
-      run: |
-        echo a
+      - id: first
+        run: |
+          echo a
 
   bar:
-    needs: foo/first
-    runs-on: ubuntu-latest
+    needs: foo
+    if: needs.foo.outputs.status == 'success'
     steps:
     - name: second
       run: |
