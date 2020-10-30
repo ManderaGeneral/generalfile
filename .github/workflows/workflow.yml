@@ -7,6 +7,8 @@ on:
 jobs:
 
   foo:
+    outputs:
+      HELLO: test
     runs-on: ubuntu-latest
     steps:
       - id: first
