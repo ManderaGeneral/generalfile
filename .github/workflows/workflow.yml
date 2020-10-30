@@ -30,12 +30,11 @@ jobs:
       - name: Clone shared repo
         run: |
           cd ..
-          ls
           git clone https://Mandera:${{ secrets.GIT_PASSWORD }}@github.com/ManderaGeneral/shared.git
 
       - name: Merge
         run: |
-          ls
+          cd ..
           cp -r shared/generalasterisk/. ${{ github.event.repository.name }}
           cd ${{ github.event.repository.name }}
 
