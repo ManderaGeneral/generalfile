@@ -20,6 +20,8 @@ jobs:
           python-version: 3.7
 
       - uses: actions/checkout@v2
+        with:
+          - token: ${{ secrets.ACTIONS_TOKEN }}
 
       - name: Setup git
         run: |
