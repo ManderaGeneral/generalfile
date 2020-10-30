@@ -6,7 +6,7 @@ on:
 
 jobs:
   foo:
-    runs-on: linux-latest
+    runs-on: ubuntu-latest
     steps:
     - if: "0"
       name: first
@@ -15,7 +15,7 @@ jobs:
 
   bar:
     needs: foo
-    runs-on: linux-latest
+    runs-on: ubuntu-latest
     steps:
     - name: first
       run: |
