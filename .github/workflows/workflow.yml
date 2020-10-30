@@ -4,51 +4,17 @@
 # Create artifact with metadata
 # Publish to PyPI if new version
 
-
-name: Shared merge, unittests and publish
+name: UnitTest and Publish
 
 on:
   push:
     branches: master
 
+# HERE ** Merge from shared
 jobs:
-  sharedmerge:
-    outputs:
-      changed: ${{ steps.merge.outputs.changed }}
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          token: ${{ secrets.ACTIONS_TOKEN }}
-
-      - name: Setup git
-        run: |
-          sudo apt install git
-          git config --global user.email "rickard.abraham@gmail.com"
-          git config --global user.name Mandera
-
-      - name: Merge and push again
-        id: merge
-        run: |
-          cd ..
-          git clone https://Mandera:${{ secrets.GIT_PASSWORD }}@github.com/ManderaGeneral/shared.git
-          cp -r shared/generalasterisk/. ${{ github.event.repository.name }}
-          cd ${{ github.event.repository.name }}
-
-          if [[ $(git status) != *"clean"* ]]; then
-            echo Package was not up to date so it will be updated
-            git add .
-            git commit -m "[CI] Automatically merging shared files" -m "${{ github.event.head_commit.message }}"
-            git push
-
-            echo '::set-output name=changed::true'
-          else
-            echo '::set-output name=changed::false'
-          fi
 
   unittest:
-    needs: sharedmerge
-    if: needs.sharedmerge.outputs.changed == 'false' && !contains(github.event.head_commit.message, '[CI SKIP]')
+    if: "!contains(github.event.head_commit.message, '[CI SKIP]')"
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
