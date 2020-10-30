@@ -5,9 +5,9 @@ on:
     branches: master
 
 jobs:
-  runs-on: ubuntu-latest
 
   foo:
+    runs-on: ubuntu-latest
     outputs:
       status: ${{ steps.first.conclusion }}
     steps:
@@ -17,6 +17,7 @@ jobs:
 
   bar:
     needs: foo
+    runs-on: ubuntu-latest
     if: needs.foo.outputs.status == 'success'
     steps:
     - name: second
