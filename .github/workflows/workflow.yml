@@ -43,6 +43,7 @@ jobs:
             git add .
             git commit -m "[CI] Automatically merging shared files" -m "${{ github.event.head_commit.message }}"
             git push
+          fi
 
   unittest:
     needs: sharedmerge
