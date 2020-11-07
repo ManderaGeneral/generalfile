@@ -53,7 +53,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        python-version: [3.7, 3.8]
+        python-version: [3.8, 3.9]
         os: [ubuntu-latest, windows-latest, macos-latest]
 
     steps:
@@ -82,7 +82,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: 3.7
+          python-version: 3.8
 
       - name: Install all my packages to get versions and dependents
         run: |
@@ -149,7 +149,18 @@ jobs:
           python setup.py sdist bdist_wheel
           twine upload dist/*
 
+          for x in {0..10}; do
+          pypi_versions=$(pip install ${{ github.event.repository.name }}== 2>&1) || :
+          if [[ $pypi_versions == *"${{ env.NEW_VERSION }}"* ]]; then
+          found_version=1
+          echo "Found new verson on PyPI!"
+          break
+          fi
+          echo "Couldn't find new version on PyPI, trying again in 30 seconds"
+          sleep 30
+          done
 
+          if [[ -v found_version ]]; then
           sudo apt install git
           git config --global user.email "rickard.abraham@gmail.com"
           git config --global user.name Mandera
@@ -161,6 +172,11 @@ jobs:
           git push
           cd ..
           done
+
+          else
+          echo "FAILING: Couldn't find new version on PyPI in time"
+          exit 1
+          fi
 
       - name: Version tag
         if: env.NEW_VERSION != env.OLD_VERSION
