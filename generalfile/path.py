@@ -4,7 +4,7 @@ import pathlib
 
 from generallibrary import VerInfo, initBases
 
-from generalfile.errors import *
+from generalfile.errors import InvalidCharacterError
 from generalfile.path_lock import Path_ContextManager
 from generalfile.path_operations import Path_Operations
 from generalfile.path_strings import Path_Strings
@@ -26,6 +26,21 @@ class Path(Path_ContextManager, Path_Operations, Path_Strings, Path_Spreadsheet)
     def __init__(self, path=None):
         self._str_path = self._scrub(str_path="" if path is None else str(path))
         self._path = pathlib.Path(self._str_path)
+
+    def __str__(self):
+        return self._str_path
+
+    def __repr__(self):
+        return self.__str__()
+
+    def __truediv__(self, other):
+        return self.Path(self._path / str(other))
+
+    def __eq__(self, other):
+        return str(self) == str(other)
+
+    def __hash__(self):
+        return hash(str(self))
 
     def _scrub(self, str_path):
         str_path = self._replace_delimiters(str_path=str_path)

@@ -9,7 +9,7 @@ import time
 
 from generallibrary import deco_cache
 
-from generalfile.errors import *
+from generalfile.errors import CaseSensitivityError
 from generalfile.decorators import deco_require_state, deco_preserve_working_dir, deco_return_if_removed
 
 

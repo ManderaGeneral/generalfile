@@ -3,7 +3,7 @@ import unittest
 
 from generalfile import Path
 from generalfile.test.setup_workdir import setup_workdir
-from generalfile.errors import *
+from generalfile.errors import InvalidCharacterError
 
 
 class PathTest(unittest.TestCase):

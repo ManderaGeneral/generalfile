@@ -114,11 +114,7 @@ class Path_Spreadsheet:
                 # TODO: Should probably support DataFrame and Series as well
 
                 :param obj: Iterable (Optionally inside another iterable) or a value for a single cell
-                :raises AttributeError: If obj is empty
                 """
-                if not obj and obj != 0:
-                    raise AttributeError("obj is empty")
-
                 with AppendContext(self.path) as append_path:
                     with open(str(append_path), "a") as file:
                         writer = self.csv.writer(file, delimiter = "\t", lineterminator = "\n")

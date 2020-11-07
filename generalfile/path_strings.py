@@ -2,25 +2,9 @@
 
 class Path_Strings:
     """ String operations for Path. """
-    def __str__(self):
-        """ :param generalfile.Path self: """
-        return self._str_path
-
-    def __repr__(self):
-        """ :param generalfile.Path self: """
-        return self.__str__()
-
     def __truediv__(self, other):
         """ :param generalfile.Path self: """
         return self.Path(self._path / str(other))
-
-    def __eq__(self, other):
-        """ :param generalfile.Path self: """
-        return str(self) == str(other)
-
-    def __hash__(self):
-        """ :param generalfile.Path self: """
-        return hash(str(self))
 
     def __getitem__(self, item):
         """ :param generalfile.Path self: """
