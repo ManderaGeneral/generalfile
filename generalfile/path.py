@@ -9,10 +9,11 @@ from generalfile.path_lock import Path_ContextManager
 from generalfile.path_operations import Path_Operations
 from generalfile.path_strings import Path_Strings
 from generalfile.optional_dependencies.path_spreadsheet import Path_Spreadsheet
+from generalfile.optional_dependencies.path_text import Path_Text
 
 
 @initBases
-class Path(Path_ContextManager, Path_Operations, Path_Strings, Path_Spreadsheet):
+class Path(Path_ContextManager, Path_Operations, Path_Strings, Path_Spreadsheet, Path_Text):
     """
     Immutable cross-platform Path.
     Wrapper for pathlib.

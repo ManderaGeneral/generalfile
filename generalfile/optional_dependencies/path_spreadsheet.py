@@ -1,5 +1,5 @@
 
-from generallibrary import deco_cache, typeChecker, getRows
+from generallibrary import deco_cache, typeChecker, getRows, initBases
 
 
 class Path_Spreadsheet:
@@ -13,7 +13,8 @@ class Path_Spreadsheet:
     @staticmethod
     @deco_cache()
     def _spreadsheet():
-        class Spreadsheet:
+        @initBases
+        class _Spreadsheet(_Extension):
             """ Contains all functionality to handle spreadsheet files.
                 Such as CSV and TSV. """
 
@@ -38,7 +39,7 @@ class Path_Spreadsheet:
 
                 typeChecker(df, self.pd.DataFrame)
 
-                with WriteContext(self.path, overwrite=overwrite) as write_path:
+                with self.WriteContext(self.path, overwrite=overwrite) as write_path:
                     if df.empty:
                         write_path.write()
                         return False, False
@@ -67,7 +68,7 @@ class Path_Spreadsheet:
                 header = "infer" if header else None
                 column = 0 if column else None
 
-                with ReadContext(self.path) as read_path:
+                with self.ReadContext(self.path) as read_path:
                     try:
                         df = self._read_helper(read_path, header, column)
                     except self.pd.errors.EmptyDataError:
@@ -115,7 +116,7 @@ class Path_Spreadsheet:
 
                 :param obj: Iterable (Optionally inside another iterable) or a value for a single cell
                 """
-                with AppendContext(self.path) as append_path:
+                with self.AppendContext(self.path) as append_path:
                     with open(str(append_path), "a") as file:
                         writer = self.csv.writer(file, delimiter = "\t", lineterminator = "\n")
                         for row in getRows(obj):
@@ -151,10 +152,10 @@ class Path_Spreadsheet:
                         row.append(value)
                 return row
 
-        return Spreadsheet
+        return _Spreadsheet
 
 
-from generalfile.path_operations import WriteContext, ReadContext, AppendContext
+from generalfile.path_operations import _Extension
 
 
 

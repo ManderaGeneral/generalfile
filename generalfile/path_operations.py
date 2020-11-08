@@ -13,6 +13,7 @@ from generalfile.errors import CaseSensitivityError
 from generalfile.decorators import deco_require_state, deco_preserve_working_dir, deco_return_if_removed
 
 
+
 class _Context:
     def __init__(self, path):
         self.path = path
@@ -65,12 +66,22 @@ class AppendContext(_Context):
 
     def __enter__(self):
         super().__enter__()
-        self.path.copy(self.temp_path)
+        if self.path.exists():
+            self.path.copy(self.temp_path)
         return self.temp_path
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.temp_path.rename(self.path.name(), overwrite=True)
         super().__exit__(exc_type, exc_val, exc_tb)
+
+
+class _Extension:
+    WriteContext = WriteContext
+    ReadContext = ReadContext
+    AppendContext = AppendContext
+
+    def __init__(self, path):
+        self.path = path
 
 
 class Path_Operations:
