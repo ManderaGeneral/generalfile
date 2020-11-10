@@ -370,11 +370,11 @@ class FileTest(PathTest):
         # path.write("foobar", overwrite=True)
         # self.assertNotEqual(methods[0](), methods[1]())
 
-    def test_getitem(self):
-        self.assertEqual("foo", Path("foo/bar")[0])
-        self.assertEqual("bar", Path("foo/bar")[1])
-
-        self.assertEqual(not Path.verInfo.pathRootIsDelimiter, bool(Path().absolute()[0]))
+    # def test_getitem(self):
+    #     self.assertEqual("foo", Path("foo/bar")[0])
+    #     self.assertEqual("bar", Path("foo/bar")[1])
+    #
+    #     self.assertEqual(not Path.verInfo.pathRootIsDelimiter, bool(Path().absolute()[0]))
 
     def test_threads(self):
         from generallibrary import sleep
