@@ -168,7 +168,7 @@ jobs:
           for x in ${{ env.DEPENDENT_PACKAGES }}; do
           git clone https://Mandera:${{ secrets.GIT_PASSWORD }}@github.com/ManderaGeneral/$x.git
           cd $x
-          git commit -m "[CI AUTO] Test trigger for ${{ github.event.repository.name }}'s new ${{ env.NEW_VERSION }} release." --allow-empty
+          git commit -m "[CI AUTO] ${{ github.event.repository.name }} ${{ env.NEW_VERSION }} published." -m "${{ github.event.head_commit.message }}" --allow-empty
           git push
           cd ..
           done
