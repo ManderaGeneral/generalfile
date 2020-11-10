@@ -38,7 +38,7 @@ class Path_Text:
                         file.write(string)
 
             def replace(self, d, regex=False):
-                """ Replace matches in this path. """
+                """ Replace matches in this path with a given dictionary. """
                 with self.path.lock():
                     text = self.path.text.read()
                     for key, value in d.items():
