@@ -2,13 +2,11 @@
 
 class Path_Strings:
     """ String operations for Path. """
-    def __truediv__(self, other):
-        """ :param generalfile.Path self: """
-        return self.Path(self._path / str(other))
-
     def __getitem__(self, item):
-        """ :param generalfile.Path self: """
-        return self.Path(self._str_path.__getitem__(item))
+        """ Split path into it's delimiter. item=0 with an absolute path gives an empty string on a unix system.
+
+            :param generalfile.Path self: """
+        return self._str_path.split(self.path_delimiter)[item]
 
     def get_replaced_alternative_characters(self):
         """ Get a dictionary of all characters that are replaced for the alternative path.
