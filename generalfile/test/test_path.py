@@ -30,6 +30,11 @@ class FileTest(PathTest):
         path = Path("folder/folder2/test.txt")
         self.assertEqual(["folder", "folder2", "test.txt"], path.parts())
 
+        self.assertEqual("foo", Path("foo/bar").parts()[0])
+        self.assertEqual("bar", Path("foo/bar").parts()[1])
+
+        self.assertEqual(not Path.verInfo.pathRootIsDelimiter, bool(Path().absolute().parts()[0]))
+
     def test_name(self):
         path = Path("folder/test.txt")
         self.assertEqual("test.txt", path.name())
@@ -370,11 +375,10 @@ class FileTest(PathTest):
         # path.write("foobar", overwrite=True)
         # self.assertNotEqual(methods[0](), methods[1]())
 
-    # def test_getitem(self):
-    #     self.assertEqual("foo", Path("foo/bar")[0])
-    #     self.assertEqual("bar", Path("foo/bar")[1])
-    #
-    #     self.assertEqual(not Path.verInfo.pathRootIsDelimiter, bool(Path().absolute()[0]))
+    def test_getitem(self):
+        self.assertEqual("f", Path("foobar")[0])
+        self.assertEqual("fo", Path("foobar")[0:2])
+        self.assertEqual("raboof", Path("foobar")[-1::-1])
 
     def test_threads(self):
         from generallibrary import sleep

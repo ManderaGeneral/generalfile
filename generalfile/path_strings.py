@@ -3,11 +3,18 @@
 class Path_Strings:
     """ String operations for Path. """
     def __getitem__(self, item):
-        """ Split path into it's delimiter. item=0 with an absolute path gives an empty string on a unix system.
+        """ Get character from path string.
 
             :param generalfile.Path self: """
         return self.Path(self._str_path.__getitem__(item))
-        # return self._str_path.split(self.path_delimiter)[item]
+
+    @property
+    def get_part(self):
+        """ Split path using it's delimiter. item=0 with an absolute path gives an empty string on a posix system.
+
+            :param generalfile.Path self:
+            :param i: Index of part"""
+        return self._str_path.split(self.path_delimiter)
 
     def get_replaced_alternative_characters(self):
         """ Get a dictionary of all characters that are replaced for the alternative path.
@@ -151,7 +158,7 @@ class Path_Strings:
         return self.Path(strParent)
 
     def parts(self):
-        """ Get list of parts building this Path as list of strings.
+        """ Split path using it's delimiter. With an absolute path the first index is an empty string on a posix system.
 
             :param generalfile.Path self: """
         return str(self).split(self.path_delimiter)
