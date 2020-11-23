@@ -35,6 +35,7 @@ class Path(Path_ContextManager, Path_Operations, Path_Strings, Path_Spreadsheet,
         return self.__str__()
 
     def __truediv__(self, other):
+        """ :rtype: Path"""
         return self.Path(self._path / str(other))
 
     def __eq__(self, other):
@@ -42,6 +43,9 @@ class Path(Path_ContextManager, Path_Operations, Path_Strings, Path_Spreadsheet,
 
     def __hash__(self):
         return hash(str(self))
+
+    def __contains__(self, item):
+        return self._str_path.__contains__(item)
 
     def _scrub(self, str_path):
         str_path = self._replace_delimiters(str_path=str_path)

@@ -303,7 +303,7 @@ class Path_Operations:
             del queued_folders[0]
 
     def create_folder(self):
-        """ Create folder with this Path unless it exists
+        """ Create folder with this Path unless it exists. 
 
             :param generalfile.Path self: """
         if self.exists():

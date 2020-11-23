@@ -358,7 +358,6 @@ class FileTest(PathTest):
         self.assertEqual(1, len(list(Path("folder/test2.txt").get_paths_recursive())))
 
     def test_time_created_and_modified(self):
-        import time
         path = Path("test.txt")
         methods = (path.seconds_since_creation, path.seconds_since_modified)
 
@@ -379,6 +378,10 @@ class FileTest(PathTest):
         self.assertEqual("f", Path("foobar")[0])
         self.assertEqual("fo", Path("foobar")[0:2])
         self.assertEqual("raboof", Path("foobar")[-1::-1])
+
+    def test_iter(self):
+        self.assertEqual(["f", "o", "o"], list(Path("foo")))
+        self.assertIn("foo", Path("foobar"))
 
     def test_threads(self):
         from generallibrary import sleep
