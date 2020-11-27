@@ -2,7 +2,7 @@
 from generallibrary import deco_cache, initBases
 
 
-class Path_Text:
+class Path_Text:  # Import in path.py
     """ Text methods for Path. """
     @property
     @deco_cache()

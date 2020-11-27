@@ -10,10 +10,11 @@ from generalfile.path_operations import Path_Operations
 from generalfile.path_strings import Path_Strings
 from generalfile.optional_dependencies.path_spreadsheet import Path_Spreadsheet
 from generalfile.optional_dependencies.path_text import Path_Text
+from generalfile.optional_dependencies.path_cfg import Path_Cfg
 
 
 @initBases
-class Path(Path_ContextManager, Path_Operations, Path_Strings, Path_Spreadsheet, Path_Text):
+class Path(Path_ContextManager, Path_Operations, Path_Strings, Path_Spreadsheet, Path_Text, Path_Cfg):
     """
     Immutable cross-platform Path.
     Wrapper for pathlib.
@@ -35,9 +36,9 @@ class Path(Path_ContextManager, Path_Operations, Path_Strings, Path_Spreadsheet,
         return self.__str__()
 
     def __truediv__(self, other):
-        """ :rtype: Path"""
+        """ :rtype: generalfile.Path """
         return self.Path(self._path / str(other))
-
+    
     def __eq__(self, other):
         return str(self) == str(other)
 
