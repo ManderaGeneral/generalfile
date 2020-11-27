@@ -3,14 +3,14 @@ from generalfile import Path
 from generalfile.test.test_path import PathTest
 
 class FileTest(PathTest):
+
     def test_cfg(self):
-        dict_ = {'setup': {'name': 'generalfile', 'version': '2.2.3', 'description': 'Easily manage files cross platform.', 'install_requires': '["generallibrary", "send2trash", "appdirs"]', 'extras_require': '{\n"spreadsheet": ["pandas"]\n}', 'classifiers': '[\n"Development Status :: 2 - Pre-Alpha",\n"Topic :: Desktop Environment :: File Managers"\n]'}}
+        dict_ = {'test': {'foo': 'bar', 'number': 2, 'hi': ['a', 'b', 3]}}
 
         Path("foo").cfg.write(dict_)
         self.assertEqual(dict_, Path("foo").cfg.read())
 
-        dict_["setup"]["name"] = "test"
-
+        dict_["test"]["foo"] = "hi"
         Path("foo").cfg.write(dict_, overwrite=True)
         self.assertEqual(dict_, Path("foo").cfg.read())
 

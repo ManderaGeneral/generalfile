@@ -1,7 +1,8 @@
 
 from generallibrary import deco_cache, initBases
-
 import configparser
+import json
+
 
 
 class Path_Cfg:
@@ -26,12 +27,18 @@ class Path_Cfg:
                         config.read_dict(dictionary=dict_)
                         config.write(file)
 
+            def _read_json_cast(self, value):
+                try:
+                    return json.loads(value.replace("'", '"'))
+                except json.decoder.JSONDecodeError:
+                    return value
+
             def read(self):
                 """ Read from this path to get a dictionary. """
                 with self.ReadContext(self.path) as read_path:
                     config = configparser.RawConfigParser()
                     config.read(str(read_path))
-                    return {s: dict(config.items(s)) for s in config.sections()}
+                    return {s: {key: self._read_json_cast(value) for key, value in config.items(s)} for s in config.sections()}
 
             def append(self, dict_):
                 """ Update this cfg with a dictionary. """
