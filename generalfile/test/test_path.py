@@ -108,7 +108,9 @@ class FileTest(PathTest):
         self.assertEqual(Path("folder/foobar"), path.get_parent(0))
         self.assertEqual(Path("folder"), path.get_parent(1))
         self.assertEqual(Path(), path.get_parent(2))
-        self.assertRaises(Exception, path.parent, 3)
+        self.assertEqual(None, path.get_parent(3))
+        self.assertEqual(None, path.get_parent(99))
+        self.assertEqual(None, path.get_parent(-99))
 
     def test_startswith(self):
         self.assertFalse(Path("file.txt").startswith("folder"))
@@ -344,16 +346,17 @@ class FileTest(PathTest):
         Path("folder/test2.txt").write()
         Path("folder/test3.txt").write()
 
-        self.assertEqual(2, len(list(Path().get_paths_recursive(depth=0))))
-        self.assertEqual(3, len(list(Path().get_paths_recursive(depth=0, include_self=True))))
+        self.assertEqual(1, len(list(Path().get_paths_recursive(depth=1))))
+        self.assertEqual(2, len(list(Path().get_paths_recursive(depth=1, include_self=True))))
 
-        self.assertEqual(1, len(list(Path("test.txt").get_paths_recursive(depth=0))))
-        self.assertEqual(2, len(list(Path("test.txt").get_paths_recursive(depth=0, include_self=True))))
+        self.assertEqual(0, len(list(Path("test.txt").get_paths_recursive(depth=1))))
+        self.assertEqual(1, len(list(Path("test.txt").get_paths_recursive(depth=1, include_self=True))))
+        self.assertEqual(1, len(list(Path("test.txt").get_paths_recursive(depth=1, include_folders=True))))
 
-        self.assertEqual(4, len(list(Path().get_paths_recursive(depth=2))))
-        self.assertEqual(5, len(list(Path().get_paths_recursive(depth=2, include_self=True))))
-        self.assertEqual(5, len(list(Path().get_paths_recursive(depth=-1, include_self=True))))
-        self.assertEqual(3, len(list(Path().get_paths_recursive(depth=0, include_self=True))))
+        self.assertEqual(3, len(list(Path().get_paths_recursive(depth=3))))
+        self.assertEqual(4, len(list(Path().get_paths_recursive(depth=3, include_self=True))))
+        self.assertEqual(4, len(list(Path().get_paths_recursive(depth=-1, include_self=True))))
+        self.assertEqual(2, len(list(Path().get_paths_recursive(depth=1, include_self=True))))
 
         self.assertEqual(1, len(list(Path("folder/test2.txt").get_paths_recursive())))
 

@@ -29,10 +29,16 @@ class Path(TreeDiagram, Path_ContextManager, Path_Operations, Path_Strings, Path
 
         self._path = pathlib.Path(self.path)
 
-    def hook_create_post(self):
-        """ Generate parents after init. """
-        if self.get_parent() is None:
+    def get_parent(self, index=0):
+        """ Override get_parent to generate all parents if direct parent is None. """
+        if self._parent is None:
             self._generate_parents()
+        return TreeDiagram.get_parent(self=self, index=index)
+
+    # def hook_create_post(self):
+    #     """ Generate parents after init. """
+    #     if self.get_parent() is None:
+    #         self._generate_parents()
 
     def __str__(self):
         return self.path

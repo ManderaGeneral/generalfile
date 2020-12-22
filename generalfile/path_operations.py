@@ -271,7 +271,7 @@ class Path_Operations:
     def get_paths_recursive(self, depth=-1, include_self=False, include_files=True, include_folders=False):
         """ Get all paths that are next to this file or inside this folder.
 
-            :param depth: Depth of -1 is limitless recursive searching. Depth of 0 searches only first level.
+            :param depth: Depth of -1 is limitless recursive searching. Depth of 1 searches only first level.
             :param include_self:
             :param include_files:
             :param include_folders:
@@ -297,7 +297,7 @@ class Path_Operations:
                     if include_folders:
                         yield path
 
-                    current_depth = len(path.parts()) - self_parts_len
+                    current_depth = len(path.parts()) - self_parts_len + 1
                     if depth == -1 or current_depth < depth:
                         queued_folders.append(path)
             del queued_folders[0]
