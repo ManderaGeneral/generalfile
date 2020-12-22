@@ -6,7 +6,7 @@ class Path_Strings:
         """ Get character from path string.
 
             :param generalfile.Path self: """
-        return self.Path(self._str_path.__getitem__(item))
+        return self.Path(self.path.__getitem__(item))
 
     @property
     def get_part(self):
@@ -14,7 +14,7 @@ class Path_Strings:
 
             :param generalfile.Path self:
             :param i: Index of part"""
-        return self._str_path.split(self.path_delimiter)
+        return self.path.split(self.path_delimiter)
 
     def get_replaced_alternative_characters(self):
         """ Get a dictionary of all characters that are replaced for the alternative path.
@@ -144,18 +144,12 @@ class Path_Strings:
         path = self.Path(path)
         return self.absolute() == path.absolute()
 
-    def parent(self, index=0):
-        """ Get any parent as a new Path.
-            Doesn't convert to absolute path even if needed.
-
-            :param generalfile.Path self:
-            :param index: Which parent, 0 is direct parent.
-            :raises IndexError: If index doesn't exist.
-            :rtype: generalfile.Path """
-        strParent = str(self._path.parents[index])
-        if strParent == ".":
-            strParent = ""
-        return self.Path(strParent)
+    def _generate_parents(self):
+        """ :param generalfile.Path self: """
+        path = None
+        for pathlib_path in reversed(self._path.parents):
+            path = self.Path(path="" if str(pathlib_path) == "." else str(pathlib_path), parent=path)
+        self.set_parent(path)
 
     def parts(self):
         """ Split path using it's delimiter. With an absolute path the first index is an empty string on a posix system.

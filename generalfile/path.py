@@ -2,7 +2,7 @@
 import pathlib
 
 
-from generallibrary import VerInfo, initBases
+from generallibrary import VerInfo, initBases, TreeDiagram
 
 from generalfile.errors import InvalidCharacterError
 from generalfile.path_lock import Path_ContextManager
@@ -14,23 +14,28 @@ from generalfile.optional_dependencies.path_cfg import Path_Cfg
 
 
 @initBases
-class Path(Path_ContextManager, Path_Operations, Path_Strings, Path_Spreadsheet, Path_Text, Path_Cfg):
-    """
-    Immutable cross-platform Path.
-    Wrapper for pathlib.
-    Implements rules to ensure cross-platform compatability.
-    Adds useful methods.
-    """
+class Path(TreeDiagram, Path_ContextManager, Path_Operations, Path_Strings, Path_Spreadsheet, Path_Text, Path_Cfg):
+    """ Immutable cross-platform Path.
+        Built on pathlib and TreeDiagram.
+        Implements rules to ensure cross-platform compatability.
+        Adds useful methods. """
     verInfo = VerInfo()
     path_delimiter = verInfo.pathDelimiter
     Path = ...
 
-    def __init__(self, path=None):
-        self._str_path = self._scrub(str_path="" if path is None else str(path))
-        self._path = pathlib.Path(self._str_path)
+    def __init__(self, path=None, parent=None):
+        path = self._scrub(str_path="" if path is None else str(path))
+        self.path = self.data_keys_add(key="path", value=path, unique=True)
+
+        self._path = pathlib.Path(self.path)
+
+    def hook_create_post(self):
+        """ Generate parents after init. """
+        if self.get_parent() is None:
+            self._generate_parents()
 
     def __str__(self):
-        return self._str_path
+        return self.path
 
     def __repr__(self):
         return self.__str__()
@@ -46,7 +51,7 @@ class Path(Path_ContextManager, Path_Operations, Path_Strings, Path_Spreadsheet,
         return hash(str(self))
 
     def __contains__(self, item):
-        return self._str_path.__contains__(item)
+        return self.path.__contains__(item)
 
     def _scrub(self, str_path):
         str_path = self._replace_delimiters(str_path=str_path)
@@ -84,6 +89,12 @@ class Path(Path_ContextManager, Path_Operations, Path_Strings, Path_Spreadsheet,
         if str_path.endswith(self.path_delimiter):
             str_path = str_path[0:-1]
         return str_path
+
+    def view(self, only_last_part=True, indent=1, relative=False, custom_repr=None, print_out=True):
+        """ Override view to use default custom repr. """
+        if only_last_part and custom_repr is None:
+            custom_repr = lambda path: path.parts()[-1]
+        return TreeDiagram.view(self=self, indent=indent, relative=relative, custom_repr=custom_repr, print_out=print_out)
 
 setattr(Path, "Path", Path)
 

@@ -104,10 +104,10 @@ class FileTest(PathTest):
 
     def test_parent(self):
         path = Path("folder/foobar/test.txt")
-        self.assertEqual(Path("folder/foobar"), path.parent())
-        self.assertEqual(Path("folder/foobar"), path.parent(0))
-        self.assertEqual(Path("folder"), path.parent(1))
-        self.assertEqual(Path(), path.parent(2))
+        self.assertEqual(Path("folder/foobar"), path.get_parent())
+        self.assertEqual(Path("folder/foobar"), path.get_parent(0))
+        self.assertEqual(Path("folder"), path.get_parent(1))
+        self.assertEqual(Path(), path.get_parent(2))
         self.assertRaises(Exception, path.parent, 3)
 
     def test_startswith(self):
@@ -316,8 +316,8 @@ class FileTest(PathTest):
 
             path.write()
             self.assertEqual(True, path.exists())
-            self.assertEqual(True, getattr(path.parent(), method)())
-            self.assertEqual(False, getattr(path.parent(), method)())
+            self.assertEqual(True, getattr(path.get_parent(), method)())
+            self.assertEqual(False, getattr(path.get_parent(), method)())
             self.assertEqual(False, Path("folder").exists())
 
     def test_trash_and_delete_folder_content(self):

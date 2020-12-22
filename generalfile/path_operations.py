@@ -38,7 +38,7 @@ class WriteContext(_Context):
         if not self.overwrite and self.path.exists():
             raise FileExistsError(f"Path '{self.path}' already exists and overwrite is 'False'.")
         super().__enter__()
-        self.path.parent().create_folder()
+        self.path.get_parent().create_folder()
         return self.temp_path
 
     def __exit__(self, exc_type, exc_val, exc_tb):
@@ -176,7 +176,7 @@ class Path_Operations:
         if target_folder_path.is_file():
             raise NotADirectoryError("parent_path cannot be a file")
 
-        self_parent_path = self.absolute().parent() if self.is_file() else self.absolute()
+        self_parent_path = self.absolute().get_parent() if self.is_file() else self.absolute()
         if self_parent_path == target_folder_path:
             return
 
@@ -255,7 +255,7 @@ class Path_Operations:
 
             :param generalfile.Path self: """
         if self.is_file():
-            return self.parent()
+            return self.get_parent()
         else:
             return self
 
@@ -265,10 +265,10 @@ class Path_Operations:
 
             :param generalfile.Path self: """
         for child in self._path.iterdir():
-            yield self.Path(child)
+            yield self.Path(child, parent=self)
 
     @deco_require_state(quick_exists=True)
-    def get_paths_recursive(self, depth=-1, include_self=False, include_files=True, include_folders=True):
+    def get_paths_recursive(self, depth=-1, include_self=False, include_files=True, include_folders=False):
         """ Get all paths that are next to this file or inside this folder.
 
             :param depth: Depth of -1 is limitless recursive searching. Depth of 0 searches only first level.
@@ -277,7 +277,7 @@ class Path_Operations:
             :param include_folders:
             :param generalfile.Path self: """
         if self.is_file():
-            queued_folders = [self.parent()]
+            queued_folders = [self.get_parent()]
         elif self.is_folder():
             queued_folders = [self]
         else:
