@@ -144,13 +144,6 @@ class Path_Strings:
         path = self.Path(path)
         return self.absolute() == path.absolute()
 
-    def _generate_parents(self):
-        """ :param generalfile.Path self: """
-        path = None
-        for pathlib_path in reversed(self._path.parents):
-            path = self.Path(path="" if str(pathlib_path) == "." else str(pathlib_path), parent=path)
-        self.set_parent(path)
-
     def parts(self):
         """ Split path using it's delimiter. With an absolute path the first index is an empty string on a posix system.
 
