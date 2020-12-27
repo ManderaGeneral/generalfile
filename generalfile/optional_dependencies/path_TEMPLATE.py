@@ -18,20 +18,17 @@ class Path_Text:  # Import in path.py
             def write(self, string=None, overwrite=False):
                 """ Write to this path with a given string. """
                 with self.WriteContext(self.path, overwrite=overwrite) as write_path:
-                    with open(str(write_path), "w") as file:
-                        file.write(string)
+                    return write_path.open_operation("w", lambda stream: stream.write(string))
 
             def read(self):
                 """ Read from this path to get a string. """
                 with self.ReadContext(self.path) as read_path:
-                    with open(str(read_path), "r") as file:
-                        return file.read()
+                    return read_path.open_operation("r", lambda stream: stream.read())
 
             def append(self, string):
                 """ Append to this path with a given string. """
                 with self.AppendContext(self.path) as append_path:
-                    with open(str(append_path), "a") as file:
-                        file.write(string)
+                    return append_path.open_operation("a", lambda stream: stream.write(string))
 
         return _Text
 

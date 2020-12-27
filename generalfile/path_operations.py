@@ -91,6 +91,20 @@ class Path_Operations:
     dead_lock_seconds = 3
     _working_dir = None
 
+    def open_operation(self, mode, func):
+        """ Handles all open() calls. """
+        with open(str(self), mode, encoding="utf-8") as stream:
+            return func(stream)
+
+        # Couldn't do this as it only fails when writing, not reading
+        # try:
+        #     with open(str(self), mode) as stream:
+        #         return func(stream)
+        # except UnicodeEncodeError:
+        #     with open(str(self), mode, encoding="utf-8") as stream:
+        #         return func(stream)
+
+
     def write(self, content=None, overwrite=False):
         """ Write to this Path with JSON.
 
@@ -99,24 +113,15 @@ class Path_Operations:
             :param overwrite: Whether to allow overwriting or not. """
         content_json = json.dumps(content)
         with WriteContext(self, overwrite=overwrite) as write_path:
-            # write_path = write_path.absolute()
-            # try:
-            with open(str(write_path), "w") as stream:
-                stream.write(content_json)
-                # stream.flush()
-                # os.fsync(stream.fileno())
-            # except Exception as e:
-            #     print(write_path, write_path.absolute(), write_path.get_working_dir())
-            #     raise e
-            return content_json
+            write_path.open_operation("w", lambda stream: stream.write(content_json))
+        return content_json
 
     def read(self):
         """ Read this Path with JSON.
 
             :param generalfile.Path self: """
-        with ReadContext(self):
-            with open(str(self), "r") as file_stream:
-                return json.loads(file_stream.read())
+        with ReadContext(self) as read_path:
+            return read_path.open_operation("r", lambda stream: json.loads(stream.read()))
 
     @deco_require_state(exists=True)
     def rename(self, name=None, stem=None, suffix=None, overwrite=False):

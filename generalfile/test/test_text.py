@@ -5,6 +5,7 @@ from generalfile.test.test_path import PathTest
 
 class TextTest(PathTest):
     paths = ("a", "b.txt", "c.md")
+
     def test_text_read_write(self):
         for path in self.paths:
             text = Path(path).text
@@ -59,6 +60,10 @@ class TextTest(PathTest):
             text.replace({"\d+": ""}, regex=True)
             self.assertEqual("foobar", text.read())
 
+    def test_utf8(self):
+        path = Path("foo")
+        path.text.write("├")
+        self.assertEqual("├", path.text.read())
 
 
 

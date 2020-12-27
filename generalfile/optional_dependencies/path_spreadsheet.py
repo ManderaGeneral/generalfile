@@ -112,15 +112,17 @@ class Path_Spreadsheet:
                  | {1: {"b": 2, "c": 3}, 4: {"e": 5, "f": 6}}
                  | {1: [2, 3], 4: [5, 6]}
 
-                # TODO: Should probably support DataFrame and Series as well
+                TODO: Should probably support DataFrame and Series as well.
 
                 :param obj: Iterable (Optionally inside another iterable) or a value for a single cell
                 """
+                def _append_helper(stream):
+                    writer = self.csv.writer(stream, delimiter="\t", lineterminator="\n")
+                    for row in getRows(obj):
+                        writer.writerow(row)
+
                 with self.AppendContext(self.path) as append_path:
-                    with open(str(append_path), "a") as file:
-                        writer = self.csv.writer(file, delimiter = "\t", lineterminator = "\n")
-                        for row in getRows(obj):
-                            writer.writerow(row)
+                    return append_path.open_operation("a", _append_helper)
 
 
             def _indexIsNamed(self, index):
