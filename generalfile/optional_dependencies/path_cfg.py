@@ -42,7 +42,8 @@ class Path_Cfg:
             def append(self, dict_):
                 """ Update this cfg with a dictionary. """
                 with self.AppendContext(self.path) as append_path:
-                    append_path.cfg.write(dict_=append_path.cfg.read() | dict_, overwrite=True)
+                    # append_path.cfg.write(dict_=append_path.cfg.read() | dict_, overwrite=True)
+                    append_path.cfg.write(dict_={**append_path.cfg.read(), **dict_}, overwrite=True)
 
         return _Cfg
 
