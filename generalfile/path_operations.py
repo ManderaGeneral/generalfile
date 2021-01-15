@@ -105,13 +105,14 @@ class Path_Operations:
         #         return func(stream)
 
 
-    def write(self, content=None, overwrite=False):
+    def write(self, content=None, overwrite=False, indent=None):
         """ Write to this Path with JSON.
 
             :param generalfile.Path self:
             :param any content: Serializable by JSON
-            :param overwrite: Whether to allow overwriting or not. """
-        content_json = json.dumps(content)
+            :param overwrite: Whether to allow overwriting or not.
+            :param indent: """
+        content_json = json.dumps(content, indent=indent)
         with WriteContext(self, overwrite=overwrite) as write_path:
             write_path.open_operation("w", lambda stream: stream.write(content_json))
         return content_json
@@ -275,6 +276,7 @@ class Path_Operations:
     @deco_require_state(quick_exists=True)
     def get_paths_recursive(self, depth=-1, include_self=False, include_files=True, include_folders=False):
         """ Get all paths that are next to this file or inside this folder.
+            Todo: Filter for Path.get_paths_* like we have in ObjInfo.
 
             :param depth: Depth of -1 is limitless recursive searching. Depth of 1 searches only first level.
             :param include_self:
