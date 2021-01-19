@@ -1,5 +1,6 @@
 
 import unittest
+import multiprocessing as mp
 
 from generalfile import Path
 from generalfile.test.setup_workdir import setup_workdir
@@ -386,14 +387,19 @@ class FileTest(PathTest):
         self.assertEqual(["f", "o", "o"], list(Path("foo")))
         self.assertIn("foo", Path("foobar"))
 
+    def test_root(self):
+        str_path = Path().absolute().get_parent(-1).path
+        if Path.verInfo.pathRootIsDelimiter:
+            self.assertEqual("/", str_path)
+        else:
+            self.assertTrue(len(str_path) == 3 and str_path[1] == ":" and str_path[2] == Path.path_delimiter)
+
     def test_threads(self):
-        from generallibrary import sleep
-        import multiprocessing as mp
         threads = []
         queue = mp.Queue()
         count = 2
         for i in range(count):
-            threads.append(mp.Process(target=threadTest, args=(queue, i)))
+            threads.append(mp.Process(target=_thread_test, args=(queue, i)))
         for thread in threads:
             thread.start()
 
@@ -405,7 +411,8 @@ class FileTest(PathTest):
 
         self.assertEqual(len(results), count)
 
-def threadTest(queue, i):
+
+def _thread_test(queue, i):
     queue.put(int(Path("test.txt").write(i, overwrite=True)))
 
 if __name__ == "__main__":

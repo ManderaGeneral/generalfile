@@ -323,6 +323,7 @@ class Path_Operations:
         """ Open folder to view it manually.
 
             :param generalfile.Path self: """
+        self.create_folder()
         os.startfile(str(self.without_file()))
 
     @classmethod

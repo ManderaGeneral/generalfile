@@ -30,7 +30,9 @@ class Path(TreeDiagram, Path_ContextManager, Path_Operations, Path_Strings, Path
         self._path = pathlib.Path(self.path)
 
     def get_parent(self, index=0):
-        """ Override to generate all parents if direct parent is None. """
+        """ Override to generate all parents if direct parent is None.
+
+            :rtype: Path or None """
         if self._parent is None:
             self._generate_parents()
         return TreeDiagram.get_parent(self=self, index=index)
@@ -64,6 +66,12 @@ class Path(TreeDiagram, Path_ContextManager, Path_Operations, Path_Strings, Path
         str_path = self._replace_delimiters(str_path=str_path)
         str_path = self._invalid_characters(str_path=str_path)
         str_path = self._trim(str_path=str_path)
+        str_path = self._delimiter_suffix_if_root(str_path=str_path)
+        return str_path
+
+    def _delimiter_suffix_if_root(self, str_path):
+        if len(str_path) == 2 and str_path[1] == ":":
+            return f"{str_path}{self.path_delimiter}"
         return str_path
 
     def _replace_delimiters(self, str_path):

@@ -10,6 +10,12 @@ from generalfile import Path
 
 
 path = Path().absolute()
+
+path = path.get_parent(-1)
+
+print(path)
+
+
 # list(path.get_paths_recursive())
 
-path.get_parent(-1).view()
+# path.get_parent(-1).view()
