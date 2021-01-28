@@ -102,7 +102,7 @@ class Path(TreeDiagram, Path_ContextManager, Path_Operations, Path_Strings, Path
     def _trim(self, str_path):
         if not self.verInfo.pathRootIsDelimiter and str_path.startswith(self.path_delimiter):
             str_path = str_path[1:]
-        if str_path.endswith(self.path_delimiter):
+        if str_path.endswith(self.path_delimiter) and len(str_path) > 1:
             str_path = str_path[0:-1]
         return str_path
 
