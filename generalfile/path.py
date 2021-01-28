@@ -18,7 +18,8 @@ class Path(TreeDiagram, Path_ContextManager, Path_Operations, Path_Strings, Path
     """ Immutable cross-platform Path.
         Built on pathlib and TreeDiagram.
         Implements rules to ensure cross-platform compatability.
-        Adds useful methods. """
+        Adds useful methods.
+        Todo: Add a proper place for all variables, add working_dir, sys.executable and sys.prefix to it. """
     verInfo = VerInfo()
     path_delimiter = verInfo.pathDelimiter
     Path = ...
@@ -107,6 +108,9 @@ class Path(TreeDiagram, Path_ContextManager, Path_Operations, Path_Strings, Path
 
     def view(self, only_last_part=True, indent=1, relative=False, custom_repr=None, print_out=True):
         """ Override view to use default custom repr. """
+        if not self.get_children():
+            list(self.get_paths_recursive())
+
         if only_last_part and custom_repr is None:
             custom_repr = lambda path: path.parts()[-1]
         return TreeDiagram.view(self=self, indent=indent, relative=relative, custom_repr=custom_repr, print_out=print_out)
