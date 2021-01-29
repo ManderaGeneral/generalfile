@@ -28,8 +28,8 @@ Easily manage files cross platform.
 <a href='https://github.com/ManderaGeneral/generalfile/blob/6c7dd3ca1e5eb1e618167b802c89216d93798623/generalfile/__init__.py#L1'>Module: generalfile</a>
 ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/6c7dd3ca1e5eb1e618167b802c89216d93798623/generalfile/errors.py#L4'>Class: CaseSensitivityError</a>
 ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/6c7dd3ca1e5eb1e618167b802c89216d93798623/generalfile/errors.py#L5'>Class: InvalidCharacterError</a>
-└─ <a href='https://github.com/ManderaGeneral/generalfile/blob/6c7dd3ca1e5eb1e618167b802c89216d93798623/generalfile/path.py#L16'>Class: Path</a>
-   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/6c7dd3ca1e5eb1e618167b802c89216d93798623/generalfile/path.py#L16'>Class: Path</a>
+└─ <a href='https://github.com/ManderaGeneral/generalfile/blob/6c7dd3ca1e5eb1e618167b802c89216d93798623/generalfile/path.py#L17'>Class: Path</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/6c7dd3ca1e5eb1e618167b802c89216d93798623/generalfile/path.py#L17'>Class: Path</a>
    ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/6c7dd3ca1e5eb1e618167b802c89216d93798623/generalfile/path_strings.py#L56'>Method: absolute</a>
    ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/6c7dd3ca1e5eb1e618167b802c89216d93798623/generalfile/path_operations.py#L11'>Method: copy</a>
    ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/6c7dd3ca1e5eb1e618167b802c89216d93798623/generalfile/path_operations.py#L211'>Method: copy_to_folder</a>
@@ -87,9 +87,9 @@ Easily manage files cross platform.
 ## Todos
 | Module              | Message                                                                                     |
 |:--------------------|:--------------------------------------------------------------------------------------------|
-| path\_lock.py        | other\_paths                                                                                 |
 | decorators.py       | Put this in library                                                                         |
 | path.py             | Add a proper place for all variables, add working\_dir, sys.executable and sys.prefix to it. |
+| path\_lock.py        | other\_paths                                                                                 |
 | path\_operations.py  | Can we not just change signature to rename(self, new\_path, overwrite=False) ?               |
 | path\_operations.py  | Filter for Path.get\_paths\_* like we have in ObjInfo.                                        |
 | path\_operations.py  | Add this error parameter for more methods                                                   |
@@ -97,5 +97,5 @@ Easily manage files cross platform.
 | path\_spreadsheet.py | Should probably support DataFrame and Series as well.                                       |
 
 <sup>
-Generated 2021-01-29 11:42 CET for commit <a href='https://github.com/ManderaGeneral/generalfile/commit/6c7dd3ca1e5eb1e618167b802c89216d93798623'>6c7dd3ca1e5eb1e618167b802c89216d93798623</a>.
+Generated 2021-01-29 11:44 CET for commit <a href='https://github.com/ManderaGeneral/generalfile/commit/6c7dd3ca1e5eb1e618167b802c89216d93798623'>6c7dd3ca1e5eb1e618167b802c89216d93798623</a>.
 </sup>
