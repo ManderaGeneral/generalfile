@@ -1,88 +1,101 @@
-# Package: generalfile
-File manager for intuitive cross-platform compatability with gathered useful functionality.
-Generalfile operates on the middle ground of all relevant operating systems.
-E.g. Windows being case insensitive -> Don't allow paths with same name but differeing case.
+# generalfile
+Easily manage files cross platform.
 
-Uses a race condition safe lock mechanism for all file operations.
+[![workflow Actions Status](https://github.com/ManderaGeneral/generalfile/workflows/workflow/badge.svg)](https://github.com/ManderaGeneral/generalfile/actions)
+![GitHub last commit](https://img.shields.io/github/last-commit/ManderaGeneral/generalfile)
+[![PyPI version shields.io](https://img.shields.io/pypi/v/generalfile.svg)](https://pypi.org/project/generalfile/)
+[![PyPI pyversions](https://img.shields.io/pypi/pyversions/generalfile.svg)](https://pypi.python.org/pypi/generalfile/)
+[![Generic badge](https://img.shields.io/badge/platforms-windows%20%7C%20ubuntu-blue.svg)](https://shields.io/)
+
+## Contents
+<pre>
+<a href='#generalfile'>generalfile</a>
+├─ <a href='#Contents'>Contents</a>
+├─ <a href='#Installation'>Installation</a>
+├─ <a href='#Attributes'>Attributes</a>
+└─ <a href='#Todos'>Todos</a>
+</pre>
 
 ## Installation
-```
-pip install generalfile
-```
+| Command                                | <a href='https://pypi.org/project/generallibrary'>generallibrary</a>   | <a href='https://pypi.org/project/send2trash'>send2trash</a>   | <a href='https://pypi.org/project/appdirs'>appdirs</a>   | <a href='https://pypi.org/project/pandas'>pandas</a>   |
+|:---------------------------------------|:-----------------------------------------------------------------------|:---------------------------------------------------------------|:---------------------------------------------------------|:-------------------------------------------------------|
+| `pip install generalfile`              | Yes                                                                    | Yes                                                            | Yes                                                      | -                                                      |
+| `pip install generalfile[spreadsheet]` | Yes                                                                    | Yes                                                            | Yes                                                      | Yes                                                    |
+| `pip install generalfile[full]`        | Yes                                                                    | Yes                                                            | Yes                                                      | Yes                                                    |
 
-## Features
-| Module   | Name                  | Explanation                                                         |
-|:---------|:----------------------|:--------------------------------------------------------------------|
-| path     | Path                  | Immutable cross-platform Path.                                      |
-| errors   | CaseSensitivityError  | Raised when an existing file matches a path but not the exact case. |
-| errors   | InvalidCharacterError | Raised when using an invalid character.                             |
+## Attributes
+<pre>
+<a href='https://github.com/ManderaGeneral/generalfile/blob/6c7dd3ca1e5eb1e618167b802c89216d93798623/generalfile/__init__.py#L1'>Module: generalfile</a>
+├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/6c7dd3ca1e5eb1e618167b802c89216d93798623/generalfile/errors.py#L4'>Class: CaseSensitivityError</a>
+├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/6c7dd3ca1e5eb1e618167b802c89216d93798623/generalfile/errors.py#L5'>Class: InvalidCharacterError</a>
+└─ <a href='https://github.com/ManderaGeneral/generalfile/blob/6c7dd3ca1e5eb1e618167b802c89216d93798623/generalfile/path.py#L16'>Class: Path</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/6c7dd3ca1e5eb1e618167b802c89216d93798623/generalfile/path.py#L16'>Class: Path</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/6c7dd3ca1e5eb1e618167b802c89216d93798623/generalfile/path_strings.py#L56'>Method: absolute</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/6c7dd3ca1e5eb1e618167b802c89216d93798623/generalfile/path_operations.py#L11'>Method: copy</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/6c7dd3ca1e5eb1e618167b802c89216d93798623/generalfile/path_operations.py#L211'>Method: copy_to_folder</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/6c7dd3ca1e5eb1e618167b802c89216d93798623/generalfile/path_operations.py#L312'>Method: create_folder</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/6c7dd3ca1e5eb1e618167b802c89216d93798623/generalfile/path_operations.py#L35'>Method: delete</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/6c7dd3ca1e5eb1e618167b802c89216d93798623/generalfile/path_operations.py#L35'>Method: delete_folder_content</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/6c7dd3ca1e5eb1e618167b802c89216d93798623/generalfile/path_strings.py#L99'>Method: endswith</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/6c7dd3ca1e5eb1e618167b802c89216d93798623/generalfile/path_operations.py#L239'>Method: exists</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/6c7dd3ca1e5eb1e618167b802c89216d93798623/generalfile/path_strings.py#L29'>Method: get_alternative_path</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/6c7dd3ca1e5eb1e618167b802c89216d93798623/generalfile/path_operations.py#L329'>Method: get_cache_dir</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/6c7dd3ca1e5eb1e618167b802c89216d93798623/generalfile/path_operations.py#L337'>Method: get_lock_dir</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/6c7dd3ca1e5eb1e618167b802c89216d93798623/generalfile/path_strings.py#L39'>Method: get_lock_path</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/6c7dd3ca1e5eb1e618167b802c89216d93798623/generalfile/path.py#L33'>Method: get_parent</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/6c7dd3ca1e5eb1e618167b802c89216d93798623/generalfile/path_strings.py#L45'>Method: get_path_from_alternative</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/6c7dd3ca1e5eb1e618167b802c89216d93798623/generalfile/path_operations.py#L11'>Method: get_paths_in_folder</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/6c7dd3ca1e5eb1e618167b802c89216d93798623/generalfile/path_operations.py#L11'>Method: get_paths_recursive</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/6c7dd3ca1e5eb1e618167b802c89216d93798623/generalfile/path_strings.py#L19'>Method: get_replaced_alternative_characters</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/6c7dd3ca1e5eb1e618167b802c89216d93798623/generalfile/path_operations.py#L345'>Method: get_working_dir</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/6c7dd3ca1e5eb1e618167b802c89216d93798623/generalfile/path_strings.py#L79'>Method: is_absolute</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/6c7dd3ca1e5eb1e618167b802c89216d93798623/generalfile/path_operations.py#L227'>Method: is_file</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/6c7dd3ca1e5eb1e618167b802c89216d93798623/generalfile/path_operations.py#L233'>Method: is_folder</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/6c7dd3ca1e5eb1e618167b802c89216d93798623/generalfile/path_strings.py#L85'>Method: is_relative</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/6c7dd3ca1e5eb1e618167b802c89216d93798623/generalfile/path_lock.py#L116'>Method: lock</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/6c7dd3ca1e5eb1e618167b802c89216d93798623/generalfile/path_operations.py#L219'>Method: move</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/6c7dd3ca1e5eb1e618167b802c89216d93798623/generalfile/path_strings.py#L153'>Method: name</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/6c7dd3ca1e5eb1e618167b802c89216d93798623/generalfile/path_operations.py#L322'>Method: open_folder</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/6c7dd3ca1e5eb1e618167b802c89216d93798623/generalfile/path_operations.py#L94'>Method: open_operation</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/6c7dd3ca1e5eb1e618167b802c89216d93798623/generalfile/path_strings.py#L147'>Method: parts</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/6c7dd3ca1e5eb1e618167b802c89216d93798623/generalfile/path_operations.py#L120'>Method: read</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/6c7dd3ca1e5eb1e618167b802c89216d93798623/generalfile/path_strings.py#L67'>Method: relative</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/6c7dd3ca1e5eb1e618167b802c89216d93798623/generalfile/path_strings.py#L123'>Method: remove_end</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/6c7dd3ca1e5eb1e618167b802c89216d93798623/generalfile/path_strings.py#L107'>Method: remove_start</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/6c7dd3ca1e5eb1e618167b802c89216d93798623/generalfile/path_operations.py#L11'>Method: rename</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/6c7dd3ca1e5eb1e618167b802c89216d93798623/generalfile/path_strings.py#L139'>Method: same_destination</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/6c7dd3ca1e5eb1e618167b802c89216d93798623/generalfile/path_operations.py#L11'>Method: seconds_since_creation</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/6c7dd3ca1e5eb1e618167b802c89216d93798623/generalfile/path_operations.py#L11'>Method: seconds_since_modified</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/6c7dd3ca1e5eb1e618167b802c89216d93798623/generalfile/path_operations.py#L365'>Method: set_working_dir</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/6c7dd3ca1e5eb1e618167b802c89216d93798623/generalfile/path_strings.py#L91'>Method: startswith</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/6c7dd3ca1e5eb1e618167b802c89216d93798623/generalfile/path_strings.py#L167'>Method: stem</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/6c7dd3ca1e5eb1e618167b802c89216d93798623/generalfile/path_strings.py#L195'>Method: suffix</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/6c7dd3ca1e5eb1e618167b802c89216d93798623/generalfile/path_strings.py#L234'>Method: suffixes</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/6c7dd3ca1e5eb1e618167b802c89216d93798623/generalfile/path_operations.py#L35'>Method: trash</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/6c7dd3ca1e5eb1e618167b802c89216d93798623/generalfile/path_operations.py#L35'>Method: trash_folder_content</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/6c7dd3ca1e5eb1e618167b802c89216d93798623/generalfile/path_strings.py#L181'>Method: true_stem</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/6c7dd3ca1e5eb1e618167b802c89216d93798623/generalfile/path.py#L109'>Method: view</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/6c7dd3ca1e5eb1e618167b802c89216d93798623/generalfile/path_strings.py#L159'>Method: with_name</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/6c7dd3ca1e5eb1e618167b802c89216d93798623/generalfile/path_strings.py#L173'>Method: with_stem</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/6c7dd3ca1e5eb1e618167b802c89216d93798623/generalfile/path_strings.py#L201'>Method: with_suffix</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/6c7dd3ca1e5eb1e618167b802c89216d93798623/generalfile/path_strings.py#L240'>Method: with_suffixes</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/6c7dd3ca1e5eb1e618167b802c89216d93798623/generalfile/path_strings.py#L187'>Method: with_true_stem</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/6c7dd3ca1e5eb1e618167b802c89216d93798623/generalfile/path_operations.py#L259'>Method: without_file</a>
+   └─ <a href='https://github.com/ManderaGeneral/generalfile/blob/6c7dd3ca1e5eb1e618167b802c89216d93798623/generalfile/path_operations.py#L108'>Method: write</a>
+</pre>
 
-## Path
-| Module          | Name                                | Explanation                                                                                     |
-|:----------------|:------------------------------------|:------------------------------------------------------------------------------------------------|
-| path_lock       | lock                                | Create a lock for this path unless path is inside `lock dir`.                                   |
-| path_operations | copy                                | Copy a file or folder next to itself with a new name.                                           |
-| path_operations | copy_to_folder                      | Copy file or files inside given folder to anything except it's own parent, use `copy` for that. |
-| path_operations | create_folder                       | Create folder with this Path unless it exists                                                   |
-| path_operations | delete                              | Delete a file or folder.                                                                        |
-| path_operations | delete_folder_content               | Delete a file or folder and then create an empty folder in it's place.                          |
-| path_operations | exists                              | Get whether this Path exists.                                                                   |
-| path_operations | get_cache_dir                       | Get cache folder.                                                                               |
-| path_operations | get_lock_dir                        | Get lock folder inside cache folder.                                                            |
-| path_operations | get_paths_in_folder                 | Get a generator containing every child Path inside this folder, relative if possible.           |
-| path_operations | get_paths_recursive                 | Get all paths that are next to this file or inside this folder.                                 |
-| path_operations | get_working_dir                     | Get current working folder as a new Path.                                                       |
-| path_operations | is_file                             | Get whether this Path is a file.                                                                |
-| path_operations | is_folder                           | Get whether this Path is a folder.                                                              |
-| path_operations | move                                | Move files inside given folder or file to anything except it's own parent.                      |
-| path_operations | open_folder                         | Open folder to view it manually.                                                                |
-| path_operations | read                                | Read this Path with JSON.                                                                       |
-| path_operations | rename                              | Rename this single file or folder to anything.                                                  |
-| path_operations | seconds_since_creation              | Get time in seconds since file was created.                                                     |
-| path_operations | seconds_since_modified              | Get time in seconds since file was modified.                                                    |
-| path_operations | set_working_dir                     | Set current working folder.                                                                     |
-| path_operations | trash                               | Trash a file or folder.                                                                         |
-| path_operations | trash_folder_content                | Trash a file or folder and then create an empty folder in it's place.                           |
-| path_operations | without_file                        | Get this path without it's name if it's a file, otherwise it returns itself.                    |
-| path_operations | write                               | Write to this Path with JSON.                                                                   |
-| path_strings    | absolute                            | Get new Path as absolute.                                                                       |
-| path_strings    | endswith                            | Get whether this Path ends with given string.                                                   |
-| path_strings    | get_alternative_path                | Get path using alternative delimiter and alternative root for windows.                          |
-| path_strings    | get_lock_path                       | Get absolute lock path pointing to actual lock.                                                 |
-| path_strings    | get_path_from_alternative           | Get path from an alternative representation with or without leading lock dir.                   |
-| path_strings    | get_replaced_alternative_characters | Get a dictionary of all characters that are replaced for the alternative path.                  |
-| path_strings    | is_absolute                         | Get whether this Path is absolute.                                                              |
-| path_strings    | is_relative                         | Get whether this Path is relative.                                                              |
-| path_strings    | name                                | Get name of Path which is stem + suffix.                                                        |
-| path_strings    | parent                              | Get any parent as a new Path.                                                                   |
-| path_strings    | parts                               | Get list of parts building this Path as list of strings.                                        |
-| path_strings    | relative                            | Get new Path as relative.                                                                       |
-| path_strings    | remove_end                          | Remove a string from the end of this Path.                                                      |
-| path_strings    | remove_start                        | Remove a string from the start of this Path.                                                    |
-| path_strings    | same_destination                    | See if two paths point to the same destination.                                                 |
-| path_strings    | startswith                          | Get whether this Path starts with given string.                                                 |
-| path_strings    | stem                                | Get stem which is name without last suffix.                                                     |
-| path_strings    | suffix                              | Get suffix which is name without stem.                                                          |
-| path_strings    | suffixes                            | Get every suffix as a list.                                                                     |
-| path_strings    | true_stem                           | Get true stem which is name without any suffixes.                                               |
-| path_strings    | with_name                           | Get a new Path with new name which is stem + suffix.                                            |
-| path_strings    | with_stem                           | Get a new Path with new stem which is name without last suffix.                                 |
-| path_strings    | with_suffix                         | Get a new Path with a new suffix at any index.                                                  |
-| path_strings    | with_suffixes                       | Get a new Path with a new list of suffixes.                                                     |
-| path_strings    | with_true_stem                      | Get a new Path with new stem which is name without any suffixes.                                |
+## Todos
+| Module              | Message                                                                                     |
+|:--------------------|:--------------------------------------------------------------------------------------------|
+| path\_lock.py        | other\_paths                                                                                 |
+| decorators.py       | Put this in library                                                                         |
+| path.py             | Add a proper place for all variables, add working\_dir, sys.executable and sys.prefix to it. |
+| path\_operations.py  | Can we not just change signature to rename(self, new\_path, overwrite=False) ?               |
+| path\_operations.py  | Filter for Path.get\_paths\_* like we have in ObjInfo.                                        |
+| path\_operations.py  | Add this error parameter for more methods                                                   |
+| path\_spreadsheet.py | Make it order columns if there are any so that they line up with append.                    |
+| path\_spreadsheet.py | Should probably support DataFrame and Series as well.                                       |
 
-## Usage example
-```python
-from generalfile import Path
-
-Path("newfolder/test.txt").write("foobar")  # Automatically creates new folder
-assert Path("newfolder/test.txt").read() == "foobar"
-Path("newfolder").delete()  # Delete entire folder
-
-with Path("foo/bar.txt").lock():  # Recursively lock a file or even a folder which doesn't have to exist.
-    pass  # The lock is created in a seperate cache folder, so you're free to do whatever you want in here
-```
-
-## TODO
- * Optional dependency: .npy for Numpy
- * Tell user to `pip install generalfile[spreadsheet]` instead of `requires pandas` - Probably update generallibrary
+<sup>
+Generated 2021-01-29 11:42 CET for commit <a href='https://github.com/ManderaGeneral/generalfile/commit/6c7dd3ca1e5eb1e618167b802c89216d93798623'>6c7dd3ca1e5eb1e618167b802c89216d93798623</a>.
+</sup>
