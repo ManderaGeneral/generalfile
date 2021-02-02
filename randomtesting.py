@@ -8,14 +8,11 @@ from generalfile import Path
 # Path.get_lock_dir().open_folder()
 
 
+print(Path.get_working_dir())
 
-path = Path().absolute()
+with Path("hello").as_working_dir():
+    print(Path.get_working_dir())
 
-path = path.get_parent(-1)
-
-print(path)
+print(Path.get_working_dir())
 
 
-# list(path.get_paths_recursive())
-
-# path.get_parent(-1).view()

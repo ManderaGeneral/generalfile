@@ -100,12 +100,11 @@ class _Lock:
 
 class Path_ContextManager:
     """ Context manager methods for Path. """
-
     locked_paths = []
 
     @staticmethod
     def _create_context_manager(path, *other_paths):
-        """ :param Path path: """
+        """ :param generalfile.Path path: """
         path_is_lock = path.startswith(path.get_lock_dir())
         path_already_locked_by_this_process = path in path.locked_paths
         if path_is_lock or path_already_locked_by_this_process:
@@ -122,12 +121,24 @@ class Path_ContextManager:
             :param generalfile.Path self: """
         return self._create_context_manager(self.absolute(), *other_paths)
 
+    def as_working_dir(self):
+        """ Temporarily set working dir.
+
+            :param generalfile.Path self: """
+        return TempWorkingDir(self)
 
 
+class TempWorkingDir:
+    """ Temporarily set working dir. """
+    def __init__(self, path):
+        self.path = path
+        self.original_working_dir = path.get_working_dir()
 
+    def __enter__(self):
+        self.path.set_working_dir()
 
-
-
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.original_working_dir.set_working_dir()
 
 
 

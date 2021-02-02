@@ -394,6 +394,13 @@ class FileTest(PathTest):
         else:
             self.assertTrue(len(str_path) == 3 and str_path[1] == ":" and str_path[2] == Path.path_delimiter)
 
+    def test_as_working_dir(self):
+        working_dir = Path.get_working_dir()
+        with Path("hello").as_working_dir():
+            self.assertEqual(working_dir / "hello", Path.get_working_dir())
+
+        self.assertEqual(working_dir, Path.get_working_dir())
+
     def test_threads(self):
         threads = []
         queue = mp.Queue()
