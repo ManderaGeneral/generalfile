@@ -19,7 +19,8 @@ class Path(TreeDiagram, Path_ContextManager, Path_Operations, Path_Strings, Path
         Built on pathlib and TreeDiagram.
         Implements rules to ensure cross-platform compatability.
         Adds useful methods.
-        Todo: Add a proper place for all variables, add working_dir, sys.executable and sys.prefix to it. """
+        Todo: Add a proper place for all variables, add working_dir, sys.executable and sys.prefix to it.
+        Todo: Raise suppressable warning if space in Path. """
     verInfo = VerInfo()
     path_delimiter = verInfo.pathDelimiter
     Path = ...
