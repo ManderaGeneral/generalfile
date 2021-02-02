@@ -25,63 +25,63 @@ Easily manage files cross platform.
 
 ## Attributes
 <pre>
-<a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/__init__.py#L1'>Module: generalfile</a>
-├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/errors.py#L4'>Class: CaseSensitivityError</a>
-├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/errors.py#L5'>Class: InvalidCharacterError</a>
-└─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path.py#L17'>Class: Path</a>
-   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path.py#L17'>Class: Path</a>
-   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_strings.py#L56'>Method: absolute</a>
-   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_operations.py#L11'>Method: copy</a>
-   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_operations.py#L211'>Method: copy_to_folder</a>
-   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_operations.py#L312'>Method: create_folder</a>
-   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_operations.py#L35'>Method: delete</a>
-   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_operations.py#L35'>Method: delete_folder_content</a>
-   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_strings.py#L99'>Method: endswith</a>
-   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_operations.py#L239'>Method: exists</a>
-   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_strings.py#L29'>Method: get_alternative_path</a>
-   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_operations.py#L329'>Method: get_cache_dir</a>
-   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_operations.py#L337'>Method: get_lock_dir</a>
-   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_strings.py#L39'>Method: get_lock_path</a>
-   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path.py#L33'>Method: get_parent</a>
-   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_strings.py#L45'>Method: get_path_from_alternative</a>
-   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_operations.py#L11'>Method: get_paths_in_folder</a>
-   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_operations.py#L11'>Method: get_paths_recursive</a>
-   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_strings.py#L19'>Method: get_replaced_alternative_characters</a>
-   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_operations.py#L345'>Method: get_working_dir</a>
-   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_strings.py#L79'>Method: is_absolute</a>
-   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_operations.py#L227'>Method: is_file</a>
-   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_operations.py#L233'>Method: is_folder</a>
-   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_strings.py#L85'>Method: is_relative</a>
-   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_lock.py#L116'>Method: lock</a>
-   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_operations.py#L219'>Method: move</a>
-   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_strings.py#L153'>Method: name</a>
-   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_operations.py#L322'>Method: open_folder</a>
-   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_operations.py#L94'>Method: open_operation</a>
-   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_strings.py#L147'>Method: parts</a>
-   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_operations.py#L120'>Method: read</a>
-   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_strings.py#L67'>Method: relative</a>
-   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_strings.py#L123'>Method: remove_end</a>
-   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_strings.py#L107'>Method: remove_start</a>
-   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_operations.py#L11'>Method: rename</a>
-   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_strings.py#L139'>Method: same_destination</a>
-   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_operations.py#L11'>Method: seconds_since_creation</a>
-   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_operations.py#L11'>Method: seconds_since_modified</a>
-   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_operations.py#L365'>Method: set_working_dir</a>
-   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_strings.py#L91'>Method: startswith</a>
-   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_strings.py#L167'>Method: stem</a>
-   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_strings.py#L195'>Method: suffix</a>
-   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_strings.py#L234'>Method: suffixes</a>
-   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_operations.py#L35'>Method: trash</a>
-   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_operations.py#L35'>Method: trash_folder_content</a>
-   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_strings.py#L181'>Method: true_stem</a>
-   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path.py#L109'>Method: view</a>
-   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_strings.py#L159'>Method: with_name</a>
-   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_strings.py#L173'>Method: with_stem</a>
-   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_strings.py#L201'>Method: with_suffix</a>
-   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_strings.py#L240'>Method: with_suffixes</a>
-   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_strings.py#L187'>Method: with_true_stem</a>
-   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_operations.py#L259'>Method: without_file</a>
-   └─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_operations.py#L108'>Method: write</a>
+<a href='https://github.com/ManderaGeneral/generalfile/blob/a7f1a39/generalfile/__init__.py#L1'>Module: generalfile</a>
+├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/a7f1a39/generalfile/errors.py#L4'>Class: CaseSensitivityError</a>
+├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/a7f1a39/generalfile/errors.py#L5'>Class: InvalidCharacterError</a>
+└─ <a href='https://github.com/ManderaGeneral/generalfile/blob/a7f1a39/generalfile/path.py#L17'>Class: Path</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/a7f1a39/generalfile/path.py#L17'>Class: Path</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/a7f1a39/generalfile/path_strings.py#L56'>Method: absolute</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/a7f1a39/generalfile/path_operations.py#L11'>Method: copy</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/a7f1a39/generalfile/path_operations.py#L211'>Method: copy_to_folder</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/a7f1a39/generalfile/path_operations.py#L312'>Method: create_folder</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/a7f1a39/generalfile/path_operations.py#L35'>Method: delete</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/a7f1a39/generalfile/path_operations.py#L35'>Method: delete_folder_content</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/a7f1a39/generalfile/path_strings.py#L99'>Method: endswith</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/a7f1a39/generalfile/path_operations.py#L239'>Method: exists</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/a7f1a39/generalfile/path_strings.py#L29'>Method: get_alternative_path</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/a7f1a39/generalfile/path_operations.py#L329'>Method: get_cache_dir</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/a7f1a39/generalfile/path_operations.py#L337'>Method: get_lock_dir</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/a7f1a39/generalfile/path_strings.py#L39'>Method: get_lock_path</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/a7f1a39/generalfile/path.py#L33'>Method: get_parent</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/a7f1a39/generalfile/path_strings.py#L45'>Method: get_path_from_alternative</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/a7f1a39/generalfile/path_operations.py#L11'>Method: get_paths_in_folder</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/a7f1a39/generalfile/path_operations.py#L11'>Method: get_paths_recursive</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/a7f1a39/generalfile/path_strings.py#L19'>Method: get_replaced_alternative_characters</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/a7f1a39/generalfile/path_operations.py#L345'>Method: get_working_dir</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/a7f1a39/generalfile/path_strings.py#L79'>Method: is_absolute</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/a7f1a39/generalfile/path_operations.py#L227'>Method: is_file</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/a7f1a39/generalfile/path_operations.py#L233'>Method: is_folder</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/a7f1a39/generalfile/path_strings.py#L85'>Method: is_relative</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/a7f1a39/generalfile/path_lock.py#L116'>Method: lock</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/a7f1a39/generalfile/path_operations.py#L219'>Method: move</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/a7f1a39/generalfile/path_strings.py#L153'>Method: name</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/a7f1a39/generalfile/path_operations.py#L322'>Method: open_folder</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/a7f1a39/generalfile/path_operations.py#L94'>Method: open_operation</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/a7f1a39/generalfile/path_strings.py#L147'>Method: parts</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/a7f1a39/generalfile/path_operations.py#L120'>Method: read</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/a7f1a39/generalfile/path_strings.py#L67'>Method: relative</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/a7f1a39/generalfile/path_strings.py#L123'>Method: remove_end</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/a7f1a39/generalfile/path_strings.py#L107'>Method: remove_start</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/a7f1a39/generalfile/path_operations.py#L11'>Method: rename</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/a7f1a39/generalfile/path_strings.py#L139'>Method: same_destination</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/a7f1a39/generalfile/path_operations.py#L11'>Method: seconds_since_creation</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/a7f1a39/generalfile/path_operations.py#L11'>Method: seconds_since_modified</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/a7f1a39/generalfile/path_operations.py#L365'>Method: set_working_dir</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/a7f1a39/generalfile/path_strings.py#L91'>Method: startswith</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/a7f1a39/generalfile/path_strings.py#L167'>Method: stem</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/a7f1a39/generalfile/path_strings.py#L195'>Method: suffix</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/a7f1a39/generalfile/path_strings.py#L234'>Method: suffixes</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/a7f1a39/generalfile/path_operations.py#L35'>Method: trash</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/a7f1a39/generalfile/path_operations.py#L35'>Method: trash_folder_content</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/a7f1a39/generalfile/path_strings.py#L181'>Method: true_stem</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/a7f1a39/generalfile/path.py#L109'>Method: view</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/a7f1a39/generalfile/path_strings.py#L159'>Method: with_name</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/a7f1a39/generalfile/path_strings.py#L173'>Method: with_stem</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/a7f1a39/generalfile/path_strings.py#L201'>Method: with_suffix</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/a7f1a39/generalfile/path_strings.py#L240'>Method: with_suffixes</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/a7f1a39/generalfile/path_strings.py#L187'>Method: with_true_stem</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/a7f1a39/generalfile/path_operations.py#L259'>Method: without_file</a>
+   └─ <a href='https://github.com/ManderaGeneral/generalfile/blob/a7f1a39/generalfile/path_operations.py#L108'>Method: write</a>
 </pre>
 
 ## Todo
@@ -97,5 +97,5 @@ Easily manage files cross platform.
 | path\_spreadsheet.py | Should probably support DataFrame and Series as well.                                       |
 
 <sup>
-Generated 2021-02-02 13:07 CET for commit <a href='https://github.com/ManderaGeneral/generalfile/commit/master'>master</a>.
+Generated 2021-02-02 13:08 CET for commit <a href='https://github.com/ManderaGeneral/generalfile/commit/a7f1a39'>a7f1a39</a>.
 </sup>
