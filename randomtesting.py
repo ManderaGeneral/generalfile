@@ -7,6 +7,7 @@ from generalfile import Path
 # Path.get_working_dir().open_folder()
 # Path.get_lock_dir().open_folder()
 
+from pprint import pprint
 
 
-Path("generalfile").get_changed_files(Path("target/generalfile"))
+pprint(Path("generalfile").get_differing_files(Path("target/generalfile"), exist=False, content=True))

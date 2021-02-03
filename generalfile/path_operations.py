@@ -274,7 +274,8 @@ class Path_Operations:
         for child in self._path.iterdir():
             if relative is None:
                 yield self.Path(child, parent=self)
-            yield self.Path(child).relative(base=relative).set_parent(parent=self)
+            else:
+                yield self.Path(child).relative(base=relative).set_parent(parent=self)
 
     @deco_require_state(quick_exists=True)
     def get_paths_recursive(self, depth=-1, include_self=False, include_files=True, include_folders=False, relative=None):
@@ -450,32 +451,43 @@ class Path_Operations:
             :param generalfile.Path self:
             :param path: """
         path = self.Path(path)
-        if self.size() != path.size():
-            return False
+        self_exists = self.exists(quick=True)
+        path_exists = path.exists(quick=True)
+
+        if not self_exists or not path_exists:
+            return self_exists == path_exists
+
+        # if self.size() != path.size():
+        #     return False
+
         with self.lock(path):
-            with open(str(self), "rb") as file1:
-                with open(str(path), "rb") as file2:
+            with open(str(self), "r") as file1:
+                with open(str(path), "r") as file2:
+                    # print(file1.read())
+                    # print(file2.read())
                     return file1.read() == file2.read()
 
-    def get_changed_files(self, path):
+    @deco_require_state(is_folder=True)
+    def get_differing_files(self, target, exist=True, content=True):
         """ Get list of changed files by comparing two folders.
+            Todo: Tests for get_differing_files.
 
             :param generalfile.Path self:
-            :param path: """
-        from pprint import pprint
+            :param target:
+            :param exist:
+            :param content: """
+        target = self.Path(target)
+        assert target.is_folder()
 
         self_paths = set(self.get_paths_recursive(relative=self))
-        path_paths = set(path.get_paths_recursive(relative=path))
+        target_paths = set(target.get_paths_recursive(relative=target))
 
-        # print(self_paths)
-        # print(path_paths)
-
-        diff = self_paths.difference(path_paths)
-        pprint(diff)
-
-        # HERE ** Implement is_identical here as well
-
-
+        diff = set()
+        if exist:
+            diff.update(self_paths.difference(target_paths))
+        if content:
+            diff.update({path for path in self_paths.intersection(target_paths) if not (self / path).is_identical(path=target / path)})
+        return diff
 
 
 

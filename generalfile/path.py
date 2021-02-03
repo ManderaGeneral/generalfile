@@ -2,7 +2,7 @@
 import pathlib
 
 
-from generallibrary import VerInfo, initBases, TreeDiagram
+from generallibrary import VerInfo, initBases, TreeDiagram, classproperty
 
 from generalfile.errors import InvalidCharacterError
 from generalfile.path_lock import Path_ContextManager
@@ -23,13 +23,18 @@ class Path(TreeDiagram, Path_ContextManager, Path_Operations, Path_Strings, Path
         Todo: Raise suppressable warning if space in Path. """
     verInfo = VerInfo()
     path_delimiter = verInfo.pathDelimiter
-    Path = ...
+    _Path_cls = ...
 
     def __init__(self, path=None, parent=None):
         path = self._scrub(str_path="" if path is None else str(path))
         self.path = self.data_keys_add(key="path", value=path, unique=True)
 
         self._path = pathlib.Path(self.path)
+
+    @classproperty
+    def Path(self):
+        """ :rtype: Path """
+        return self._Path_cls
 
     def get_parent(self, index=0):
         """ Override to generate all parents if direct parent is None.
@@ -116,7 +121,7 @@ class Path(TreeDiagram, Path_ContextManager, Path_Operations, Path_Strings, Path
             custom_repr = lambda path: path.parts()[-1]
         return TreeDiagram.view(self=self, indent=indent, relative=relative, custom_repr=custom_repr, print_out=print_out)
 
-setattr(Path, "Path", Path)
+setattr(Path, "_Path_cls", Path)
 
 
 
