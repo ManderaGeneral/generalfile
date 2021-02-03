@@ -31,6 +31,8 @@ class Path(TreeDiagram, Path_ContextManager, Path_Operations, Path_Strings, Path
 
         self._path = pathlib.Path(self.path)
 
+    copy_to = NotImplemented  # Maybe something like this to disable certain methods
+
     @classproperty
     def Path(self):
         """ :rtype: Path """

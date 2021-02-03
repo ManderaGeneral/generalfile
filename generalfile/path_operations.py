@@ -278,7 +278,7 @@ class Path_Operations:
                 yield self.Path(child).relative(base=relative).set_parent(parent=self)
 
     @deco_require_state(quick_exists=True)
-    def get_paths_recursive(self, depth=-1, include_self=False, include_files=True, include_folders=False, relative=None):
+    def get_paths_recursive(self, depth=-1, include_self=False, include_files=True, include_folders=False, relative=None, filt=None):
         """ Get all paths that are next to this file or inside this folder.
             Todo: Filter for Path.get_paths_* like we have in ObjInfo.
 
@@ -287,7 +287,8 @@ class Path_Operations:
             :param include_files:
             :param include_folders:
             :param generalfile.Path self:
-            :param relative: """
+            :param relative:
+            :param function filt: Optional filter with Path as arg. """
         if self.is_file():
             queued_folders = [self.get_parent()]
         elif self.is_folder():
@@ -302,6 +303,9 @@ class Path_Operations:
 
         while queued_folders:
             for path in queued_folders[0].get_paths_in_folder():
+                if filt and not filt(path):
+                    continue
+
                 if path.is_file():
                     if include_files and path != self:
                         yield path if relative is None else path.relative(base=relative)
@@ -468,19 +472,20 @@ class Path_Operations:
                     return file1.read() == file2.read()
 
     @deco_require_state(is_folder=True)
-    def get_differing_files(self, target, exist=True, content=True):
+    def get_differing_files(self, target, exist=True, content=True, filt=None):
         """ Get list of changed files by comparing two folders.
             Todo: Tests for get_differing_files.
 
             :param generalfile.Path self:
             :param target:
             :param exist:
-            :param content: """
+            :param content:
+            :param filt: """
         target = self.Path(target)
         assert target.is_folder()
 
-        self_paths = set(self.get_paths_recursive(relative=self))
-        target_paths = set(target.get_paths_recursive(relative=target))
+        self_paths = set(self.get_paths_recursive(relative=self, filt=filt))
+        target_paths = set(target.get_paths_recursive(relative=target, filt=filt))
 
         diff = set()
         if exist:
