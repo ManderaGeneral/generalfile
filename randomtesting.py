@@ -8,11 +8,5 @@ from generalfile import Path
 # Path.get_lock_dir().open_folder()
 
 
-print(Path.get_working_dir())
 
-with Path("hello").as_working_dir():
-    print(Path.get_working_dir())
-
-print(Path.get_working_dir())
-
-
+Path("generalfile").get_changed_files(Path("target/generalfile"))

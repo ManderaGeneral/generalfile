@@ -266,15 +266,18 @@ class Path_Operations:
             return self
 
     @deco_require_state(is_folder=True)
-    def get_paths_in_folder(self):
+    def get_paths_in_folder(self, relative=None):
         """ Get a generator containing every child Path inside this folder, relative if possible.
 
-            :param generalfile.Path self: """
+            :param generalfile.Path self:
+            :param relative: """
         for child in self._path.iterdir():
-            yield self.Path(child, parent=self)
+            if relative is None:
+                yield self.Path(child, parent=self)
+            yield self.Path(child).relative(base=relative).set_parent(parent=self)
 
     @deco_require_state(quick_exists=True)
-    def get_paths_recursive(self, depth=-1, include_self=False, include_files=True, include_folders=False):
+    def get_paths_recursive(self, depth=-1, include_self=False, include_files=True, include_folders=False, relative=None):
         """ Get all paths that are next to this file or inside this folder.
             Todo: Filter for Path.get_paths_* like we have in ObjInfo.
 
@@ -282,7 +285,8 @@ class Path_Operations:
             :param include_self:
             :param include_files:
             :param include_folders:
-            :param generalfile.Path self: """
+            :param generalfile.Path self:
+            :param relative: """
         if self.is_file():
             queued_folders = [self.get_parent()]
         elif self.is_folder():
@@ -293,16 +297,16 @@ class Path_Operations:
         self_parts_len = len(queued_folders[0].parts())
 
         if include_self:
-            yield self
+            yield self if relative is None else self.relative(base=relative)
 
         while queued_folders:
             for path in queued_folders[0].get_paths_in_folder():
                 if path.is_file():
                     if include_files and path != self:
-                        yield path
+                        yield path if relative is None else path.relative(base=relative)
                 elif path.is_folder():
                     if include_folders:
-                        yield path
+                        yield path if relative is None else path.relative(base=relative)
 
                     current_depth = len(path.parts()) - self_parts_len + 1
                     if depth == -1 or current_depth < depth:
@@ -428,4 +432,69 @@ class Path_Operations:
 
             :param generalfile.Path self: """
         return time.time() - os.path.getmtime(str(self))
+
+
+
+
+
+    @deco_require_state(is_file=True)
+    def size(self):
+        """ Get size in bytes of file.
+
+            :param generalfile.Path self: """
+        return self._path.stat().st_size
+
+    def is_identical(self, path):
+        """ Get whether this file is identical to another.
+
+            :param generalfile.Path self:
+            :param path: """
+        path = self.Path(path)
+        if self.size() != path.size():
+            return False
+        with self.lock(path):
+            with open(str(self), "rb") as file1:
+                with open(str(path), "rb") as file2:
+                    return file1.read() == file2.read()
+
+    def get_changed_files(self, path):
+        """ Get list of changed files by comparing two folders.
+
+            :param generalfile.Path self:
+            :param path: """
+        from pprint import pprint
+
+        self_paths = set(self.get_paths_recursive(relative=self))
+        path_paths = set(path.get_paths_recursive(relative=path))
+
+        # print(self_paths)
+        # print(path_paths)
+
+        diff = self_paths.difference(path_paths)
+        pprint(diff)
+
+        # HERE ** Implement is_identical here as well
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
