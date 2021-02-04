@@ -1,4 +1,4 @@
-# generalfile 2.3.4
+# generalfile 2.3.5
 Easily manage files cross platform.
 
 [![workflow Actions Status](https://github.com/ManderaGeneral/generalfile/workflows/workflow/badge.svg)](https://github.com/ManderaGeneral/generalfile/actions)
@@ -9,7 +9,7 @@ Easily manage files cross platform.
 
 ## Contents
 <pre>
-<a href='#generalfile-2.3.4'>generalfile 2.3.4</a>
+<a href='#generalfile-2.3.5'>generalfile 2.3.5</a>
 ├─ <a href='#Contents'>Contents</a>
 ├─ <a href='#Installation'>Installation</a>
 ├─ <a href='#Attributes'>Attributes</a>
@@ -104,5 +104,5 @@ Easily manage files cross platform.
 | path\_spreadsheet.py | Should probably support DataFrame and Series as well.                                       |
 
 <sup>
-Generated 2021-02-04 11:14 CET for commit <a href='https://github.com/ManderaGeneral/generalfile/commit/master'>master</a>.
+Generated 2021-02-04 11:28 CET for commit <a href='https://github.com/ManderaGeneral/generalfile/commit/master'>master</a>.
 </sup>

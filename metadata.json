@@ -1,6 +1,6 @@
 {
     "name": "generalfile",
-    "version": "2.3.4",
+    "version": "2.3.5",
     "description": "Easily manage files cross platform.",
     "install_requires": [
         "generallibrary",
@@ -8,7 +8,9 @@
         "appdirs"
     ],
     "extras_require": {
-        "spreadsheet": ["pandas"]
+        "spreadsheet": [
+            "pandas"
+        ]
     },
     "topics": [
         "file-manager"
