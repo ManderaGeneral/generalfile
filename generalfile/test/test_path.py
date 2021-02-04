@@ -401,6 +401,17 @@ class FileTest(PathTest):
 
         self.assertEqual(working_dir, Path.get_working_dir())
 
+    def test_match(self):
+        self.assertEqual(True, Path("hello/there").match("The*"))
+        self.assertEqual(True, Path("hello/there").match("*"))
+        self.assertEqual(True, Path("hello/there").match("*h*"))
+        self.assertEqual(True, Path(".git").match(".*"))
+
+        self.assertEqual(False, Path(".git").match("."))
+        self.assertEqual(False, Path("hello/there").match("*x*"))
+        self.assertEqual(False, Path("hello/there").match("The"))
+        self.assertEqual(False, Path("hello/there").match("hello/there"))
+
     def test_threads(self):
         threads = []
         queue = mp.Queue()

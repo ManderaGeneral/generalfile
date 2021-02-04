@@ -10,4 +10,8 @@ from generalfile import Path
 from pprint import pprint
 
 
-pprint(Path("generalfile").get_differing_files(Path("target/generalfile"), exist=False, content=True))
+# pprint(Path("generalfile").get_differing_files(Path("target/generalfile"), exist=False, content=True))
+
+
+
+

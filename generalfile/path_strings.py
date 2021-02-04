@@ -1,4 +1,6 @@
 
+import re
+
 
 class Path_Strings:
     """ String operations for Path. """
@@ -245,3 +247,44 @@ class Path_Strings:
             :param generalfile.Path self:
             :rtype: generalfile.Path """
         return self.Path(self.with_name(f"{self.true_stem()}{''.join(suffixes)}"))
+
+    def match(self, *lines):
+        """ Get whether any parts of this Path matches any given filter line.
+
+            :param generalfile.Path self: """
+        for part in self.parts():
+            for line in lines:
+                line = re.escape(line)
+                line = line.replace(r"\*", ".+")
+                pattern = f"^{line}$"
+                if re.match(pattern, part, re.IGNORECASE):
+                    return True
+        return False
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
