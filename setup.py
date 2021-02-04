@@ -6,7 +6,7 @@ setup(
     name="generalfile",
     author='Rickard "Mandera" Abraham',
     author_email="rickard.abraham@gmail.com",
-    version="2.3.3",
+    version="2.3.4",
     description="Easily manage files cross platform.",
     long_description=(Path(__file__).parent / 'README.md').read_text(encoding='utf-8'),
     long_description_content_type="text/markdown",
