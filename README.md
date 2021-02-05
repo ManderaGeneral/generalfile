@@ -1,21 +1,21 @@
-# generalfile 2.3.8
+# generalfile
 Easily manage files cross platform.
 
 This package and 3 other make up [ManderaGeneral](https://github.com/Mandera).
 
 ## Information
-| Package                                                      | Version                                        | Latest Release       | Python                                                                                                                   | Platform        |
-|:-------------------------------------------------------------|:-----------------------------------------------|:---------------------|:-------------------------------------------------------------------------------------------------------------------------|:----------------|
-| [generalfile](https://github.com/ManderaGeneral/generalfile) | [2.3.8](https://pypi.org/project/generalfile/) | 2021-02-04 17:13 CET | [3.8](https://www.python.org/downloads/release/python-380/), [3.9](https://www.python.org/downloads/release/python-390/) | Windows, Ubuntu |
+| Package                                                      | Version                                        | Latest Release       | Python                                                                                                                   | Platform        | Todos                                                    |
+|:-------------------------------------------------------------|:-----------------------------------------------|:---------------------|:-------------------------------------------------------------------------------------------------------------------------|:----------------|:---------------------------------------------------------|
+| [generalfile](https://github.com/ManderaGeneral/generalfile) | [2.3.8](https://pypi.org/project/generalfile/) | 2021-02-04 17:13 CET | [3.8](https://www.python.org/downloads/release/python-380/), [3.9](https://www.python.org/downloads/release/python-390/) | Windows, Ubuntu | [10](https://github.com/ManderaGeneral/generalfile#Todo) |
 
 ## Contents
 <pre>
-<a href='#generalfile-2.3.8'>generalfile 2.3.8</a>
+<a href='#generalfile'>generalfile</a>
 ├─ <a href='#Information'>Information</a>
 ├─ <a href='#Contents'>Contents</a>
 ├─ <a href='#Installation'>Installation</a>
 ├─ <a href='#Attributes'>Attributes</a>
-└─ <a href='#Todo-(10x)'>Todo (10x)</a>
+└─ <a href='#Todo'>Todo</a>
 </pre>
 
 ## Installation
@@ -91,7 +91,7 @@ This package and 3 other make up [ManderaGeneral](https://github.com/Mandera).
    └─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_operations.py#L108'>Method: write</a>
 </pre>
 
-## Todo (10x)
+## Todo
 | Module              | Message                                                                                     |
 |:--------------------|:--------------------------------------------------------------------------------------------|
 | path\_lock.py        | other\_paths                                                                                 |
@@ -106,5 +106,5 @@ This package and 3 other make up [ManderaGeneral](https://github.com/Mandera).
 | path\_spreadsheet.py | Should probably support DataFrame and Series as well.                                       |
 
 <sup>
-Generated 2021-02-05 12:26 CET for commit <a href='https://github.com/ManderaGeneral/generalfile/commit/master'>master</a>.
+Generated 2021-02-05 12:36 CET for commit <a href='https://github.com/ManderaGeneral/generalfile/commit/master'>master</a>.
 </sup>
