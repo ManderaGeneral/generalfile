@@ -1,5 +1,6 @@
 
 import re
+import urllib.parse
 
 
 class Path_Strings:
@@ -261,7 +262,10 @@ class Path_Strings:
                     return True
         return False
 
-
+    def encode(self):
+        """ Return a URL encoded string from this Path. """
+        url = str(self).replace("\\", "/")
+        return urllib.parse.quote(url)
 
 
 

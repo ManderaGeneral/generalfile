@@ -412,6 +412,12 @@ class FileTest(PathTest):
         self.assertEqual(False, Path("hello/there").match("The"))
         self.assertEqual(False, Path("hello/there").match("hello/there"))
 
+    def test_encode(self):
+        self.assertEqual("foo/bar", Path("foo\\bar").encode())
+        self.assertEqual("foo/bar", Path("foo/bar").encode())
+        self.assertEqual("foo%20bar", Path("foo bar").encode())
+        self.assertEqual("foo/bar/hi%20there", Path("foo/bar\\hi there").encode())
+
     def test_threads(self):
         threads = []
         queue = mp.Queue()

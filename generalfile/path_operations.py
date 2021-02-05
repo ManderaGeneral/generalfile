@@ -117,12 +117,19 @@ class Path_Operations:
             write_path.open_operation("w", lambda stream: stream.write(content_json))
         return content_json
 
-    def read(self):
+    def read(self, default=...):
         """ Read this Path with JSON.
 
-            :param generalfile.Path self: """
+            :param generalfile.Path self:
+            :param default: Optionally return a default value. """
         with ReadContext(self) as read_path:
-            return read_path.open_operation("r", lambda stream: json.loads(stream.read()))
+            try:
+                return read_path.open_operation("r", lambda stream: json.loads(stream.read()))
+            except FileNotFoundError as e:
+                if default is ...:
+                    raise e
+                else:
+                    return default
 
     @deco_require_state(exists=True)
     def rename(self, name=None, stem=None, suffix=None, overwrite=False):
