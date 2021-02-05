@@ -2,9 +2,9 @@
 Easily manage files cross platform.
 
 ## Information
-| Package                                                      | Version   | Python         | Platform              |
-|:-------------------------------------------------------------|:----------|:---------------|:----------------------|
-| [generalfile](https://github.com/ManderaGeneral/generalfile) | 2.3.8     | ('3.8', '3.9') | ('windows', 'ubuntu') |
+| Package                                                      | Version                                        | Latest Release       | Python                                                                                                                   | Platform        |
+|:-------------------------------------------------------------|:-----------------------------------------------|:---------------------|:-------------------------------------------------------------------------------------------------------------------------|:----------------|
+| [generalfile](https://github.com/ManderaGeneral/generalfile) | [2.3.8](https://pypi.org/project/generalfile/) | 2021-02-04 17:13 CET | [3.8](https://www.python.org/downloads/release/python-380/), [3.9](https://www.python.org/downloads/release/python-390/) | Windows, Ubuntu |
 
 ## Contents
 <pre>
@@ -104,5 +104,5 @@ Easily manage files cross platform.
 | path\_spreadsheet.py | Should probably support DataFrame and Series as well.                                       |
 
 <sup>
-Generated 2021-02-04 18:27 CET for commit <a href='https://github.com/ManderaGeneral/generalfile/commit/master'>master</a>.
+Generated 2021-02-05 11:05 CET for commit <a href='https://github.com/ManderaGeneral/generalfile/commit/master'>master</a>.
 </sup>
