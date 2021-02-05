@@ -106,5 +106,5 @@ This package and 3 other make up [ManderaGeneral](https://github.com/Mandera).
 | path\_spreadsheet.py | Should probably support DataFrame and Series as well.                                       |
 
 <sup>
-Generated 2021-02-05 12:36 CET for commit <a href='https://github.com/ManderaGeneral/generalfile/commit/master'>master</a>.
+Generated 2021-02-05 12:51 CET for commit <a href='https://github.com/ManderaGeneral/generalfile/commit/master'>master</a>.
 </sup>
