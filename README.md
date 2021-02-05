@@ -1,6 +1,8 @@
 # generalfile 2.3.8
 Easily manage files cross platform.
 
+This package and 3 other make up [ManderaGeneral](https://github.com/Mandera).
+
 ## Information
 | Package                                                      | Version                                        | Latest Release       | Python                                                                                                                   | Platform        |
 |:-------------------------------------------------------------|:-----------------------------------------------|:---------------------|:-------------------------------------------------------------------------------------------------------------------------|:----------------|
@@ -13,7 +15,7 @@ Easily manage files cross platform.
 ├─ <a href='#Contents'>Contents</a>
 ├─ <a href='#Installation'>Installation</a>
 ├─ <a href='#Attributes'>Attributes</a>
-└─ <a href='#Todo'>Todo</a>
+└─ <a href='#Todo-(10x)'>Todo (10x)</a>
 </pre>
 
 ## Installation
@@ -89,7 +91,7 @@ Easily manage files cross platform.
    └─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_operations.py#L108'>Method: write</a>
 </pre>
 
-## Todo
+## Todo (10x)
 | Module              | Message                                                                                     |
 |:--------------------|:--------------------------------------------------------------------------------------------|
 | path\_lock.py        | other\_paths                                                                                 |
@@ -104,5 +106,5 @@ Easily manage files cross platform.
 | path\_spreadsheet.py | Should probably support DataFrame and Series as well.                                       |
 
 <sup>
-Generated 2021-02-05 11:17 CET for commit <a href='https://github.com/ManderaGeneral/generalfile/commit/master'>master</a>.
+Generated 2021-02-05 12:08 CET for commit <a href='https://github.com/ManderaGeneral/generalfile/commit/master'>master</a>.
 </sup>
