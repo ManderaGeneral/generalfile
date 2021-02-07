@@ -1,9 +1,13 @@
 
-def copy_function_metadata(base, target):  # TODO: Put this in library
-    """ Update a wrappers' metadata with base function's.
-        Initally used for `getLocalFeaturesAsMD`. """
-    target.__doc__ = base.__doc__
-    target.__module__ = base.__module__
+
+def wrapper_transfer(base, target):  # TODO: Put wrapper_transfer() in library.
+    """ Update a wrappers' metadata with base function's to properly propagate info. """
+    for attr in ("__doc__", "__module__", "__name__"):
+        setattr(target, attr, getattr(base, attr))
+    setattr(target, "wrapped", base)
+
+    return target
+
 
 def deco_require_state(is_file=None, is_folder=None, exists=None, quick_exists=None):
     """ Decorator to easily configure and see which state to require. """
@@ -22,13 +26,10 @@ def deco_require_state(is_file=None, is_folder=None, exists=None, quick_exists=N
             elif quick_exists is not None:
                 if self.exists(quick=True) is not quick_exists:
                     raise AttributeError(f"Path {self} quick exists check didn't match ({quick_exists}).")
-
             return function(self, *args, **kwargs)
-
-        copy_function_metadata(function, _wrapper)
-
-        return _wrapper
+        return wrapper_transfer(function, _wrapper)
     return _decorator
+
 
 def deco_preserve_working_dir(function):
     """ Decorator to preserve working dir if given function changes it somehow. """
@@ -38,10 +39,7 @@ def deco_preserve_working_dir(function):
         if working_dir_path != args[0].Path.get_working_dir():
             working_dir_path.set_working_dir()
         return result
-    copy_function_metadata(function, _wrapper)
-    return _wrapper
-
-
+    return wrapper_transfer(function, _wrapper)
 
 
 def deco_return_if_removed(content):
@@ -60,9 +58,6 @@ def deco_return_if_removed(content):
 
             function(*args, **kwargs)
             return True
-
-        copy_function_metadata(function, _wrapper)
-
-        return _wrapper
+        return wrapper_transfer(function, _wrapper)
     return _decorator
 
