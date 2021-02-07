@@ -501,6 +501,17 @@ class Path_Operations:
             diff.update({path for path in self_paths.intersection(target_paths) if not (self / path).is_identical(path=target / path)})
         return diff
 
+    def contains(self, text):
+        """ Return whether text string exists in one of the files.
+
+            :param paths tuple[generalfile.Path] self:
+            :param text: """
+        with self.lock():
+            with open(str(self), "r") as stream:
+                for line in stream:
+                    if text in line:
+                        return True
+        return False
 
 
 

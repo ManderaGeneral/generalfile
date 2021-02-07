@@ -23,7 +23,9 @@ class Path_Text:
                     return write_path.open_operation("w", lambda stream: stream.write(str(text)))
 
             def read(self):
-                """ Read from this path to get a string. """
+                """ Read from this path to get a string.
+
+                    :rtype: str"""
                 with self.ReadContext(self.path) as read_path:
                     return read_path.open_operation("r", lambda stream: stream.read())
 
