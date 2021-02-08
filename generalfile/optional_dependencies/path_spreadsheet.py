@@ -32,8 +32,6 @@ class Path_Spreadsheet:
                     Should work with: Keys, Index and Transposed (8 combinations)
                     If DataFrame has both keys and index then cell A1 becomes NaN
 
-                    TODO: Make it order columns if there are any so that they line up with append.
-
                     :param pandas.DataFrame df: Serializable by JSON
                     :param overwrite: Whether to allow overwriting or not. """
 
@@ -112,7 +110,7 @@ class Path_Spreadsheet:
                  | {1: {"b": 2, "c": 3}, 4: {"e": 5, "f": 6}}
                  | {1: [2, 3], 4: [5, 6]}
 
-                TODO: Should probably support DataFrame and Series as well.
+                TODO: Support DataFrame and Series with spreadsheet.append()
 
                 :param obj: Iterable (Optionally inside another iterable) or a value for a single cell
                 """

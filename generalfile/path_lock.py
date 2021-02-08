@@ -9,11 +9,11 @@ class _Lock:
             Create lock.
             Make sure only locked by self.
         A lock is inactive if it can be removed, as there's no Lock holding it's file stream.
+        Todo: Actually lock the additional paths given to Path.lock()
         """
     def __init__(self, abs_path, *other_paths):
         self.path = abs_path
         self.lock_file_stream = None
-        # TODO: other_paths
 
     def __enter__(self):
         self._attempt_lock_creation()

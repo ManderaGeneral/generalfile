@@ -135,9 +135,6 @@ class Path_Operations:
     def rename(self, name=None, stem=None, suffix=None, overwrite=False):
         """ Rename this single file or folder to anything.
 
-            TODO: Can we not just change signature to rename(self, new_path, overwrite=False) ?
-                Then just require parents to be same and just use path's with_* methods.
-
             :param generalfile.Path self:
             :param name:
             :param stem:
@@ -287,7 +284,6 @@ class Path_Operations:
     @deco_require_state(quick_exists=True)
     def get_paths_recursive(self, depth=-1, include_self=False, include_files=True, include_folders=False, relative=None, filt=None):
         """ Get all paths that are next to this file or inside this folder.
-            Todo: Filter for Path.get_paths_* like we have in ObjInfo.
 
             :param depth: Depth of -1 is limitless recursive searching. Depth of 1 searches only first level.
             :param include_self:
@@ -388,8 +384,9 @@ class Path_Operations:
 
     @deco_preserve_working_dir
     @deco_return_if_removed(content=False)
-    def delete(self, error=True):  # TODO: Add this error parameter for more methods
+    def delete(self, error=True):
         """ Delete a file or folder.
+            Todo: Proper decorator to optionally suppress specified errors.
 
             :param error:
             :param generalfile.Path self: """
@@ -481,7 +478,6 @@ class Path_Operations:
     @deco_require_state(is_folder=True)
     def get_differing_files(self, target, exist=True, content=True, filt=None):
         """ Get list of changed files by comparing two folders.
-            Todo: Tests for get_differing_files.
 
             :param generalfile.Path self:
             :param target:

@@ -1,12 +1,5 @@
 
-
-def wrapper_transfer(base, target):  # TODO: Put wrapper_transfer() in library.
-    """ Update a wrappers' metadata with base function's to properly propagate info. """
-    for attr in ("__doc__", "__module__", "__name__"):
-        setattr(target, attr, getattr(base, attr))
-    setattr(target, "wrapped", base)
-
-    return target
+from generallibrary.functions import wrapper_transfer
 
 
 def deco_require_state(is_file=None, is_folder=None, exists=None, quick_exists=None):
