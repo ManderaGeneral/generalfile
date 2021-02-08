@@ -20,7 +20,9 @@ class Path(TreeDiagram, Path_ContextManager, Path_Operations, Path_Strings, Path
         Implements rules to ensure cross-platform compatability.
         Adds useful methods.
         Todo: Add a proper place for all variables, add working_dir, sys.executable and sys.prefix to it.
-        Todo: Raise suppressable warning if space in Path. """
+        Todo: Raise suppressable warning if space in Path.
+        Todo: Binary extension.
+        Todo: Pack and unpack. """
     verInfo = VerInfo()
     path_delimiter = verInfo.pathDelimiter
     _Path_cls = ...
