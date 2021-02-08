@@ -417,6 +417,8 @@ class FileTest(PathTest):
         self.assertEqual("foo/bar", Path("foo/bar").encode())
         self.assertEqual("foo%20bar", Path("foo bar").encode())
         self.assertEqual("foo/bar/hi%20there", Path("foo/bar\\hi there").encode())
+        self.assertEqual("_hello/there_now.py", Path("_hello/there_now.py").encode())
+        self.assertEqual("foo/_bar_now", Path("foo\\_bar_now").encode())
 
     def test_threads(self):
         threads = []
