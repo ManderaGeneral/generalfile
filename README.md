@@ -6,7 +6,7 @@ This package and 3 other make up [ManderaGeneral](https://github.com/Mandera).
 ## Information
 | Package                                                      | Version                                         | Latest Release       | Python                                                                                                                   | Platform        | Todos                                                    |   Hierarchy |
 |:-------------------------------------------------------------|:------------------------------------------------|:---------------------|:-------------------------------------------------------------------------------------------------------------------------|:----------------|:---------------------------------------------------------|------------:|
-| [generalfile](https://github.com/ManderaGeneral/generalfile) | [2.3.11](https://pypi.org/project/generalfile/) | 2021-02-07 11:19 CET | [3.8](https://www.python.org/downloads/release/python-380/), [3.9](https://www.python.org/downloads/release/python-390/) | Windows, Ubuntu | [10](https://github.com/ManderaGeneral/generalfile#Todo) |           1 |
+| [generalfile](https://github.com/ManderaGeneral/generalfile) | [2.3.12](https://pypi.org/project/generalfile/) | 2021-02-08 08:20 CET | [3.8](https://www.python.org/downloads/release/python-380/), [3.9](https://www.python.org/downloads/release/python-390/) | Windows, Ubuntu | [10](https://github.com/ManderaGeneral/generalfile#Todo) |           1 |
 
 ## Contents
 <pre>
@@ -108,5 +108,5 @@ This package and 3 other make up [ManderaGeneral](https://github.com/Mandera).
 | <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/optional_dependencies/path_spreadsheet.py#L1'>path_spreadsheet.py</a> | <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/optional_dependencies/path_spreadsheet.py#L115'>Should probably support DataFrame and Series as well.</a>                   |
 
 <sup>
-Generated 2021-02-08 08:10 CET for commit <a href='https://github.com/ManderaGeneral/generalfile/commit/master'>master</a>.
+Generated 2021-02-08 08:20 CET for commit <a href='https://github.com/ManderaGeneral/generalfile/commit/master'>master</a>.
 </sup>
