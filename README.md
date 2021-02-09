@@ -34,6 +34,7 @@ This package and 3 other make up [ManderaGeneral](https://github.com/Mandera).
    ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path.py#L17'>Class: Path</a>
    ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_strings.py#L59'>Method: absolute</a>
    ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_lock.py#L124'>Method: as_working_dir</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path.py#L10'>Property: cfg</a>
    ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_operations.py#L500'>Method: contains</a> <b>(Untested)</b>
    ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_operations.py#L157'>Method: copy</a>
    │  └─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_operations.py#L156'>Function: wrapped</a> <b>(Untested)</b>
@@ -55,6 +56,7 @@ This package and 3 other make up [ManderaGeneral](https://github.com/Mandera).
    ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_operations.py#L349'>Method: get_lock_dir</a> <b>(Untested)</b>
    ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_strings.py#L42'>Method: get_lock_path</a> <b>(Untested)</b>
    ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path.py#L43'>Method: get_parent</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path.py#L14'>Property: get_part</a> <b>(Untested)</b>
    ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_strings.py#L48'>Method: get_path_from_alternative</a> <b>(Untested)</b>
    ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_operations.py#L273'>Method: get_paths_in_folder</a> <b>(Untested)</b>
    │  └─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_operations.py#L272'>Function: wrapped</a> <b>(Untested)</b>
@@ -88,10 +90,12 @@ This package and 3 other make up [ManderaGeneral](https://github.com/Mandera).
    ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_operations.py#L377'>Method: set_working_dir</a>
    ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_operations.py#L450'>Method: size</a> <b>(Untested)</b>
    │  └─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_operations.py#L449'>Function: wrapped</a> <b>(Untested)</b>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path.py#L7'>Property: spreadsheet</a>
    ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_strings.py#L94'>Method: startswith</a>
    ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_strings.py#L171'>Method: stem</a>
    ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_strings.py#L199'>Method: suffix</a>
    ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_strings.py#L238'>Method: suffixes</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path.py#L9'>Property: text</a>
    ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_operations.py#L405'>Method: trash</a>
    │  └─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_operations.py#L404'>Function: wrapped</a> <b>(Untested)</b>
    │     └─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_operations.py#L403'>Function: wrapped</a> <b>(Untested)</b>
@@ -121,5 +125,5 @@ This package and 3 other make up [ManderaGeneral](https://github.com/Mandera).
 | <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/optional_dependencies/path_spreadsheet.py#L1'>path_spreadsheet.py</a> | <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/optional_dependencies/path_spreadsheet.py#L113'>Support DataFrame and Series with spreadsheet.append()</a>   |
 
 <sup>
-Generated 2021-02-09 07:39 CET for commit <a href='https://github.com/ManderaGeneral/generalfile/commit/master'>master</a>.
+Generated 2021-02-09 09:22 CET for commit <a href='https://github.com/ManderaGeneral/generalfile/commit/master'>master</a>.
 </sup>
