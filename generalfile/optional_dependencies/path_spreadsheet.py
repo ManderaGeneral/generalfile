@@ -1,5 +1,5 @@
 
-from generallibrary import deco_cache, typeChecker, getRows, initBases
+from generallibrary import deco_cache, typeChecker, get_rows, initBases
 
 
 class Path_Spreadsheet:
@@ -96,7 +96,7 @@ class Path_Spreadsheet:
                     if not self._indexIsNamed(df.index):
                         df.index = self.pd.RangeIndex(len(df.index))
 
-                    return df.convert_dtypes()
+                    return self._try_convert_dtypes(df)
 
             def append(self, obj):
                 """
@@ -116,7 +116,7 @@ class Path_Spreadsheet:
                 """
                 def _append_helper(stream):
                     writer = self.csv.writer(stream, delimiter="\t", lineterminator="\n")
-                    for row in getRows(obj):
+                    for row in get_rows(obj):
                         writer.writerow(row)
 
                 with self.AppendContext(self.path) as append_path:
@@ -128,13 +128,20 @@ class Path_Spreadsheet:
                 Simple version to see if a DataFrame index is named or not
                 :param index: DataFrame's index (columns or index)
                 """
-                if str(index[0]) == "0" or str(index[0]) == "1":
+                if not len(index) or str(index[0]) == "0" or str(index[0]) == "1":
                     return False
                 else:
                     return True
 
+            @staticmethod
+            def _try_convert_dtypes(df):
+                try:
+                    return df.convert_dtypes()
+                except ValueError:
+                    return df
+
             def _read_helper(self, path, header, column):
-                return self.pd.read_csv(str(path), sep="\t", header=header, index_col=column).convert_dtypes()
+                return self._try_convert_dtypes(self.pd.read_csv(str(path), sep="\t", header=header, index_col=column))
 
             def _append_helper(self, iterable_obj, key=None):
                 """

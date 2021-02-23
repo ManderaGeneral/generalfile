@@ -44,7 +44,7 @@ class Path(TreeDiagram, Path_ContextManager, Path_Operations, Path_Strings, Path
         """ Override to generate all parents if direct parent is None.
 
             :rtype: Path or None """
-        if self._parent is None:
+        if not self._parents:
             self._generate_parents()
         return TreeDiagram.get_parent(self=self, index=index)
 
