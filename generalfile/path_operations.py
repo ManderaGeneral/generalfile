@@ -4,6 +4,7 @@ import os
 import shutil
 from send2trash import send2trash
 import json
+import setuptools
 from distutils.dir_util import copy_tree
 import time
 
