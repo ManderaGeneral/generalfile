@@ -6,7 +6,7 @@ This package and 3 other make up [ManderaGeneral](https://github.com/Mandera).
 ## Information
 | Package                                                      | Ver                                             | Latest Release       | Python                                                                                                                   | Platform        |   Lvl | Todo                                                    | Tests   |
 |:-------------------------------------------------------------|:------------------------------------------------|:---------------------|:-------------------------------------------------------------------------------------------------------------------------|:----------------|------:|:--------------------------------------------------------|:--------|
-| [generalfile](https://github.com/ManderaGeneral/generalfile) | [2.3.14](https://pypi.org/project/generalfile/) | 2021-02-26 15:48 CET | [3.8](https://www.python.org/downloads/release/python-380/), [3.9](https://www.python.org/downloads/release/python-390/) | Windows, Ubuntu |     1 | [7](https://github.com/ManderaGeneral/generalfile#Todo) | 73.1 %  |
+| [generalfile](https://github.com/ManderaGeneral/generalfile) | [2.3.14](https://pypi.org/project/generalfile/) | 2021-02-26 15:48 CET | [3.8](https://www.python.org/downloads/release/python-380/), [3.9](https://www.python.org/downloads/release/python-390/) | Windows, Ubuntu |     1 | [7](https://github.com/ManderaGeneral/generalfile#Todo) | 74.6 %  |
 
 ## Contents
 <pre>
@@ -35,7 +35,7 @@ This package and 3 other make up [ManderaGeneral](https://github.com/Mandera).
    ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_strings.py#L59'>Method: absolute</a>
    ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_lock.py#L124'>Method: as_working_dir</a>
    ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/optional_dependencies/path_cfg.py#L12'>Property: cfg</a>
-   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_operations.py#L501'>Method: contains</a> <b>(Untested)</b>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_operations.py#L501'>Method: contains</a>
    ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_operations.py#L158'>Method: copy</a>
    ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_operations.py#L216'>Method: copy_to_folder</a>
    ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_operations.py#L325'>Method: create_folder</a>
@@ -109,5 +109,5 @@ This package and 3 other make up [ManderaGeneral](https://github.com/Mandera).
 | <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/optional_dependencies/path_spreadsheet.py#L1'>path_spreadsheet.py</a> | <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/optional_dependencies/path_spreadsheet.py#L113'>Support DataFrame and Series with spreadsheet.append()</a>   |
 
 <sup>
-Generated 2021-03-01 12:20 CET for commit <a href='https://github.com/ManderaGeneral/generalfile/commit/master'>master</a>.
+Generated 2021-03-02 17:47 CET for commit <a href='https://github.com/ManderaGeneral/generalfile/commit/master'>master</a>.
 </sup>
