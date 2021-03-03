@@ -248,13 +248,10 @@ class Path_Operations:
 
             :param generalfile.Path self:
             :param quick: Whether to do a quick (case insensitive on windows) check. """
-        if not self._path.exists():
-            return False
         if not quick:
             for _ in self.get_paths_recursive(depth=0, filt=self._case_sens_test):
                 raise CaseSensitivityError(f"Same path with differing case not allowed: '{self}'")
-        return True
-
+        return self._path.exists()
 
     def without_file(self):
         """ Get this path without it's name if it's a file, otherwise it returns itself.
@@ -277,7 +274,7 @@ class Path_Operations:
             else:
                 yield self.Path(child).relative(base=relative).set_parent(parent=self)
 
-    @deco_require_state(quick_exists=True)
+    # @deco_require_state(quick_exists=True)  # Doesn't check file's parent
     def get_paths_recursive(self, depth=-1, include_self=False, include_files=True, include_folders=False, relative=None, filt=None):
         """ Get all paths that are next to this file or inside this folder.
 
@@ -288,12 +285,11 @@ class Path_Operations:
             :param generalfile.Path self:
             :param relative:
             :param filt: Optional filter with Path as arg. """
-        if self.is_file():
-            queued_folders = [self.get_parent()]
-        elif self.is_folder():
+        if self.is_folder():
             queued_folders = [self]
         else:
-            raise AttributeError(f"Path {self} is neither file nor folder.")
+            queued_folders = [self.get_parent()]
+            assert self.get_parent().exists(quick=True)
 
         self_parts_len = len(queued_folders[0].parts())
 
