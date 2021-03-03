@@ -285,13 +285,13 @@ class Path_Operations:
             :param generalfile.Path self:
             :param relative:
             :param filt: Optional filter with Path as arg. """
+        queued_folders = []
         if self.is_folder():
-            queued_folders = [self]
-        else:
-            queued_folders = [self.get_parent()]
-            assert self.get_parent().exists(quick=True)
+            queued_folders.append(self)
+        elif self.get_parent().exists(quick=True):
+            queued_folders.append(self.get_parent())
 
-        self_parts_len = len(queued_folders[0].parts())
+        self_parts_len = len(queued_folders[0].parts()) if queued_folders else 0
 
         if include_self:
             yield self if relative is None else self.relative(base=relative)
