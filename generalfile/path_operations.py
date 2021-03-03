@@ -240,25 +240,21 @@ class Path_Operations:
             :param generalfile.Path self: """
         return self._path.is_dir()
 
+    def _case_sens_test(self, path):
+        return self != path and str(self).lower() == str(path).lower()
+
     def exists(self, quick=False):
         """ Get whether this Path exists.
 
             :param generalfile.Path self:
             :param quick: Whether to do a quick (case insensitive on windows) check. """
-        if quick:
-            return self._path.exists()
-        else:
-            try:
-                path_list = self.get_paths_recursive(depth=0, include_self=True)
-            except AttributeError:
-                return False
-            exists = False
-            for foundPath in path_list:
-                if foundPath == self:
-                    exists = True
-                elif str(foundPath).lower() == str(self).lower():
-                    raise CaseSensitivityError(f"Same path with differing case not allowed: '{self}'")
-            return exists
+        if not self._path.exists():
+            return False
+        if not quick:
+            for _ in self.get_paths_recursive(depth=0, filt=self._case_sens_test):
+                raise CaseSensitivityError(f"Same path with differing case not allowed: '{self}'")
+        return True
+
 
     def without_file(self):
         """ Get this path without it's name if it's a file, otherwise it returns itself.
@@ -291,7 +287,7 @@ class Path_Operations:
             :param include_folders:
             :param generalfile.Path self:
             :param relative:
-            :param function filt: Optional filter with Path as arg. """
+            :param filt: Optional filter with Path as arg. """
         if self.is_file():
             queued_folders = [self.get_parent()]
         elif self.is_folder():
