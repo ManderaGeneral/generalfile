@@ -443,8 +443,8 @@ class FileTest(PathTest):
         self.assertEqual(len(results), count)
 
     def test_CaseSensitivityError(self):
-        Path("foo").write()
-        self.assertRaises(CaseSensitivityError, Path("Foo").write)
+        Path("foo.txt").write("hi")
+        self.assertRaises(CaseSensitivityError, Path("Foo.txt").write, "there")
 
     def test_get_alternative_path(self):
         path = Path("foo/bar.txt")
