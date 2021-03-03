@@ -10,5 +10,3 @@ from generalfile import Path
 from pprint import pprint
 
 
-print(Path("foo/b ar.test").encode())
-

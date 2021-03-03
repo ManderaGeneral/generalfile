@@ -11,15 +11,7 @@ class Path_Strings:
             :param generalfile.Path self: """
         return self.Path(self.path.__getitem__(item))
 
-    @property
-    def get_part(self):
-        """ Split path using it's delimiter. item=0 with an absolute path gives an empty string on a posix system.
-
-            :param generalfile.Path self:
-            :param i: Index of part"""
-        return self.path.split(self.path_delimiter)
-
-    def get_replaced_alternative_characters(self):
+    def _get_replaced_alternative_characters(self):
         """ Get a dictionary of all characters that are replaced for the alternative path.
 
             :param generalfile.Path self: """
@@ -29,30 +21,24 @@ class Path_Strings:
             ".": "&#46;"
         }
 
-    def get_alternative_path(self):
+    def to_alternative(self):
         """ Get path using alternative delimiter and alternative root for windows.
 
             :param generalfile.Path self:
             :rtype: generalfile.Path """
-        path = str(self.absolute())
-        for char, alternative in self.get_replaced_alternative_characters().items():
+        path = str(self)
+        for char, alternative in self._get_replaced_alternative_characters().items():
             path = path.replace(char, alternative)
         return self.Path(path)
 
-    def get_lock_path(self):
-        """ Get absolute lock path pointing to actual lock.
-
-            :param generalfile.Path self: """
-        return self.get_lock_dir() / self.absolute().get_alternative_path()
-
-    def get_path_from_alternative(self):
+    def from_alternative(self):
         """ Get path from an alternative representation with or without leading lock dir.
 
             :param generalfile.Path self:
             :rtype: generalfile.Path """
 
         path = str(self.remove_start(self.get_lock_dir()))
-        for char, alternative in self.get_replaced_alternative_characters().items():
+        for char, alternative in self._get_replaced_alternative_characters().items():
             path = path.replace(alternative, char)
         return self.Path(path)
 

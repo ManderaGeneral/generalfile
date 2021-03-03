@@ -4,7 +4,6 @@ import os
 import shutil
 from send2trash import send2trash
 import json
-import setuptools
 from distutils.dir_util import copy_tree
 import time
 
@@ -340,22 +339,6 @@ class Path_Operations:
         os.startfile(str(self.without_file()))
 
     @classmethod
-    @deco_cache()
-    def get_cache_dir(cls):
-        """ Get cache folder.
-
-            :param generalfile.Path cls: """
-        return cls.Path(appdirs.user_cache_dir())
-
-    @classmethod
-    @deco_cache()
-    def get_lock_dir(cls):
-        """ Get lock folder inside cache folder.
-
-            :param generalfile.Path cls: """
-        return cls.Path.get_cache_dir() / "generalfile" / "locks"
-
-    @classmethod
     def get_working_dir(cls):
         """ Get current working folder as a new Path.
             Falls back to last seen working_dir if it doesn't exist. (Only seems to raise Error on posix)
@@ -382,6 +365,31 @@ class Path_Operations:
         self.create_folder()
         self._working_dir = self.absolute()
         os.chdir(str(self._working_dir))
+
+    @classmethod
+    @deco_cache()
+    def get_cache_dir(cls):
+        """ Get cache folder.
+
+            :param generalfile.Path cls:
+            :rtype: generalfile.Path """
+        return cls.Path(appdirs.user_cache_dir())
+
+    @classmethod
+    @deco_cache()
+    def get_lock_dir(cls):
+        """ Get lock folder inside cache folder.
+
+            :param generalfile.Path cls:
+            :rtype: generalfile.Path """
+        return cls.Path.get_cache_dir() / "generalfile" / "locks"
+
+    def get_lock_path(self):
+        """ Get absolute lock path pointing to actual lock.
+
+            :param generalfile.Path self:
+            :rtype: generalfile.Path """
+        return self.get_lock_dir() / self.absolute().to_alternative()
 
     @deco_preserve_working_dir
     @deco_return_if_removed(content=False)
@@ -442,10 +450,6 @@ class Path_Operations:
 
             :param generalfile.Path self: """
         return time.time() - os.path.getmtime(str(self))
-
-
-
-
 
     @deco_require_state(is_file=True)
     def size(self):

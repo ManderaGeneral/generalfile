@@ -2,19 +2,26 @@
 import unittest
 import multiprocessing as mp
 
-from generalfile import Path
+from generalfile import *
 from generalfile.test.setup_workdir import setup_workdir
-from generalfile.errors import InvalidCharacterError
+# from generallibrary import cache_clear
+
+
+
+
+def _thread_test(queue, i):
+    queue.put(int(Path("test.txt").write(i, overwrite=True)))
 
 
 class PathTest(unittest.TestCase):
     def setUp(self):
         """Set working dir and clear folder. Set path delimiter to '/' for testing."""
-        Path.path_delimiter = "/"
+        Path.set_path_delimiter("/")
         setup_workdir()
 
 
 class FileTest(PathTest):
+    """ Skipped: open_folder, view"""
     def test_path(self):
         self.assertRaises(InvalidCharacterError, Path, "hello:there")
         self.assertRaises(InvalidCharacterError, Path, "hello<")
@@ -163,13 +170,10 @@ class FileTest(PathTest):
         self.assertEqual(False, path.is_absolute())
         self.assertEqual(True, path.is_relative())
 
-
         path = Path("folder/folder2/file.txt")
         self.assertEqual(Path("folder2/file.txt"), path.relative("folder"))
         self.assertEqual(path.relative("folder"), "folder2/file.txt")
         self.assertEqual(path.relative("folder/folder2"), "file.txt")
-
-
 
     def test_is_file_or_folder(self):
         Path("folder.txt/file.txt").write()
@@ -192,7 +196,6 @@ class FileTest(PathTest):
         Path("folder").delete()
         self.assertEqual(False, path.exists())
         self.assertEqual(False, Path("folder").exists())
-
 
     def test_working_dir(self):
         self.assertEqual(True, Path.get_working_dir().is_absolute())
@@ -361,6 +364,8 @@ class FileTest(PathTest):
 
         self.assertEqual(1, len(list(Path("folder/test2.txt").get_paths_recursive())))
 
+        self.assertEqual(["folder/test2.txt", "folder/test3.txt"], list(Path("folder").get_paths_in_folder()))
+
     def test_time_created_and_modified(self):
         path = Path("test.txt")
         methods = (path.seconds_since_creation, path.seconds_since_modified)
@@ -437,20 +442,41 @@ class FileTest(PathTest):
 
         self.assertEqual(len(results), count)
 
+    def test_CaseSensitivityError(self):
+        Path("foo").write()
+        self.assertRaises(CaseSensitivityError, Path("Foo").write)
 
-def _thread_test(queue, i):
-    queue.put(int(Path("test.txt").write(i, overwrite=True)))
+    def test_get_alternative_path(self):
+        path = Path("foo/bar.txt")
+        self.assertEqual(path, path.to_alternative().from_alternative())
 
-if __name__ == "__main__":
-    x = unittest.main()
+        path = path.absolute()
+        self.assertEqual(path, path.to_alternative().from_alternative())
 
+    def test_get_cache_dir(self):
+        self.assertEqual(True, Path.get_lock_dir().startswith(Path.get_cache_dir()))
 
+    def test_lock(self):
+        path = Path("foo.txt")
+        with path.lock():
+            self.assertEqual(True, path.get_lock_path().exists())
 
+    def test_open_operation(self):
+        path = Path("foo.txt")
+        with path.lock():
+            path.open_operation("w", lambda stream: stream.write("hi"))
+            self.assertEqual("hi", path.open_operation("r", lambda stream: stream.read()))
 
+    def test_size(self):
+        path = Path("foo.txt")
+        path.write("bar")
+        self.assertEqual(True, path.size() > 1)
 
-
-
-
+    def test_without_file(self):
+        path = Path("foo/bar")
+        self.assertEqual("foo/bar", path.without_file())
+        path.write()
+        self.assertEqual("foo", path.without_file())
 
 
 

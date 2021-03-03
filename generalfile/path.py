@@ -2,7 +2,7 @@
 import pathlib
 
 
-from generallibrary import VerInfo, initBases, TreeDiagram, classproperty
+from generallibrary import VerInfo, initBases, TreeDiagram, classproperty, cache_clear
 
 from generalfile.errors import InvalidCharacterError
 from generalfile.path_lock import Path_ContextManager
@@ -24,7 +24,7 @@ class Path(TreeDiagram, Path_ContextManager, Path_Operations, Path_Strings, Path
         Todo: Binary extension.
         Todo: Pack and unpack. """
     verInfo = VerInfo()
-    path_delimiter = verInfo.pathDelimiter
+    _path_delimiter = verInfo.pathDelimiter
     _Path_cls = ...
 
     def __init__(self, path=None, parent=None):
@@ -36,17 +36,26 @@ class Path(TreeDiagram, Path_ContextManager, Path_Operations, Path_Strings, Path
     copy_to = NotImplemented  # Maybe something like this to disable certain methods
 
     @classproperty
+    def path_delimiter(self):
+        return self._path_delimiter
+
+    @classmethod
+    def set_path_delimiter(cls, delimiter):
+        cls._path_delimiter = delimiter
+        cache_clear(cls)
+
+    @classproperty
     def Path(self):
         """ :rtype: Path """
         return self._Path_cls
 
-    def get_parent(self, index=0):
+    def get_parent(self, index=None, depth=None, filt=None):
         """ Override to generate all parents if direct parent is None.
 
             :rtype: Path or None """
         if not self._parents:
             self._generate_parents()
-        return TreeDiagram.get_parent(self=self, index=index)
+        return TreeDiagram.get_parent(self=self, index=index, depth=depth, filt=filt)
 
     def _generate_parents(self):
         path = None
@@ -116,14 +125,14 @@ class Path(TreeDiagram, Path_ContextManager, Path_Operations, Path_Strings, Path
             str_path = str_path[0:-1]
         return str_path
 
-    def view(self, only_last_part=True, indent=1, relative=False, custom_repr=None, print_out=True):
+    def view(self, only_last_part=True, indent=1, relative=False, custom_repr=None, spacer=" ", print_out=True):
         """ Override view to use default custom repr. """
         if not self.get_children():
             list(self.get_paths_recursive())
 
         if only_last_part and custom_repr is None:
             custom_repr = lambda path: path.parts()[-1]
-        return TreeDiagram.view(self=self, indent=indent, relative=relative, custom_repr=custom_repr, print_out=print_out)
+        return TreeDiagram.view(self=self, indent=indent, relative=relative, custom_repr=custom_repr, spacer=spacer, print_out=print_out)
 
 setattr(Path, "_Path_cls", Path)
 
