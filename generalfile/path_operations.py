@@ -451,7 +451,7 @@ class Path_Operations:
         return self._path.stat().st_size
 
     def is_identical(self, path):
-        """ Get whether this file is identical to another.
+        """ Get whether this file's content is identical to another.
 
             :param generalfile.Path self:
             :param path: """
@@ -462,25 +462,20 @@ class Path_Operations:
         if not self_exists or not path_exists:
             return self_exists == path_exists
 
-        # if self.size() != path.size():
-        #     return False
-
         with self.lock(path):
             with open(str(self), "r") as file1:
                 with open(str(path), "r") as file2:
-                    # print(file1.read())
-                    # print(file2.read())
                     return file1.read() == file2.read()
 
     @deco_require_state(is_folder=True)
     def get_differing_files(self, target, exist=True, content=True, filt=None):
-        """ Get list of changed files by comparing two folders.
+        """ Get a set of changed files by comparing two folders.
 
             :param generalfile.Path self:
             :param target:
-            :param exist:
-            :param content:
-            :param filt: """
+            :param exist: Whether to compare files' existence. Ignores content.
+            :param content: Whether to compare files' content if both files exist.
+            :param filt: Optional filter, takes one Path as arg. """
         target = self.Path(target)
         assert target.is_folder()
 
@@ -489,7 +484,7 @@ class Path_Operations:
 
         diff = set()
         if exist:
-            diff.update(self_paths.difference(target_paths))
+            diff.update(self_paths.symmetric_difference(target_paths))
         if content:
             diff.update({path for path in self_paths.intersection(target_paths) if not (self / path).is_identical(path=target / path)})
         return diff

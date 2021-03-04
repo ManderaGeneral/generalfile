@@ -478,6 +478,27 @@ class FileTest(PathTest):
         path.write()
         self.assertEqual("foo", path.without_file())
 
+    def test_get_differing_files(self):
+        Path("one/bar").write("hey")
+        Path("one/foo").write("hello")
+        Path("two/foo").write("hi")
+
+        for base, target in (("one", "two"), ("two", "one")):
+            self.assertEqual({"bar"}, Path(base).get_differing_files(target, exist=True, content=False))
+            self.assertEqual({"foo"}, Path(base).get_differing_files(target, exist=False, content=True))
+            self.assertEqual({"foo", "bar"}, Path(base).get_differing_files(target, exist=True, content=True))
+            self.assertEqual(set(), Path(base).get_differing_files(target, exist=False, content=False))
+
+    def test_is_identical(self):
+        Path("foo").write("hello")
+        Path("bar").write("hello")
+        self.assertEqual(True, Path("foo").is_identical("bar"))
+
+        Path("bar").write("hi", overwrite=True)
+        self.assertEqual(False, Path("foo").is_identical("bar"))
+
+        Path("foo").write("hi\n", overwrite=True)
+        self.assertEqual(False, Path("foo").is_identical("bar"))
 
 
 
