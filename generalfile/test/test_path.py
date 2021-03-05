@@ -74,11 +74,23 @@ class FileTest(PathTest):
         self.assertEqual("folder/test.tsv", path.with_suffixes([".tsv"]))
 
     def test_suffix(self):
+        path = Path("folder/test")
+        self.assertEqual("", path.suffix())
+
         path = Path("folder/test.txt")
         self.assertEqual(".txt", path.suffix())
 
+        path = path.with_suffix("")
+        self.assertEqual("folder/test", path)
+
+        path = path.with_suffix(None)
+        self.assertEqual("folder/test", path)
+
         path = path.with_suffix(".tsv")
         self.assertEqual("folder/test.tsv", path)
+
+        path = path.with_suffix("")
+        self.assertEqual("folder/test", path)
 
         path = path.with_suffix(".csv")
         self.assertEqual("folder/test.csv", path)
@@ -499,6 +511,28 @@ class FileTest(PathTest):
 
         Path("foo").write("hi\n", overwrite=True)
         self.assertEqual(False, Path("foo").is_identical("bar"))
+
+    def test_empty(self):
+        self.assertEqual(True, Path().empty())
+        self.assertEqual(True, Path("new").empty())
+        Path("new").create_folder()
+        self.assertEqual(True, Path("new").empty())
+        Path("new/file.txt").write("foo")
+        self.assertEqual(False, Path("new").empty())
+        self.assertEqual(False, Path("new/file.txt").empty())
+        Path("new/file.txt").delete()
+        self.assertEqual(True, Path("new").empty())
+
+    def test_pack(self):
+        Path("base/test.txt").write("hello")
+        # Path("base").pack("target")
+        # self.assertEqual(True, Path("target.zip").exists())
+        # Path("target").unpack("new")
+        # self.assertEqual("hello", Path("new/test.txt").read())
+
+        Path("base").pack("target.tar.gz").unpack()
+        self.assertEqual("hello", Path("test.txt").read())
+
 
 
 

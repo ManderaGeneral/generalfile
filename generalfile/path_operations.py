@@ -1,3 +1,9 @@
+
+from generallibrary import deco_cache
+
+from generalfile.errors import CaseSensitivityError
+from generalfile.decorators import deco_require_state, deco_preserve_working_dir, deco_return_if_removed
+
 import pathlib
 import appdirs
 import os
@@ -6,12 +12,6 @@ from send2trash import send2trash
 import json
 from distutils.dir_util import copy_tree
 import time
-
-from generallibrary import deco_cache
-
-from generalfile.errors import CaseSensitivityError
-from generalfile.decorators import deco_require_state, deco_preserve_working_dir, deco_return_if_removed
-
 
 
 class _Context:
@@ -253,6 +253,16 @@ class Path_Operations:
                 raise CaseSensitivityError(f"Same path with differing case not allowed: '{self}'")
         return self._path.exists()
 
+    def empty(self):
+        """ Get whether path is an empty folder or not. """
+        if not self.exists(quick=True):
+            return True
+        elif self.is_file():
+            return False
+        for path in self.get_paths_in_folder():
+            return False
+        return True
+
     def without_file(self):
         """ Get this path without it's name if it's a file, otherwise it returns itself.
 
@@ -492,7 +502,7 @@ class Path_Operations:
     def contains(self, text):
         """ Return whether text string exists in one of the files.
 
-            :param paths tuple[generalfile.Path] self:
+            :param generalfile.Path self:
             :param text: """
         with self.lock():
             with open(str(self), "r") as stream:
@@ -501,7 +511,33 @@ class Path_Operations:
                         return True
         return False
 
+    def _pack_default_suffix(self):
+        if not self.suffix():
+            return self.with_suffix(".zip")
+        else:
+            return self
 
+    @deco_require_state(is_folder=True)
+    def pack(self, target, overwrite=False):
+        """ Pack self which is folder to a new target archive.
+
+            :param generalfile.Path self: Base folder to be packed.
+            :param target: Full path of new archive. Optional suffix, defaults to zip if missing.'
+            :param overwrite: """
+        target = self.Path(target)._pack_default_suffix()
+        if not overwrite:
+            assert not target.exists()
+        print(str(target.with_suffix(None)), target.suffix()[1:])  # HERE ** Try making format become tar.gz with test
+        shutil.make_archive(base_name=str(target.with_suffix(None)), format=target.suffix()[1:], root_dir=str(self.absolute()))
+        return target
+
+    def unpack(self, base, overwrite=False):
+        """ Unpack self which is archive to target folder (Must be empty if overwrite is False). """
+        base = self.Path(base)
+        if not overwrite:
+            assert not base.exists() or base.empty()
+        shutil.unpack_archive(filename=str(self._pack_default_suffix()), extract_dir=str(base))
+        return base
 
 
 

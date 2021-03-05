@@ -184,6 +184,7 @@ class Path_Strings:
 
     def suffix(self):
         """ Get suffix which is name without stem.
+            Empty string if missing.
 
             :param generalfile.Path self: """
         return self._path.suffix
@@ -204,17 +205,19 @@ class Path_Strings:
             suffixes[index]
         except IndexError:
             if index >= len(suffixes):
-                if suffix is None:
-                    del suffixes[-1]
+                if not suffix:
+                    if suffixes:
+                        del suffixes[-1]
                 else:
                     suffixes.append(suffix)
             else:
-                if suffix is None:
-                    del suffixes[0]
+                if not suffix:
+                    if suffixes:
+                        del suffixes[0]
                 else:
                     suffixes.insert(0, suffix)
         else:
-            if suffix is None:
+            if not suffix:
                 del suffixes[index]
             else:
                 suffixes[index] = suffix
