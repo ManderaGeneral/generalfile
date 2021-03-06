@@ -525,13 +525,18 @@ class FileTest(PathTest):
 
     def test_pack(self):
         Path("base/test.txt").write("hello")
-        # Path("base").pack("target")
-        # self.assertEqual(True, Path("target.zip").exists())
-        # Path("target").unpack("new")
-        # self.assertEqual("hello", Path("new/test.txt").read())
+        Path("base").pack("target")
+        self.assertEqual(True, Path("target.zip").exists())
+        Path("target").unpack("new")
+        self.assertEqual("hello", Path("new/test.txt").read())
 
-        Path("base").pack("target.tar.gz").unpack()
-        self.assertEqual("hello", Path("test.txt").read())
+        Path("base").pack("target.tar.gz").unpack("tarnew")
+        self.assertEqual("hello", Path("tarnew/test.txt").read())
+
+        Path("base/folder/hi").write("there")
+        Path("base").pack("packed/pack.zip").unpack("newbase")
+        self.assertEqual("hello", Path("newbase/test.txt").read())
+        self.assertEqual("there", Path("newbase/folder/hi").read())
 
 
 

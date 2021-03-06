@@ -135,7 +135,7 @@ class Path_Strings:
 
     def parts(self):
         """ Split path using it's delimiter.
-            With an absolute path the first index is an empty string on a posix system. <- Note sure about that anymore, might be /
+            With an absolute path the first index is an empty string on a posix system. <- Not sure about that anymore, might be /
 
             :param generalfile.Path self: """
         return str(self).split(self.path_delimiter)

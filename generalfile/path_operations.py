@@ -512,6 +512,7 @@ class Path_Operations:
         return False
 
     def _pack_default_suffix(self):
+        """ :param generalfile.Path self: """
         if not self.suffix():
             return self.with_suffix(".zip")
         else:
@@ -524,18 +525,30 @@ class Path_Operations:
             :param generalfile.Path self: Base folder to be packed.
             :param target: Full path of new archive. Optional suffix, defaults to zip if missing.'
             :param overwrite: """
-        target = self.Path(target)._pack_default_suffix()
+        target = self.Path(target)._pack_default_suffix().absolute()
         if not overwrite:
             assert not target.exists()
-        print(str(target.with_suffix(None)), target.suffix()[1:])  # HERE ** Try making format become tar.gz with test
-        shutil.make_archive(base_name=str(target.with_suffix(None)), format=target.suffix()[1:], root_dir=str(self.absolute()))
+
+        root_dir = self.absolute()
+        target_stem = str(target.with_suffixes([]))
+        target_suffix = "".join(target.suffixes())[1:]
+        target_suffix = {"tar.gz": "gztar"}.get(target_suffix, target_suffix)
+
+        shutil.make_archive(root_dir=str(root_dir), base_name=target_stem, format=target_suffix)
+        # shutil.make_archive(root_dir=str(root_dir.get_parent()), base_dir=root_dir.parts()[-1], base_name=target_stem, format=target_suffix)
+
         return target
 
     def unpack(self, base, overwrite=False):
-        """ Unpack self which is archive to target folder (Must be empty if overwrite is False). """
+        """ Unpack self which is archive to target folder (Must be empty if overwrite is False).
+
+            :param generalfile.Path self:
+            :param base:
+            :param overwrite: """
         base = self.Path(base)
         if not overwrite:
             assert not base.exists() or base.empty()
+
         shutil.unpack_archive(filename=str(self._pack_default_suffix()), extract_dir=str(base))
         return base
 
