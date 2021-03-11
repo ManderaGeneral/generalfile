@@ -2,7 +2,7 @@
 import pathlib
 
 
-from generallibrary import VerInfo, initBases, TreeDiagram, classproperty, cache_clear
+from generallibrary import VerInfo, initBases, TreeDiagram, classproperty, cache_clear, Recycle
 
 from generalfile.errors import InvalidCharacterError
 from generalfile.path_lock import Path_ContextManager
@@ -14,7 +14,7 @@ from generalfile.optional_dependencies.path_cfg import Path_Cfg
 
 
 @initBases
-class Path(TreeDiagram, Path_ContextManager, Path_Operations, Path_Strings, Path_Spreadsheet, Path_Text, Path_Cfg):
+class Path(TreeDiagram, Recycle, Path_ContextManager, Path_Operations, Path_Strings, Path_Spreadsheet, Path_Text, Path_Cfg):
     """ Immutable cross-platform Path.
         Built on pathlib and TreeDiagram.
         Implements rules to ensure cross-platform compatability.
@@ -22,10 +22,12 @@ class Path(TreeDiagram, Path_ContextManager, Path_Operations, Path_Strings, Path
         Todo: Add a proper place for all variables, add working_dir, sys.executable and sys.prefix to it.
         Todo: Raise suppressable warning if space in Path.
         Todo: Binary extension.
-        Todo: Pack and unpack. """
+        Todo: Inherit Recycle in Path. """
     verInfo = VerInfo()
     _path_delimiter = verInfo.pathDelimiter
-    _Path_cls = ...
+    Path = ...
+
+    _recycle_keys = {"path": lambda path: str(path)}
 
     def __init__(self, path=None, parent=None):
         path = self._scrub(str_path="" if path is None else str(path))
@@ -44,18 +46,9 @@ class Path(TreeDiagram, Path_ContextManager, Path_Operations, Path_Strings, Path
         cls._path_delimiter = delimiter
         cache_clear(cls)
 
-    @classproperty
-    def Path(self):
-        """ :rtype: Path """
-        return self._Path_cls
-
-    def get_parent(self, index=None, depth=None, filt=None):
-        """ Override to generate all parents if direct parent is None.
-
-            :rtype: Path or None """
+    def spawn_parents(self):
         if not self._parents:
             self._generate_parents()
-        return TreeDiagram.get_parent(self=self, index=index, depth=depth, filt=filt)
 
     def _generate_parents(self):
         path = None
@@ -64,7 +57,8 @@ class Path(TreeDiagram, Path_ContextManager, Path_Operations, Path_Strings, Path
         self.set_parent(path)
 
     def __str__(self):
-        return self.path
+        # return self.path
+        return getattr(self, "path", "<Path not loaded yet>")
 
     def __repr__(self):
         return self.__str__()
@@ -134,7 +128,7 @@ class Path(TreeDiagram, Path_ContextManager, Path_Operations, Path_Strings, Path
             custom_repr = lambda path: path.parts()[-1]
         return TreeDiagram.view(self=self, indent=indent, relative=relative, custom_repr=custom_repr, spacer=spacer, print_out=print_out)
 
-setattr(Path, "_Path_cls", Path)
+setattr(Path, "Path", Path)
 
 
 

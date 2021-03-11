@@ -1,25 +1,26 @@
 
-
-
 from generalfile import Path
 from generalfile.test.setup_workdir import setup_workdir
-# setup_workdir()
-# Path.get_working_dir().open_folder()
-# Path.get_lock_dir().open_folder()
 
-# from pprint import pprint
 
+Path.set_path_delimiter("/")
 setup_workdir()
 
-# Path().open_folder()
+print(Path("hi").get_lock_path().from_alternative())  # HERE ** Why is lock dir using old delimiter
 
-path = Path("base/test.txt")
-path.write("hello")
+# Path("hi").write("hello")
 
-target = Path("target/packed")
+# with Path("hi").lock():
+#     pass
 
-Path("base").pack(target)
+# Path.get_lock_dir().open_folder()
 
-target.unpack("base")
 
+# print(id(Path()._children))
+# print(id(Path()._children))
+
+# print(Path().get_children())
+# print(list(Path().get_paths_in_folder()))
+# print(Path().get_children())
+# print(path.get_children())
 

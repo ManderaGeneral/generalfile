@@ -132,6 +132,10 @@ class FileTest(PathTest):
         self.assertEqual(None, path.get_parent(99))
         self.assertEqual(None, path.get_parent(-99))
 
+        self.assertEqual([Path("folder/foobar"), Path("folder"), Path()], path.get_parents(depth=-1))
+        new_path = Path("folder/foobar/test.txt")
+        self.assertEqual([Path("folder/foobar"), Path("folder"), Path()], new_path.get_parents(depth=-1))
+
     def test_startswith(self):
         self.assertFalse(Path("file.txt").startswith("folder"))
         self.assertTrue(Path("file.txt").startswith("file"))

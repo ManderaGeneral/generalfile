@@ -82,7 +82,6 @@ class _Lock:
 
             :rtype: tuple[generalfile.Path] """
         for alternative_path in self.path.get_lock_dir().get_paths_in_folder():
-
             path = alternative_path.from_alternative()
             if self.path.startswith(path) or path.startswith(self.path):
                 yield path

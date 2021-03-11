@@ -36,10 +36,13 @@ class Path_Strings:
 
             :param generalfile.Path self:
             :rtype: generalfile.Path """
-
+        print(1, self)
+        print(2, self.get_lock_dir())
         path = str(self.remove_start(self.get_lock_dir()))
+        print(path)
         for char, alternative in self._get_replaced_alternative_characters().items():
             path = path.replace(alternative, char)
+        print(path)
         return self.Path(path)
 
     def absolute(self):
