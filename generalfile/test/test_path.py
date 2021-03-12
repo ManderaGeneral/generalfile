@@ -16,7 +16,7 @@ def _thread_test(queue, i):
 class PathTest(unittest.TestCase):
     def setUp(self):
         """Set working dir and clear folder. Set path delimiter to '/' for testing."""
-        Path.set_path_delimiter("/")
+        # Path.path_delimiter = "/"
         setup_workdir()
 
 
@@ -542,6 +542,15 @@ class FileTest(PathTest):
         self.assertEqual("hello", Path("newbase/test.txt").read())
         self.assertEqual("there", Path("newbase/folder/hi").read())
 
+    def test_recycle(self):
+        self.assertIs(Path("hi/there"), Path("hi/there"))
+        self.assertIs(Path("hi/there")._children, Path("hi/there")._children)
+        self.assertIs(Path("hi/there"), Path("hi\\there"))
+        self.assertIs(Path("hi/there"), Path("hi") / "there")
+        self.assertIs(Path("hi\\there"), Path("hi") / "there")
+
+        self.assertIsNot(Path("hithere"), Path("hi") / "there")
+        self.assertIsNot(Path("hi"), Path("hi").absolute())
 
 
 

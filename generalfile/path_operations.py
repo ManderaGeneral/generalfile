@@ -1,4 +1,5 @@
 
+from generallibrary import deco_cache
 from generalfile.errors import CaseSensitivityError
 from generalfile.decorators import deco_require_state, deco_preserve_working_dir, deco_return_if_removed
 
@@ -367,14 +368,17 @@ class Path_Operations:
         os.chdir(str(self._working_dir))
 
     @classmethod
+    @deco_cache()
     def get_cache_dir(cls):
         """ Get cache folder.
 
             :param generalfile.Path or Any cls:
             :rtype: generalfile.Path """
-        return cls(appdirs.user_cache_dir())
+        path = cls(appdirs.user_cache_dir())
+        return path
 
     @classmethod
+    @deco_cache()
     def get_lock_dir(cls):
         """ Get lock folder inside cache folder.
 
