@@ -412,7 +412,7 @@ class Path_Operations:
             except Exception as e:
                 if error:
                     raise e
-            self.set_parent(None)
+            self.set_parent(None)  # HERE ** Need proper remove_node method with recursive option
 
     @deco_preserve_working_dir
     @deco_return_if_removed(content=False)

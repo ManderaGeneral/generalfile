@@ -46,7 +46,7 @@ class Path(TreeDiagram, Recycle, Path_ContextManager, Path_Operations, Path_Stri
                 path = self.Path(path="" if str(pathlib_path) == "." else str(pathlib_path), parent=path)
             self.set_parent(path)
 
-    def spawn_children(self):  # HERE ** Replace get_paths* to use get_children with filt arg instead
+    def spawn_children(self):
         if not self._children and self.is_folder():
             for child in self._path.iterdir():
                 self.Path(child, parent=self)
