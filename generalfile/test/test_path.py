@@ -263,7 +263,7 @@ class FileTest(PathTest):
         Path("folder2/foobar").rename(suffix=".test")
         self.assertTrue(Path("folder2/foobar.test").exists())
 
-        Path("folder2/foobar.test").rename(stem="hello")
+        self.assertEqual("folder2/hello.test", Path("folder2/foobar.test").rename(stem="hello"))
         self.assertTrue(Path("folder2/hello.test").exists())
 
     def test_copy(self):
@@ -380,7 +380,7 @@ class FileTest(PathTest):
 
         self.assertEqual(1, len(list(Path("folder/test2.txt").get_paths_recursive())))
 
-        self.assertEqual(["folder/test2.txt", "folder/test3.txt"], list(Path("folder").get_paths_in_folder()))
+        self.assertEqual(["folder/test2.txt", "folder/test3.txt"], Path("folder").get_children())
 
     def test_time_created_and_modified(self):
         path = Path("test.txt")

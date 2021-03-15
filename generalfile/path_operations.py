@@ -147,10 +147,12 @@ class Path_Operations:
             return
 
         with self.lock(new_path):
+            self.set_parent(None)
             if overwrite:
                 self._path.replace(str(new_path))
             else:
                 self._path.rename(str(new_path))
+        return new_path
 
     @deco_require_state(exists=True)
     def copy(self, new_path, overwrite=False):
@@ -190,9 +192,9 @@ class Path_Operations:
             return
 
         if self.is_file():
-            filepaths = (self,)
+            filepaths = [self]
         else:
-            filepaths = tuple(self.get_paths_in_folder())
+            filepaths = self.get_children()
 
         target_filepaths = [target_folder_path / path.absolute().relative(self_parent_path) for path in filepaths]
         if not overwrite and any([target.exists(quick=True) for target in target_filepaths]):
@@ -410,6 +412,7 @@ class Path_Operations:
             except Exception as e:
                 if error:
                     raise e
+            self.set_parent(None)
 
     @deco_preserve_working_dir
     @deco_return_if_removed(content=False)
@@ -419,6 +422,7 @@ class Path_Operations:
             :param generalfile.Path self: """
         with self.lock():
             send2trash(str(self))
+            self.set_parent(None)
 
     @deco_preserve_working_dir
     @deco_return_if_removed(content=True)

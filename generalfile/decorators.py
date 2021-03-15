@@ -1,3 +1,5 @@
+""" Todo: Tests for decorators, not sure why they aren't found for readme.
+    Todo: Warn for redundant requirements. (Both file and lib requires pandas.) """
 
 from generallibrary.functions import wrapper_transfer
 
@@ -43,11 +45,8 @@ def deco_return_if_removed(content):
             if not path.exists(quick=True):
                 return False
 
-            if content:
-                for _ in path.get_paths_in_folder():
-                    break
-                else:
-                    return False  # Folder is empty
+            if content and path.empty():
+                return False
 
             function(*args, **kwargs)
             return True

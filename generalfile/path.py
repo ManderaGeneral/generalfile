@@ -29,12 +29,11 @@ class Path(TreeDiagram, Recycle, Path_ContextManager, Path_Operations, Path_Stri
     _recycle_keys = {"path": lambda path: Path._scrub(path)}
 
     def __init__(self, path=None, parent=None):
-        path = self._scrub(str_path="" if path is None else path)
-        self.path = self.data_keys_add(key="path", value=path, unique=True)
+        self.path = self._scrub(str_path="" if path is None else path)
 
         self._path = pathlib.Path(self.path)
 
-    copy_to = NotImplemented  # Maybe something like this to disable certain methods
+    copy_node = NotImplemented  # Maybe something like this to disable certain methods
 
     @classproperty
     def path_delimiter(cls):
@@ -47,10 +46,10 @@ class Path(TreeDiagram, Recycle, Path_ContextManager, Path_Operations, Path_Stri
                 path = self.Path(path="" if str(pathlib_path) == "." else str(pathlib_path), parent=path)
             self.set_parent(path)
 
-    # def spawn_children(self):
-    #     if not self._children and self.is_folder():
-    #         for child in self._path.iterdir():
-    #             self.Path(child, parent=self)
+    def spawn_children(self):  # HERE ** Replace get_paths* to use get_children with filt arg instead
+        if not self._children and self.is_folder():
+            for child in self._path.iterdir():
+                self.Path(child, parent=self)
 
     def __str__(self):
         # return self.path
