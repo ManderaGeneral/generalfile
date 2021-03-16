@@ -24,7 +24,7 @@ class _Lock:
     def _delete_if_dead(self, lock_path):
         try:
             seconds_since_creation = lock_path.seconds_since_modified()
-        except AttributeError:  # Might need more exceptions
+        except AttributeError:
             pass
         else:
             if seconds_since_creation > lock_path.dead_lock_seconds:
@@ -81,7 +81,7 @@ class _Lock:
             Use `get_alternative_path()` or 'get_lock_path()' if actual lock path is wanted.
 
             :rtype: tuple[generalfile.Path] """
-        for alternative_path in self.path.get_lock_dir().get_paths_in_folder():
+        for alternative_path in self.path.get_lock_dir().get_children(gen=True, filt=self.path.Path.exists):
             path = alternative_path.from_alternative()
             if self.path.startswith(path) or path.startswith(self.path):
                 yield path

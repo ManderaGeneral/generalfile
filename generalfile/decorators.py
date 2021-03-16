@@ -19,7 +19,7 @@ def deco_require_state(is_file=None, is_folder=None, exists=None, quick_exists=N
                 if self.exists() != exists:
                     raise AttributeError(f"Path {self} exists check didn't match ({exists}).")
             elif quick_exists is not None:
-                if self.exists(quick=True) is not quick_exists:
+                if self.exists() is not quick_exists:
                     raise AttributeError(f"Path {self} quick exists check didn't match ({quick_exists}).")
             return function(self, *args, **kwargs)
         return wrapper_transfer(function, _wrapper)
@@ -42,7 +42,7 @@ def deco_return_if_removed(content):
     def _decorator(function):
         def _wrapper(*args, **kwargs):
             path = args[0]
-            if not path.exists(quick=True):
+            if not path.exists():
                 return False
 
             if content and path.empty():

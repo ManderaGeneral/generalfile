@@ -147,11 +147,11 @@ class Path_Operations:
             return
 
         with self.lock(new_path):
-            self.set_parent(None)
             if overwrite:
                 self._path.replace(str(new_path))
             else:
                 self._path.rename(str(new_path))
+            # self.remove_node()
         return new_path
 
     @deco_require_state(exists=True)
@@ -194,10 +194,10 @@ class Path_Operations:
         if self.is_file():
             filepaths = [self]
         else:
-            filepaths = self.get_children()
+            filepaths = self.get_children(filt=self.Path.exists)
 
         target_filepaths = [target_folder_path / path.absolute().relative(self_parent_path) for path in filepaths]
-        if not overwrite and any([target.exists(quick=True) for target in target_filepaths]):
+        if not overwrite and any([target.exists() for target in target_filepaths]):
             raise FileExistsError("Atleast one target filepath exists, cannot copy")
 
         with self.lock(target_folder_path):
@@ -244,23 +244,23 @@ class Path_Operations:
     def _case_sens_test(self, path):
         return self != path and str(self).lower() == str(path).lower()
 
-    def exists(self, quick=False):
+    def exists(self):
         """ Get whether this Path exists.
 
-            :param generalfile.Path self:
-            :param quick: Whether to do a quick (case insensitive on windows) check. """
-        if not quick:
-            for _ in self.get_paths_recursive(depth=0, filt=self._case_sens_test):
-                raise CaseSensitivityError(f"Same path with differing case not allowed: '{self}'")
+            :param generalfile.Path self: """
+        if self.get_sibling(spawn=False, filt=self._case_sens_test):
+            raise CaseSensitivityError(f"Same path with differing case not allowed: '{self}'")
         return self._path.exists()
 
     def empty(self):
-        """ Get whether path is an empty folder or not. """
-        if not self.exists(quick=True):
+        """ Get whether path is an empty folder or not.
+
+            :param generalfile.Path self: """
+        if not self.exists():
             return True
         elif self.is_file():
             return False
-        for path in self.get_paths_in_folder():
+        if self.get_child(filt=self.Path.exists):
             return False
         return True
 
@@ -272,57 +272,6 @@ class Path_Operations:
             return self.get_parent()
         else:
             return self
-
-    @deco_require_state(is_folder=True)
-    def get_paths_in_folder(self, relative=None):
-        """ Get a generator containing every child Path inside this folder, relative if possible.
-
-            :param generalfile.Path self:
-            :param relative: """
-        for child in self._path.iterdir():
-            if relative is None:
-                yield self.Path(child, parent=self)
-            else:
-                yield self.Path(child).relative(base=relative).set_parent(parent=self)
-
-    # @deco_require_state(quick_exists=True)  # Doesn't check file's parent
-    def get_paths_recursive(self, depth=-1, include_self=False, include_files=True, include_folders=False, relative=None, filt=None):
-        """ Get all paths that are next to this file or inside this folder.
-
-            :param depth: Depth of -1 is limitless recursive searching. Depth of 1 searches only first level.
-            :param include_self:
-            :param include_files:
-            :param include_folders:
-            :param generalfile.Path self:
-            :param relative:
-            :param filt: Optional filter with Path as arg. """
-        queued_folders = []
-        if self.is_folder():
-            queued_folders.append(self)
-        elif self.get_parent().exists(quick=True):
-            queued_folders.append(self.get_parent())
-
-        self_parts_len = len(queued_folders[0].parts()) if queued_folders else 0
-
-        if include_self:
-            yield self if relative is None else self.relative(base=relative)
-
-        while queued_folders:
-            for path in queued_folders[0].get_paths_in_folder():
-                if filt and not filt(path):
-                    continue
-
-                if path.is_file():
-                    if include_files and path != self:
-                        yield path if relative is None else path.relative(base=relative)
-                elif path.is_folder():
-                    if include_folders:
-                        yield path if relative is None else path.relative(base=relative)
-
-                    current_depth = len(path.parts()) - self_parts_len + 1
-                    if depth == -1 or current_depth < depth:
-                        queued_folders.append(path)
-            del queued_folders[0]
 
     def create_folder(self):
         """ Create folder with this Path unless it exists. 
@@ -412,7 +361,7 @@ class Path_Operations:
             except Exception as e:
                 if error:
                     raise e
-            self.set_parent(None)  # HERE ** Need proper remove_node method with recursive option
+            # self.remove_node()
 
     @deco_preserve_working_dir
     @deco_return_if_removed(content=False)
@@ -422,7 +371,7 @@ class Path_Operations:
             :param generalfile.Path self: """
         with self.lock():
             send2trash(str(self))
-            self.set_parent(None)
+            # self.remove_node()
 
     @deco_preserve_working_dir
     @deco_return_if_removed(content=True)
@@ -430,7 +379,7 @@ class Path_Operations:
         """ Delete every path in a folder.
 
             :param generalfile.Path self: """
-        for path in self.get_paths_in_folder():
+        for path in self.get_children(gen=True, filt=self.Path.exists):
             path.delete()
 
     @deco_preserve_working_dir
@@ -439,7 +388,7 @@ class Path_Operations:
         """ Trash a file or folder and then create an empty folder in it's place.
 
             :param generalfile.Path self: """
-        for path in self.get_paths_in_folder():
+        for path in self.get_children(gen=True, filt=self.Path.exists):
             path.trash()
 
     @deco_require_state(is_file=True)
@@ -470,8 +419,8 @@ class Path_Operations:
             :param generalfile.Path self:
             :param path: """
         path = self.Path(path)
-        self_exists = self.exists(quick=True)
-        path_exists = path.exists(quick=True)
+        self_exists = self.exists()
+        path_exists = path.exists()
 
         if not self_exists or not path_exists:
             return self_exists == path_exists
@@ -493,8 +442,13 @@ class Path_Operations:
         target = self.Path(target)
         assert target.is_folder()
 
-        self_paths = set(self.get_paths_recursive(relative=self, filt=filt))
-        target_paths = set(target.get_paths_recursive(relative=target, filt=filt))
+        if filt is None:
+            filt = lambda path: path.exists()
+        else:
+            filt = lambda path: path.exists() and filt(path)
+
+        self_paths = {child.relative(self) for child in self.get_children(filt=filt)}
+        target_paths = {child.relative(target) for child in target.get_children(filt=filt)}
 
         diff = set()
         if exist:

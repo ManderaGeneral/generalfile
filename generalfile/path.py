@@ -47,9 +47,9 @@ class Path(TreeDiagram, Recycle, Path_ContextManager, Path_Operations, Path_Stri
             self.set_parent(path)
 
     def spawn_children(self):
-        if not self._children and self.is_folder():
+        if self.is_folder():
             for child in self._path.iterdir():
-                self.Path(child, parent=self)
+                self.Path(path=child).set_parent(parent=self)
 
     def __str__(self):
         # return self.path
@@ -122,9 +122,6 @@ class Path(TreeDiagram, Recycle, Path_ContextManager, Path_Operations, Path_Stri
 
     def view(self, only_last_part=True, indent=1, relative=False, custom_repr=None, spacer=" ", print_out=True):
         """ Override view to use default custom repr. """
-        if not self.get_children():
-            list(self.get_paths_recursive())
-
         if only_last_part and custom_repr is None:
             custom_repr = lambda path: path.parts()[-1]
         return TreeDiagram.view(self=self, indent=indent, relative=relative, custom_repr=custom_repr, spacer=spacer, print_out=print_out)

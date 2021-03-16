@@ -366,19 +366,19 @@ class FileTest(PathTest):
         Path("folder/test2.txt").write()
         Path("folder/test3.txt").write()
 
-        self.assertEqual(1, len(list(Path().get_paths_recursive(depth=1))))
-        self.assertEqual(2, len(list(Path().get_paths_recursive(depth=1, include_self=True))))
+        self.assertEqual(1, len(Path().get_children()))
+        self.assertEqual(2, len(Path().get_children(include_self=True)))
 
-        self.assertEqual(0, len(list(Path("test.txt").get_paths_recursive(depth=1))))
-        self.assertEqual(1, len(list(Path("test.txt").get_paths_recursive(depth=1, include_self=True))))
-        self.assertEqual(1, len(list(Path("test.txt").get_paths_recursive(depth=1, include_folders=True))))
+        self.assertEqual(0, len(Path("test.txt").get_children()))
+        self.assertEqual(1, len(Path("test.txt").get_children(include_self=True)))
+        self.assertEqual(1, len(Path("test.txt").get_children()))
 
-        self.assertEqual(3, len(list(Path().get_paths_recursive(depth=3))))
-        self.assertEqual(4, len(list(Path().get_paths_recursive(depth=3, include_self=True))))
-        self.assertEqual(4, len(list(Path().get_paths_recursive(depth=-1, include_self=True))))
-        self.assertEqual(2, len(list(Path().get_paths_recursive(depth=1, include_self=True))))
+        self.assertEqual(3, len(Path().get_children(depth=3)))
+        self.assertEqual(4, len(Path().get_children(depth=3, include_self=True)))
+        self.assertEqual(4, len(Path().get_children(depth=-1, include_self=True)))
+        self.assertEqual(2, len(Path().get_children(depth=1, include_self=True)))
 
-        self.assertEqual(1, len(list(Path("folder/test2.txt").get_paths_recursive())))
+        self.assertEqual(1, len(Path("folder/test2.txt").get_children(depth=-1)))
 
         self.assertEqual(["folder/test2.txt", "folder/test3.txt"], Path("folder").get_children())
 
@@ -460,6 +460,7 @@ class FileTest(PathTest):
 
     def test_CaseSensitivityError(self):
         Path("foo.txt").write("hi")
+        # Path("foo.txt").get_parent()
         self.assertRaises(CaseSensitivityError, Path("Foo.txt").exists)
 
     def test_get_alternative_path(self):
