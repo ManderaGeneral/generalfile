@@ -147,6 +147,8 @@ class FileTest(PathTest):
         self.assertTrue(Path("file.SUFFIX.txt").startswith("file.SUFFIX.txt"))
         self.assertFalse(Path("filE.txt").startswith("file.txt"))
 
+        Path("filE.txt").remove_node()
+
     def test_endswith(self):
         self.assertFalse(Path("file.txt").endswith("folder"))
         self.assertFalse(Path("file.txt").endswith("file"))
@@ -158,6 +160,8 @@ class FileTest(PathTest):
         self.assertTrue(Path("file.txt").endswith("file.txt"))
         self.assertFalse(Path("filE.txt").endswith("file.txt"))
 
+        Path("filE.txt").remove_node()
+
     def test_remove_start(self):
         self.assertEqual(Path(), Path("test.txt").remove_start("test.txt"))
         self.assertEqual(Path("folder/test.txt"), Path("folder/test.txt").remove_start("Folder"))
@@ -166,6 +170,8 @@ class FileTest(PathTest):
 
         if Path.verInfo.pathRootIsDelimiter:
             self.assertEqual(Path("test.txt"), Path("folder/test.txt").remove_start("folder"))
+
+        Path("Folder").remove_node()
 
     def test_remove_end(self):
         self.assertEqual(Path(), Path("test.txt").remove_end("test.txt"))
@@ -366,19 +372,19 @@ class FileTest(PathTest):
         Path("folder/test2.txt").write()
         Path("folder/test3.txt").write()
 
-        self.assertEqual(1, len(Path().get_children()))
-        self.assertEqual(2, len(Path().get_children(include_self=True)))
+        self.assertEqual(2, len(Path().get_children()))
+        self.assertEqual(3, len(Path().get_children(include_self=True)))
 
         self.assertEqual(0, len(Path("test.txt").get_children()))
         self.assertEqual(1, len(Path("test.txt").get_children(include_self=True)))
-        self.assertEqual(1, len(Path("test.txt").get_children()))
+        self.assertEqual(0, len(Path("test.txt").get_children()))
 
-        self.assertEqual(3, len(Path().get_children(depth=3)))
-        self.assertEqual(4, len(Path().get_children(depth=3, include_self=True)))
-        self.assertEqual(4, len(Path().get_children(depth=-1, include_self=True)))
-        self.assertEqual(2, len(Path().get_children(depth=1, include_self=True)))
+        self.assertEqual(4, len(Path().get_children(depth=3)))
+        self.assertEqual(5, len(Path().get_children(depth=1, include_self=True)))
+        self.assertEqual(5, len(Path().get_children(depth=-1, include_self=True)))
+        self.assertEqual(3, len(Path().get_children(depth=0, include_self=True)))
 
-        self.assertEqual(1, len(Path("folder/test2.txt").get_children(depth=-1)))
+        self.assertEqual(0, len(Path("folder/test2.txt").get_children(depth=-1)))
 
         self.assertEqual(["folder/test2.txt", "folder/test3.txt"], Path("folder").get_children())
 
@@ -414,6 +420,9 @@ class FileTest(PathTest):
             self.assertEqual("/", str_path)
         else:
             self.assertTrue(len(str_path) == 3 and str_path[1] == ":" and str_path[2] == Path.path_delimiter)
+        self.assertEqual(True, Path().absolute().get_parent(-1).is_root())
+        self.assertEqual(False, Path("foo").is_root())
+        self.assertEqual(False, Path().absolute().is_root())
 
     def test_as_working_dir(self):
         working_dir = Path.get_working_dir()
@@ -462,6 +471,8 @@ class FileTest(PathTest):
         Path("foo.txt").write("hi")
         # Path("foo.txt").get_parent()
         self.assertRaises(CaseSensitivityError, Path("Foo.txt").exists)
+
+        Path("Foo.txt").remove_node()
 
     def test_get_alternative_path(self):
         path = Path("foo/bar.txt")

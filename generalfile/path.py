@@ -1,8 +1,9 @@
 
 import pathlib
+import os
 
 
-from generallibrary import VerInfo, initBases, TreeDiagram, Recycle, classproperty
+from generallibrary import VerInfo, initBases, TreeDiagram, Recycle, classproperty, deco_cache, hook
 
 from generalfile.errors import InvalidCharacterError
 from generalfile.path_lock import Path_ContextManager
@@ -13,7 +14,6 @@ from generalfile.optional_dependencies.path_text import Path_Text
 from generalfile.optional_dependencies.path_cfg import Path_Cfg
 
 
-@initBases
 class Path(TreeDiagram, Recycle, Path_ContextManager, Path_Operations, Path_Strings, Path_Spreadsheet, Path_Text, Path_Cfg):
     """ Immutable cross-platform Path.
         Built on pathlib and TreeDiagram.
@@ -26,12 +26,17 @@ class Path(TreeDiagram, Recycle, Path_ContextManager, Path_Operations, Path_Stri
     _path_delimiter = verInfo.pathDelimiter
     Path = ...
 
-    _recycle_keys = {"path": lambda path: Path._scrub(path)}
+    _recycle_keys = {"path": lambda path: Path.scrub(path)}
+    # _recycle_keys = {"path": lambda path: hash(Path.scrub(path))}
 
-    def __init__(self, path=None, parent=None):
-        self.path = self._scrub(str_path="" if path is None else path)
+    def __init__(self, path=None):  # Don't have parent here because of Recycle
+        self.path = self.scrub(str_path=path)
 
         self._path = pathlib.Path(self.path)
+        self._latest_listdir = set()
+
+    # def __init_post__(self):
+    #     self._generate_parent()
 
     copy_node = NotImplemented  # Maybe something like this to disable certain methods
 
@@ -39,17 +44,23 @@ class Path(TreeDiagram, Recycle, Path_ContextManager, Path_Operations, Path_Stri
     def path_delimiter(cls):
         return cls._path_delimiter
 
+    # def _generate_parent(self):
     def spawn_parents(self):
-        if not self._parents:
-            path = None
-            for pathlib_path in reversed(self._path.parents):
-                path = self.Path(path="" if str(pathlib_path) == "." else str(pathlib_path), parent=path)
-            self.set_parent(path)
+        if not self.get_parent(spawn=False) and self.path and not self.is_root():
+            try:
+                index = self.path.rindex(self.path_delimiter)
+            except ValueError:
+                index = 0
+            self.set_parent(Path(path=self.path[:index]))
+
 
     def spawn_children(self):
+        for child in self.get_children(spawn=False, gen=True):
+            child.set_parent(None)
+
         if self.is_folder():
-            for child in self._path.iterdir():
-                self.Path(path=child).set_parent(parent=self)
+            for name in os.listdir(self.path if self.path else "."):
+                Path(path=self / name).set_parent(self)
 
     def __str__(self):
         # return self.path
@@ -58,12 +69,20 @@ class Path(TreeDiagram, Recycle, Path_ContextManager, Path_Operations, Path_Stri
     def __repr__(self):
         return self.__str__()
 
+    def __format__(self, format_spec):
+        return str(self).__format__(format_spec)
+
     def __truediv__(self, other):
         """ :rtype: generalfile.Path """
         return self.Path(self._path / str(other))
-    
+
+    # @deco_cache()
     def __eq__(self, other):
-        return self._scrub(self) == self._scrub(other)
+        if isinstance(other, Path):
+            other = other.path
+        else:
+            other = self._scrub(other)
+        return self.path == other
 
     def __hash__(self):
         return hash(str(self))
@@ -73,12 +92,17 @@ class Path(TreeDiagram, Recycle, Path_ContextManager, Path_Operations, Path_Stri
 
     @classmethod
     def _scrub(cls, str_path):
-        str_path = str(str_path)
+        str_path = str("" if str_path is None else str_path)
         str_path = cls._replace_delimiters(str_path=str_path)
         str_path = cls._invalid_characters(str_path=str_path)
         str_path = cls._trim(str_path=str_path)
         str_path = cls._delimiter_suffix_if_root(str_path=str_path)
         return str_path
+
+    @classmethod
+    @deco_cache()
+    def scrub(cls, str_path):
+        return cls._scrub(str_path=str_path)
 
     @classmethod
     def _replace_delimiters(cls, str_path):
@@ -127,7 +151,7 @@ class Path(TreeDiagram, Recycle, Path_ContextManager, Path_Operations, Path_Stri
         return TreeDiagram.view(self=self, indent=indent, relative=relative, custom_repr=custom_repr, spacer=spacer, print_out=print_out)
 
 setattr(Path, "Path", Path)
-
+# hook(Path.set_parent, Path._generate_parent, after=True)  # Doesn't respect remove_node
 
 
 

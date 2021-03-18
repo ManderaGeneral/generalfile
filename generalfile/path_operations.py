@@ -90,6 +90,24 @@ class Path_Operations:
     dead_lock_seconds = 3
     _working_dir = None
 
+    def _moved_path(self, new_path=None, target_folder=None):
+        """ Called by delete, trash, move and rename.
+            Just remove node and let it re-create for now, in the future we could re-use structures.
+
+            :param generalfile.Path self: """
+        # self.remove_node()
+        # mirror = self.mirror_path()
+        # print(f"here {self:<150} {str(mirror):<70} {self.get_working_dir()}")
+        # if mirror is not None:
+        #     mirror.remove_node()
+
+    def _changed_working_dir(self):
+        """ :param generalfile.Path self: """
+        from pprint import pprint
+        # pprint(self.Path().get_children(spawn=False))
+        # self.Path().remove_node()
+        # pprint(self.Path().get_children(spawn=False))
+
     def open_operation(self, mode, func):
         """ Handles all open() calls. """
         with open(str(self), mode, encoding="utf-8") as stream:
@@ -151,7 +169,7 @@ class Path_Operations:
                 self._path.replace(str(new_path))
             else:
                 self._path.rename(str(new_path))
-            # self.remove_node()
+            self._moved_path(new_path=new_path)
         return new_path
 
     @deco_require_state(exists=True)
@@ -194,7 +212,7 @@ class Path_Operations:
         if self.is_file():
             filepaths = [self]
         else:
-            filepaths = self.get_children(filt=self.Path.exists)
+            filepaths = self.get_children()
 
         target_filepaths = [target_folder_path / path.absolute().relative(self_parent_path) for path in filepaths]
         if not overwrite and any([target.exists() for target in target_filepaths]):
@@ -212,6 +230,7 @@ class Path_Operations:
 
             if method == "move" and self.is_folder():
                 self.delete()
+            self._moved_path(target_folder=target_folder_path)
 
     def copy_to_folder(self, target_folder_path, overwrite=False):
         """ Copy file or files inside given folder to anything except it's own parent, use `copy` for that.
@@ -241,7 +260,17 @@ class Path_Operations:
             :param generalfile.Path self: """
         return self._path.is_dir()
 
+    def is_root(self):
+        """ Get whether this Path is a root.
+
+            :param generalfile.Path self: """
+        if self.verInfo.pathRootIsDelimiter:
+            return self.path == self.path_delimiter
+        else:
+            return len(self.path) == 3 and self.path[1] == ":" and self.path[2] == self.path_delimiter
+
     def _case_sens_test(self, path):
+        """ :param generalfile.Path self: """
         return self != path and str(self).lower() == str(path).lower()
 
     def exists(self):
@@ -260,7 +289,7 @@ class Path_Operations:
             return True
         elif self.is_file():
             return False
-        if self.get_child(filt=self.Path.exists):
+        if self.get_child():
             return False
         return True
 
@@ -318,6 +347,8 @@ class Path_Operations:
         self._working_dir = self.absolute()
         os.chdir(str(self._working_dir))
 
+        self._changed_working_dir()
+
     @classmethod
     @deco_cache()
     def get_cache_dir(cls):
@@ -361,7 +392,7 @@ class Path_Operations:
             except Exception as e:
                 if error:
                     raise e
-            # self.remove_node()
+            self._moved_path()
 
     @deco_preserve_working_dir
     @deco_return_if_removed(content=False)
@@ -371,7 +402,7 @@ class Path_Operations:
             :param generalfile.Path self: """
         with self.lock():
             send2trash(str(self))
-            # self.remove_node()
+            self._moved_path()  # Todo: Could support returning trash Path and undoing trash.
 
     @deco_preserve_working_dir
     @deco_return_if_removed(content=True)
@@ -379,7 +410,7 @@ class Path_Operations:
         """ Delete every path in a folder.
 
             :param generalfile.Path self: """
-        for path in self.get_children(gen=True, filt=self.Path.exists):
+        for path in self.get_children(gen=True, ):
             path.delete()
 
     @deco_preserve_working_dir
@@ -388,7 +419,7 @@ class Path_Operations:
         """ Trash a file or folder and then create an empty folder in it's place.
 
             :param generalfile.Path self: """
-        for path in self.get_children(gen=True, filt=self.Path.exists):
+        for path in self.get_children(gen=True, ):
             path.trash()
 
     @deco_require_state(is_file=True)

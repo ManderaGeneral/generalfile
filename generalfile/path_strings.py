@@ -53,7 +53,8 @@ class Path_Strings:
             # return self.Path(self._path.absolute())
 
     def relative(self, base=None):
-        """ Get new Path as relative.
+        """ Get new Path as relative, uses working dir if base is None.
+            Returns None if not inside base.
 
             :param generalfile.Path self:
             :param base: Defaults to working dir. """
@@ -62,7 +63,10 @@ class Path_Strings:
         else:
             if base is None:
                 base = self.get_working_dir()
-            return self.Path() if self == base else self.Path(self._path.relative_to(str(base)))
+            try:
+                return self.Path() if self == base else self.Path(self._path.relative_to(str(base)))
+            except ValueError:
+                return None
 
     def is_absolute(self):
         """ Get whether this Path is absolute.
@@ -75,6 +79,16 @@ class Path_Strings:
 
             :param generalfile.Path self: """
         return not self.is_absolute()
+
+    def mirror_path(self):
+        """ Return mirror Path which currently points to same destination based on working dir.
+            Absolute Path returns relative Path and vice versa.
+
+            :param generalfile.Path self: """
+        if self.is_absolute():
+            return self.relative()
+        else:
+            return self.absolute()
 
     def startswith(self, path):
         """ Get whether this Path starts with given string.
