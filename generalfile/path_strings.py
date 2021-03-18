@@ -26,7 +26,7 @@ class Path_Strings:
 
             :param generalfile.Path self:
             :rtype: generalfile.Path """
-        path = str(self)
+        path = self.path
         for char, alternative in self._get_replaced_alternative_characters().items():
             path = path.replace(char, alternative)
         return self.Path(path)
@@ -96,7 +96,7 @@ class Path_Strings:
             :param generalfile.Path self:
             :param str or Path path:"""
         path = self.Path(path)
-        return str(self).startswith(str(path))
+        return self.path.startswith(str(path))
 
     def endswith(self, path):
         """ Get whether this Path ends with given string.
@@ -104,7 +104,7 @@ class Path_Strings:
             :param generalfile.Path self:
             :param str or Path path:"""
         path = self.Path(path)
-        return str(self).endswith(str(path))
+        return self.path.endswith(str(path))
 
     def remove_start(self, path):
         """ Remove a string from the start of this Path.
@@ -116,7 +116,7 @@ class Path_Strings:
         if not self.startswith(str_path):
             return self
         else:
-            new_path = self.Path(str(self)[len(str_path):])
+            new_path = self.Path(self.path[len(str_path):])
             if str(new_path).startswith(path.path_delimiter):
                 return new_path[1:]
             else:
@@ -132,7 +132,7 @@ class Path_Strings:
         if not self.endswith(str_path):
             return self
         else:
-            new_path = self.Path(str(self)[:-len(str_path)])
+            new_path = self.Path(self.path[:-len(str_path)])
             if str(new_path).endswith(path.path_delimiter):
                 return new_path[:-1]
             else:
@@ -151,7 +151,7 @@ class Path_Strings:
             With an absolute path the first index is an empty string on a posix system. <- Not sure about that anymore, might be /
 
             :param generalfile.Path self: """
-        return str(self).split(self.path_delimiter)
+        return self.path.split(self.path_delimiter)
 
     def name(self):
         """ Get name of Path which is stem + suffix.
@@ -266,7 +266,7 @@ class Path_Strings:
 
     def encode(self):
         """ Return a URL encoded string from this Path. """
-        url = str(self).replace("\\", "/")
+        url = self.path.replace("\\", "/")
         return quote(url)
 
 

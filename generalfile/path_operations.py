@@ -90,35 +90,21 @@ class Path_Operations:
     dead_lock_seconds = 3
     _working_dir = None
 
-    def _moved_path(self, new_path=None, target_folder=None):
-        """ Called by delete, trash, move and rename.
-            Just remove node and let it re-create for now, in the future we could re-use structures.
-
-            :param generalfile.Path self: """
-        # self.remove_node()
-        # mirror = self.mirror_path()
-        # print(f"here {self:<150} {str(mirror):<70} {self.get_working_dir()}")
-        # if mirror is not None:
-        #     mirror.remove_node()
-
-    def _changed_working_dir(self):
-        """ :param generalfile.Path self: """
-        from pprint import pprint
-        # pprint(self.Path().get_children(spawn=False))
-        # self.Path().remove_node()
-        # pprint(self.Path().get_children(spawn=False))
-
     def open_operation(self, mode, func):
-        """ Handles all open() calls. """
-        with open(str(self), mode, encoding="utf-8") as stream:
+        """ Handles all open() calls.
+
+            :param generalfile.Path self:
+            :param mode:
+            :param func: """
+        with open(self.path, mode, encoding="utf-8") as stream:
             return func(stream)
 
         # Couldn't do this as it only fails when writing, not reading
         # try:
-        #     with open(str(self), mode) as stream:
+        #     with open(self.path, mode) as stream:
         #         return func(stream)
         # except UnicodeEncodeError:
-        #     with open(str(self), mode, encoding="utf-8") as stream:
+        #     with open(self.path, mode, encoding="utf-8") as stream:
         #         return func(stream)
 
 
@@ -169,7 +155,6 @@ class Path_Operations:
                 self._path.replace(str(new_path))
             else:
                 self._path.rename(str(new_path))
-            self._moved_path(new_path=new_path)
         return new_path
 
     @deco_require_state(exists=True)
@@ -194,9 +179,9 @@ class Path_Operations:
 
     def _copy_file_or_folder(self, new_path):
         if self.is_file():
-            shutil.copy(str(self), str(new_path), follow_symlinks=False)  # Can clobber
+            shutil.copy(self.path, str(new_path), follow_symlinks=False)  # Can clobber
         else:
-            copy_tree(str(self), str(new_path))
+            copy_tree(self.path, str(new_path))
 
     @deco_require_state(exists=True)
     def _copy_or_move(self, target_folder_path, overwrite, method):
@@ -230,7 +215,6 @@ class Path_Operations:
 
             if method == "move" and self.is_folder():
                 self.delete()
-            self._moved_path(target_folder=target_folder_path)
 
     def copy_to_folder(self, target_folder_path, overwrite=False):
         """ Copy file or files inside given folder to anything except it's own parent, use `copy` for that.
@@ -271,7 +255,7 @@ class Path_Operations:
 
     def _case_sens_test(self, path):
         """ :param generalfile.Path self: """
-        return self != path and str(self).lower() == str(path).lower()
+        return self != path and self.path.lower() == str(path).lower()
 
     def exists(self):
         """ Get whether this Path exists.
@@ -347,8 +331,6 @@ class Path_Operations:
         self._working_dir = self.absolute()
         os.chdir(str(self._working_dir))
 
-        self._changed_working_dir()
-
     @classmethod
     @deco_cache()
     def get_cache_dir(cls):
@@ -368,6 +350,7 @@ class Path_Operations:
             :rtype: generalfile.Path """
         return cls.get_cache_dir() / "generalfile" / "locks"
 
+    @deco_cache()
     def get_lock_path(self):
         """ Get absolute lock path pointing to actual lock.
 
@@ -386,13 +369,12 @@ class Path_Operations:
         with self.lock():
             try:
                 if self.is_file():
-                    os.remove(str(self))
+                    os.remove(self.path)
                 elif self.is_folder():
-                    shutil.rmtree(str(self), ignore_errors=True)
+                    shutil.rmtree(self.path, ignore_errors=True)
             except Exception as e:
                 if error:
                     raise e
-            self._moved_path()
 
     @deco_preserve_working_dir
     @deco_return_if_removed(content=False)
@@ -401,8 +383,7 @@ class Path_Operations:
 
             :param generalfile.Path self: """
         with self.lock():
-            send2trash(str(self))
-            self._moved_path()  # Todo: Could support returning trash Path and undoing trash.
+            send2trash(self.path)
 
     @deco_preserve_working_dir
     @deco_return_if_removed(content=True)
@@ -428,14 +409,14 @@ class Path_Operations:
             NOTE: Doesn't seem to update very quickly for windows (7).
 
             :param generalfile.Path self: """
-        return time.time() - os.path.getctime(str(self))
+        return time.time() - os.path.getctime(self.path)
 
     @deco_require_state(is_file=True)
     def seconds_since_modified(self):
         """ Get time in seconds since file was modified.
 
             :param generalfile.Path self: """
-        return time.time() - os.path.getmtime(str(self))
+        return time.time() - os.path.getmtime(self.path)
 
     @deco_require_state(is_file=True)
     def size(self):
@@ -457,7 +438,7 @@ class Path_Operations:
             return self_exists == path_exists
 
         with self.lock(path):
-            with open(str(self), "r") as file1:
+            with open(self.path, "r") as file1:
                 with open(str(path), "r") as file2:
                     return file1.read() == file2.read()
 
@@ -494,7 +475,7 @@ class Path_Operations:
             :param generalfile.Path self:
             :param text: """
         with self.lock():
-            with open(str(self), "r") as stream:
+            with open(self.path, "r") as stream:
                 for line in stream:
                     if text in line:
                         return True

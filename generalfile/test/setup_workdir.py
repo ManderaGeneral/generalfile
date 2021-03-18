@@ -12,9 +12,6 @@ def setup_workdir(use_working_dir=False):
         raise EnvironmentError(f"Failed setting correct working dir, should be ..test/tests but it's {path}")
 
     path.delete_folder_content()
-    # path.remove_node()
-    # Path().remove_node()
-    # Path.recycle_clear_all()
 
 
 from generalfile.path import Path

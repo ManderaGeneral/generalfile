@@ -55,12 +55,15 @@ class Path(TreeDiagram, Recycle, Path_ContextManager, Path_Operations, Path_Stri
 
 
     def spawn_children(self):
-        for child in self.get_children(spawn=False, gen=True):
-            child.set_parent(None)
-
         if self.is_folder():
-            for name in os.listdir(self.path if self.path else "."):
-                Path(path=self / name).set_parent(self)
+            old_children = set(self.get_children(spawn=False))
+            new_children = {Path(path=self / name) for name in os.listdir(self.path if self.path else ".")}
+
+            for child in old_children - new_children:
+                child.set_parent(None)
+
+            for child in new_children - old_children:
+                child.set_parent(self)
 
     def __str__(self):
         # return self.path
@@ -70,7 +73,7 @@ class Path(TreeDiagram, Recycle, Path_ContextManager, Path_Operations, Path_Stri
         return self.__str__()
 
     def __format__(self, format_spec):
-        return str(self).__format__(format_spec)
+        return self.path.__format__(format_spec)
 
     def __truediv__(self, other):
         """ :rtype: generalfile.Path """
@@ -85,7 +88,7 @@ class Path(TreeDiagram, Recycle, Path_ContextManager, Path_Operations, Path_Stri
         return self.path == other
 
     def __hash__(self):
-        return hash(str(self))
+        return hash(self.path)
 
     def __contains__(self, item):
         return self.path.__contains__(item)

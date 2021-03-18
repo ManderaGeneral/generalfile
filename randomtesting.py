@@ -4,15 +4,16 @@ from generalfile.test.setup_workdir import setup_workdir
 
 
 
-setup_workdir()
+
+# setup_workdir()
 
 
 # Path.get_lock_dir().open_folder()
 
 
-Path("hi").write("there")
+# Path("hi").write("there")
 
-print(Path().get_children())
+# print(Path().get_children())
 # print(Path()._children)
 
 # print(Path("hi/there").get_parent())

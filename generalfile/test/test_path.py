@@ -147,8 +147,6 @@ class FileTest(PathTest):
         self.assertTrue(Path("file.SUFFIX.txt").startswith("file.SUFFIX.txt"))
         self.assertFalse(Path("filE.txt").startswith("file.txt"))
 
-        Path("filE.txt").remove_node()
-
     def test_endswith(self):
         self.assertFalse(Path("file.txt").endswith("folder"))
         self.assertFalse(Path("file.txt").endswith("file"))
@@ -160,8 +158,6 @@ class FileTest(PathTest):
         self.assertTrue(Path("file.txt").endswith("file.txt"))
         self.assertFalse(Path("filE.txt").endswith("file.txt"))
 
-        Path("filE.txt").remove_node()
-
     def test_remove_start(self):
         self.assertEqual(Path(), Path("test.txt").remove_start("test.txt"))
         self.assertEqual(Path("folder/test.txt"), Path("folder/test.txt").remove_start("Folder"))
@@ -171,7 +167,6 @@ class FileTest(PathTest):
         if Path.verInfo.pathRootIsDelimiter:
             self.assertEqual(Path("test.txt"), Path("folder/test.txt").remove_start("folder"))
 
-        Path("Folder").remove_node()
 
     def test_remove_end(self):
         self.assertEqual(Path(), Path("test.txt").remove_end("test.txt"))
@@ -471,8 +466,6 @@ class FileTest(PathTest):
         Path("foo.txt").write("hi")
         # Path("foo.txt").get_parent()
         self.assertRaises(CaseSensitivityError, Path("Foo.txt").exists)
-
-        Path("Foo.txt").remove_node()
 
     def test_get_alternative_path(self):
         path = Path("foo/bar.txt")
