@@ -90,6 +90,9 @@ class Path_Operations:
     dead_lock_seconds = 3
     _working_dir = None
 
+    def _removed_path(self):
+        self.set_parent(None)
+
     def open_operation(self, mode, func):
         """ Handles all open() calls.
 
@@ -155,6 +158,7 @@ class Path_Operations:
                 self._path.replace(str(new_path))
             else:
                 self._path.rename(str(new_path))
+            self._removed_path()
         return new_path
 
     @deco_require_state(exists=True)
@@ -213,8 +217,10 @@ class Path_Operations:
                 elif method == "move":
                     shutil.move(str(path), str(target))  # Can clobber if full target path is specified like we do
 
-            if method == "move" and self.is_folder():
-                self.delete()
+            if method == "move":
+                self._removed_path()
+                if self.is_folder():
+                    self.delete()
 
     def copy_to_folder(self, target_folder_path, overwrite=False):
         """ Copy file or files inside given folder to anything except it's own parent, use `copy` for that.
@@ -376,6 +382,8 @@ class Path_Operations:
                 if error:
                     raise e
 
+            self._removed_path()
+
     @deco_preserve_working_dir
     @deco_return_if_removed(content=False)
     def trash(self):
@@ -384,6 +392,8 @@ class Path_Operations:
             :param generalfile.Path self: """
         with self.lock():
             send2trash(self.path)
+
+            self._removed_path()
 
     @deco_preserve_working_dir
     @deco_return_if_removed(content=True)

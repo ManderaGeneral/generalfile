@@ -26,11 +26,11 @@ class Path(TreeDiagram, Recycle, Path_ContextManager, Path_Operations, Path_Stri
     _path_delimiter = verInfo.pathDelimiter
     Path = ...
 
-    _recycle_keys = {"path": lambda path: Path.scrub(path)}
+    _recycle_keys = {"path": lambda path: Path.scrub("" if path is None else str(path))}
     # _recycle_keys = {"path": lambda path: hash(Path.scrub(path))}
 
     def __init__(self, path=None):  # Don't have parent here because of Recycle
-        self.path = self.scrub(str_path=path)
+        self.path = self.scrub(str_path="" if path is None else str(path))
 
         self._path = pathlib.Path(self.path)
         self._latest_listdir = set()
@@ -53,21 +53,18 @@ class Path(TreeDiagram, Recycle, Path_ContextManager, Path_Operations, Path_Stri
                 index = 0
             self.set_parent(Path(path=self.path[:index]))
 
-
     def spawn_children(self):
         if self.is_folder():
-            old_children = set(self.get_children(spawn=False))
-            new_children = {Path(path=self / name) for name in os.listdir(self.path if self.path else ".")}
+            old_children = {path.name() for path in self.get_children(spawn=False)}
+            new_children = set(os.listdir(self.path if self.path else "."))
 
-            for child in old_children - new_children:
-                child.set_parent(None)
-
-            for child in new_children - old_children:
-                child.set_parent(self)
+            for name in old_children.symmetric_difference(new_children):
+                path = Path(path=self / name)
+                path.set_parent(self if name in new_children else None)
 
     def __str__(self):
-        # return self.path
         return getattr(self, "path", "<Path not loaded yet>")
+        # return self.path
 
     def __repr__(self):
         return self.__str__()
@@ -77,6 +74,7 @@ class Path(TreeDiagram, Recycle, Path_ContextManager, Path_Operations, Path_Stri
 
     def __truediv__(self, other):
         """ :rtype: generalfile.Path """
+        # print("here", self._recycle_instances)
         return self.Path(self._path / str(other))
 
     # @deco_cache()
@@ -84,7 +82,7 @@ class Path(TreeDiagram, Recycle, Path_ContextManager, Path_Operations, Path_Stri
         if isinstance(other, Path):
             other = other.path
         else:
-            other = self._scrub(other)
+            other = self._scrub("" if other is None else str(other))
         return self.path == other
 
     def __hash__(self):
@@ -95,7 +93,6 @@ class Path(TreeDiagram, Recycle, Path_ContextManager, Path_Operations, Path_Stri
 
     @classmethod
     def _scrub(cls, str_path):
-        str_path = str("" if str_path is None else str_path)
         str_path = cls._replace_delimiters(str_path=str_path)
         str_path = cls._invalid_characters(str_path=str_path)
         str_path = cls._trim(str_path=str_path)

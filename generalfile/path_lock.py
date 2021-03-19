@@ -24,7 +24,7 @@ class _Lock:
     def _delete_if_dead(self, lock_path):
         try:
             seconds_since_creation = lock_path.seconds_since_modified()
-        except AttributeError:
+        except (AttributeError, FileNotFoundError):
             pass
         else:
             if seconds_since_creation > lock_path.dead_lock_seconds:
