@@ -4,7 +4,9 @@ def setup_workdir(use_working_dir=False):
     """ Class to set up working dir for tests, File extensions import this class.
         Set working dir and clear it after it's made sure it's correct path."""
     path = Path.get_working_dir() if use_working_dir else Path(__file__).get_parent()
-    path /= "tests"
+
+    if path.endswith("test"):
+        path /= "tests"
 
     path.set_working_dir()
 

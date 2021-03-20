@@ -126,11 +126,11 @@ class FileTest(PathTest):
         path = Path("folder/foobar/test.txt")
         self.assertEqual(Path("folder/foobar"), path.get_parent())
         self.assertEqual(Path("folder/foobar"), path.get_parent(0))
-        self.assertEqual(Path("folder"), path.get_parent(1))
-        self.assertEqual(Path(), path.get_parent(2))
-        self.assertEqual(None, path.get_parent(3))
-        self.assertEqual(None, path.get_parent(99))
-        self.assertEqual(None, path.get_parent(-99))
+        self.assertEqual(Path("folder"), path.get_parent(1, 1))
+        self.assertEqual(Path(), path.get_parent(2, 2))
+        self.assertEqual(None, path.get_parent(3, 3))
+        self.assertEqual(None, path.get_parent(99, 99))
+        self.assertEqual(None, path.get_parent(-99, -99))
 
         self.assertEqual([Path("folder/foobar"), Path("folder"), Path()], path.get_parents(depth=-1))
         new_path = Path("folder/foobar/test.txt")
@@ -410,12 +410,12 @@ class FileTest(PathTest):
         self.assertIn("foo", Path("foobar"))
 
     def test_root(self):
-        str_path = Path().absolute().get_parent(-1).path
+        str_path = Path().absolute().get_parent(depth=-1, index=-1).path
         if Path.verInfo.pathRootIsDelimiter:
             self.assertEqual("/", str_path)
         else:
             self.assertTrue(len(str_path) == 3 and str_path[1] == ":" and str_path[2] == Path.path_delimiter)
-        self.assertEqual(True, Path().absolute().get_parent(-1).is_root())
+        self.assertEqual(True, Path().absolute().get_parent(-1, -1).is_root())
         self.assertEqual(False, Path("foo").is_root())
         self.assertEqual(False, Path().absolute().is_root())
 
