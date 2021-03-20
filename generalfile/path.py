@@ -56,7 +56,11 @@ class Path(TreeDiagram, Recycle, Path_ContextManager, Path_Operations, Path_Stri
     def spawn_children(self):
         if self.is_folder():
             old_children = {path.name() for path in self.get_children(spawn=False)}
-            new_children = set(os.listdir(self.path if self.path else "."))
+
+            try:
+                new_children = set(os.listdir(self.path if self.path else "."))
+            except PermissionError:
+                new_children = set()
 
             for name in old_children.symmetric_difference(new_children):
                 path = Path(path=self / name)
@@ -144,14 +148,13 @@ class Path(TreeDiagram, Recycle, Path_ContextManager, Path_Operations, Path_Stri
             return f"{str_path}{cls.path_delimiter}"
         return str_path
 
-    def view(self, only_last_part=True, indent=1, relative=False, custom_repr=None, spacer=" ", print_out=True):
+    def view(self, only_last_part=True, indent=1, relative=False, custom_repr=None, spacer=" ", spawn=False, print_out=True):
         """ Override view to use default custom repr. """
         if only_last_part and custom_repr is None:
-            custom_repr = lambda path: path.parts()[-1]
-        return TreeDiagram.view(self=self, indent=indent, relative=relative, custom_repr=custom_repr, spacer=spacer, print_out=print_out)
+            custom_repr = lambda path: path if path.is_root() else path.parts()[-1]
+        return TreeDiagram.view(self=self, indent=indent, relative=relative, custom_repr=custom_repr, spacer=spacer, spawn=spawn, print_out=print_out)
 
 setattr(Path, "Path", Path)
-# hook(Path.set_parent, Path._generate_parent, after=True)  # Doesn't respect remove_node
 
 
 
