@@ -3,7 +3,7 @@ import pathlib
 import os
 
 
-from generallibrary import VerInfo, initBases, TreeDiagram, Recycle, classproperty, deco_cache, hook
+from generallibrary import VerInfo, TreeDiagram, Recycle, classproperty, deco_cache
 
 from generalfile.errors import InvalidCharacterError
 from generalfile.path_lock import Path_ContextManager
@@ -27,7 +27,7 @@ class Path(TreeDiagram, Recycle, Path_ContextManager, Path_Operations, Path_Stri
     Path = ...
 
     _recycle_keys = {"path": lambda path: Path.scrub("" if path is None else str(path))}
-    # _recycle_keys = {"path": lambda path: hash(Path.scrub(path))}
+    _alternative_chars = {_path_delimiter: "&#47;", ":": "&#58", ".": "&#46;"}
 
     def __init__(self, path=None):  # Don't have parent here because of Recycle
         self.path = self.scrub(str_path="" if path is None else str(path))
@@ -35,16 +35,12 @@ class Path(TreeDiagram, Recycle, Path_ContextManager, Path_Operations, Path_Stri
         self._path = pathlib.Path(self.path)
         self._latest_listdir = set()
 
-    # def __init_post__(self):
-    #     self._generate_parent()
-
     copy_node = NotImplemented  # Maybe something like this to disable certain methods
 
     @classproperty
     def path_delimiter(cls):
         return cls._path_delimiter
 
-    # def _generate_parent(self):
     def spawn_parents(self):
         if not self.get_parent(spawn=False) and self.path and not self.is_root():
             try:
@@ -81,7 +77,6 @@ class Path(TreeDiagram, Recycle, Path_ContextManager, Path_Operations, Path_Stri
         # print("here", self._recycle_instances)
         return self.Path(self._path / str(other))
 
-    # @deco_cache()
     def __eq__(self, other):
         if isinstance(other, Path):
             other = other.path
@@ -109,13 +104,14 @@ class Path(TreeDiagram, Recycle, Path_ContextManager, Path_Operations, Path_Stri
         return cls._scrub(str_path=str_path)
 
     @classmethod
+    @deco_cache()
     def _replace_delimiters(cls, str_path):
         str_path = str_path.replace("/", cls.path_delimiter)
         str_path = str_path.replace("\\", cls.path_delimiter)
-        # str_path = str_path.replace(self.path_delimiter_alternative, self.path_delimiter)  # Don't remember why I commented this
         return str_path
 
     @classmethod
+    @deco_cache()
     def _invalid_characters(cls, str_path):
         # Simple invalid characters testing from Windows
         for character in '<>"|?*':
@@ -135,6 +131,7 @@ class Path(TreeDiagram, Recycle, Path_ContextManager, Path_Operations, Path_Stri
         return str_path
 
     @classmethod
+    @deco_cache()
     def _trim(cls, str_path):
         if not cls.verInfo.pathRootIsDelimiter and str_path.startswith(cls.path_delimiter):
             str_path = str_path[1:]
@@ -143,6 +140,7 @@ class Path(TreeDiagram, Recycle, Path_ContextManager, Path_Operations, Path_Stri
         return str_path
 
     @classmethod
+    @deco_cache()
     def _delimiter_suffix_if_root(cls, str_path):
         if len(str_path) == 2 and str_path[1] == ":":
             return f"{str_path}{cls.path_delimiter}"

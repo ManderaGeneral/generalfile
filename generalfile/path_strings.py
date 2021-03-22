@@ -1,5 +1,6 @@
 
-import re
+from generallibrary import match, replace, deco_cache
+
 from urllib.parse import quote
 
 
@@ -11,35 +12,22 @@ class Path_Strings:
             :param generalfile.Path self: """
         return self.Path(self.path.__getitem__(item))
 
-    def _get_replaced_alternative_characters(self):
-        """ Get a dictionary of all characters that are replaced for the alternative path.
-
-            :param generalfile.Path self: """
-        return {
-            self.path_delimiter: "&#47;",
-            ":": "&#58",
-            ".": "&#46;"
-        }
-
+    @deco_cache()
     def to_alternative(self):
         """ Get path using alternative delimiter and alternative root for windows.
 
             :param generalfile.Path self:
             :rtype: generalfile.Path """
-        path = self.path
-        for char, alternative in self._get_replaced_alternative_characters().items():
-            path = path.replace(char, alternative)
-        return self.Path(path)
+        return self.Path(replace(string=self.path, **self._alternative_chars))
 
+    @deco_cache()
     def from_alternative(self):
         """ Get path from an alternative representation with or without leading lock dir.
 
             :param generalfile.Path self:
             :rtype: generalfile.Path """
         path = str(self.remove_start(self.get_lock_dir()))
-        for char, alternative in self._get_replaced_alternative_characters().items():
-            path = path.replace(alternative, char)
-        return self.Path(path)
+        return self.Path(replace(string=path, reverse=True, **self._alternative_chars))
 
     def absolute(self):
         """ Get new Path as absolute.
@@ -50,7 +38,6 @@ class Path_Strings:
             return self
         else:
             return self.get_working_dir() / self
-            # return self.Path(self._path.absolute())
 
     def relative(self, base=None):
         """ Get new Path as relative, uses working dir if base is None.
@@ -68,18 +55,21 @@ class Path_Strings:
             except ValueError:
                 return None
 
+    @deco_cache()
     def is_absolute(self):
         """ Get whether this Path is absolute.
 
             :param generalfile.Path self: """
         return self._path.is_absolute()
 
+    @deco_cache()
     def is_relative(self):
         """ Get whether this Path is relative.
 
             :param generalfile.Path self: """
         return not self.is_absolute()
 
+    @deco_cache()
     def mirror_path(self):
         """ Return mirror Path which currently points to same destination based on working dir.
             Absolute Path returns relative Path and vice versa.
@@ -90,6 +80,7 @@ class Path_Strings:
         else:
             return self.absolute()
 
+    @deco_cache()
     def startswith(self, path):
         """ Get whether this Path starts with given string.
 
@@ -98,6 +89,7 @@ class Path_Strings:
         path = self.Path(path)
         return self.path.startswith(str(path))
 
+    @deco_cache()
     def endswith(self, path):
         """ Get whether this Path ends with given string.
 
@@ -106,6 +98,7 @@ class Path_Strings:
         path = self.Path(path)
         return self.path.endswith(str(path))
 
+    @deco_cache()
     def remove_start(self, path):
         """ Remove a string from the start of this Path.
 
@@ -122,6 +115,7 @@ class Path_Strings:
             else:
                 return new_path
 
+    @deco_cache()
     def remove_end(self, path):
         """ Remove a string from the end of this Path.
 
@@ -146,6 +140,7 @@ class Path_Strings:
         path = self.Path(path)
         return self.absolute() == path.absolute()
 
+    @deco_cache()
     def parts(self):
         """ Split path using it's delimiter.
             With an absolute path the first index is an empty string on a posix system. <- Not sure about that anymore, might be /
@@ -153,12 +148,14 @@ class Path_Strings:
             :param generalfile.Path self: """
         return self.path.split(self.path_delimiter)
 
+    @deco_cache()
     def name(self):
         """ Get name of Path which is stem + suffix.
 
             :param generalfile.Path self: """
         return self._path.name
 
+    @deco_cache()
     def with_name(self, name):
         """ Get a new Path with new name which is stem + suffix.
 
@@ -167,12 +164,14 @@ class Path_Strings:
             :rtype: generalfile.Path """
         return self.Path(self._path.with_name(str(name)))
 
+    @deco_cache()
     def stem(self):
         """ Get stem which is name without last suffix.
 
             :param generalfile.Path self: """
         return self._path.stem
 
+    @deco_cache()
     def with_stem(self, stem):
         """ Get a new Path with new stem which is name without last suffix.
 
@@ -181,12 +180,14 @@ class Path_Strings:
             :rtype: generalfile.Path """
         return self.Path(self.with_name(f"{stem}{self.suffix()}"))
 
+    @deco_cache()
     def true_stem(self):
         """ Get true stem which is name without any suffixes.
 
             :param generalfile.Path self: """
         return self._path.stem.split(".")[0]
 
+    @deco_cache()
     def with_true_stem(self, true_stem):
         """ Get a new Path with new stem which is name without any suffixes.
 
@@ -195,6 +196,7 @@ class Path_Strings:
             :rtype: generalfile.Path """
         return self.Path(self.with_name(f"{true_stem}{''.join(self.suffixes())}"))
 
+    @deco_cache()
     def suffix(self):
         """ Get suffix which is name without stem.
             Empty string if missing.
@@ -202,6 +204,7 @@ class Path_Strings:
             :param generalfile.Path self: """
         return self._path.suffix
 
+    @deco_cache()
     def with_suffix(self, suffix, index=-1):
         """ Get a new Path with a new suffix at any index.
             Index is automatically clamped if it's outside index range.
@@ -212,7 +215,7 @@ class Path_Strings:
             :param index: Suffix index to alter.
             :rtype: generalfile.Path """
 
-        suffixes = self.suffixes()
+        suffixes = self.suffixes().copy()
 
         try:
             suffixes[index]
@@ -237,35 +240,34 @@ class Path_Strings:
 
         return self.with_name(f"{self.true_stem()}{''.join(suffixes)}")
 
+    @deco_cache()
     def suffixes(self):
         """ Get every suffix as a list.
 
             :param generalfile.Path self: """
         return self._path.suffixes
 
-    def with_suffixes(self, suffixes):
+    @deco_cache()
+    def with_suffixes(self, *suffixes):
         """ Get a new Path with a new list of suffixes.
 
-            :param list or tuple suffixes: New list of suffixes.
+            :param str suffixes: New suffixes
             :param generalfile.Path self:
             :rtype: generalfile.Path """
         return self.Path(self.with_name(f"{self.true_stem()}{''.join(suffixes)}"))
 
-    def match(self, *lines):
+    @deco_cache()
+    def match(self, *patterns):
         """ Get whether any parts of this Path matches any given filter line.
 
             :param generalfile.Path self: """
-        for part in self.parts():
-            for line in lines:
-                line = re.escape(line)
-                line = line.replace(r"\*", ".+")
-                pattern = f"^{line}$"
-                if re.match(pattern, part, re.IGNORECASE):
-                    return True
-        return False
+        return match(self.path, *map(self._replace_delimiters, patterns))
 
+    @deco_cache()
     def encode(self):
-        """ Return a URL encoded string from this Path. """
+        """ Return a URL encoded string from this Path.
+
+            :param generalfile.Path self: """
         url = self.path.replace("\\", "/")
         return quote(url)
 

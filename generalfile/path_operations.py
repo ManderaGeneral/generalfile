@@ -91,6 +91,7 @@ class Path_Operations:
     _working_dir = None
 
     def _removed_path(self):
+        """ :param generalfile.Path self: """
         self.set_parent(None)
 
     def open_operation(self, mode, func):
@@ -101,15 +102,6 @@ class Path_Operations:
             :param func: """
         with open(self.path, mode, encoding="utf-8") as stream:
             return func(stream)
-
-        # Couldn't do this as it only fails when writing, not reading
-        # try:
-        #     with open(self.path, mode) as stream:
-        #         return func(stream)
-        # except UnicodeEncodeError:
-        #     with open(self.path, mode, encoding="utf-8") as stream:
-        #         return func(stream)
-
 
     def write(self, content=None, overwrite=False, indent=None):
         """ Write to this Path with JSON.
@@ -182,6 +174,7 @@ class Path_Operations:
             self._copy_file_or_folder(new_path=new_path)
 
     def _copy_file_or_folder(self, new_path):
+        """ :param generalfile.Path self: """
         if self.is_file():
             shutil.copy(self.path, str(new_path), follow_symlinks=False)  # Can clobber
         else:
@@ -510,7 +503,7 @@ class Path_Operations:
             assert not target.exists()
 
         root_dir = self.absolute()
-        target_stem = str(target.with_suffixes([]))
+        target_stem = str(target.with_suffixes())
         target_suffix = "".join(target.suffixes())[1:]
         target_suffix = {"tar.gz": "gztar"}.get(target_suffix, target_suffix)
 

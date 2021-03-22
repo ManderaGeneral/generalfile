@@ -71,7 +71,7 @@ class FileTest(PathTest):
     def test_suffixes(self):
         path = Path("folder/test.hello.txt")
         self.assertEqual([".hello", ".txt"], path.suffixes())
-        self.assertEqual("folder/test.tsv", path.with_suffixes([".tsv"]))
+        self.assertEqual("folder/test.tsv", path.with_suffixes(".tsv"))
 
     def test_suffix(self):
         path = Path("folder/test")
@@ -431,11 +431,15 @@ class FileTest(PathTest):
         self.assertEqual(True, Path("hello/there").match("*"))
         self.assertEqual(True, Path("hello/there").match("*h*"))
         self.assertEqual(True, Path(".git").match(".*"))
+        self.assertEqual(True, Path(".git").match("."))
+        self.assertEqual(True, Path("hello/there").match("The"))
+        self.assertEqual(True, Path("hello/there").match("hello/there"))
+        self.assertEqual(True, Path("foo/bar/hi").match("/bar/"))
+        self.assertEqual(True, Path("foo/bar/hi").match("\\bar\\"))
 
-        self.assertEqual(False, Path(".git").match("."))
+        self.assertEqual(False, Path("hello/there").match("x"))
         self.assertEqual(False, Path("hello/there").match("*x*"))
-        self.assertEqual(False, Path("hello/there").match("The"))
-        self.assertEqual(False, Path("hello/there").match("hello/there"))
+        self.assertEqual(False, Path("hello/there").match("there/"))
 
     def test_encode(self):
         self.assertEqual("foo/bar", Path("foo\\bar").encode())
