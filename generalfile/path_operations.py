@@ -260,7 +260,7 @@ class Path_Operations:
         """ Get whether this Path exists.
 
             :param generalfile.Path self: """
-        if self.get_sibling(spawn=False, filt=self._case_sens_test):
+        if self.get_sibling(spawn=False, filt=self._case_sens_test, traverse_excluded=True):
             raise CaseSensitivityError(f"Same path with differing case not allowed: '{self}'")
         return self._path.exists()
 
