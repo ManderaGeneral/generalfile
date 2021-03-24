@@ -67,7 +67,7 @@ class Path(TreeDiagram, Recycle, Path_ContextManager, Path_Operations, Path_Stri
         # return self.path
 
     def __repr__(self):
-        return self.__str__()
+        return self.name()
 
     def __format__(self, format_spec):
         return self.path.__format__(format_spec)
@@ -145,12 +145,6 @@ class Path(TreeDiagram, Recycle, Path_ContextManager, Path_Operations, Path_Stri
         if len(str_path) == 2 and str_path[1] == ":":
             return f"{str_path}{cls.path_delimiter}"
         return str_path
-
-    def view(self, only_last_part=True, indent=1, relative=False, custom_repr=None, spacer=" ", spawn=False, print_out=True):
-        """ Override view to use default custom repr. """
-        if only_last_part and custom_repr is None:
-            custom_repr = lambda path: path if path.is_root() else path.parts()[-1]
-        return TreeDiagram.view(self=self, indent=indent, relative=relative, custom_repr=custom_repr, spacer=spacer, spawn=spawn, print_out=print_out)
 
 setattr(Path, "Path", Path)
 

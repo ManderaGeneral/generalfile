@@ -150,10 +150,10 @@ class Path_Strings:
 
     @deco_cache()
     def name(self):
-        """ Get name of Path which is stem + suffix.
+        """ Get string name of Path which is stem + suffix, or entire path if root.
 
             :param generalfile.Path self: """
-        return self._path.name
+        return self.path if self.is_root() else self._path.name
 
     @deco_cache()
     def with_name(self, name):
@@ -270,9 +270,6 @@ class Path_Strings:
             :param generalfile.Path self: """
         url = self.path.replace("\\", "/")
         return quote(url)
-
-
-
 
 
 
