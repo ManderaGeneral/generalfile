@@ -41,11 +41,11 @@ class Path_Strings:
 
     def relative(self, base=None):
         """ Get new Path as relative, uses working dir if base is None.
-            Returns None if not inside base.
+            Returns self if not inside base.
 
             :param generalfile.Path self:
             :param base: Defaults to working dir. """
-        if self.is_relative() and base is None:
+        if self.is_relative() and (base is None or not self.startswith(base)):
             return self
         else:
             if base is None:
@@ -100,7 +100,7 @@ class Path_Strings:
 
     @deco_cache()
     def remove_start(self, path):
-        """ Remove a string from the start of this Path.
+        """ Remove a string from the start of this Path if it exists.
 
             :param generalfile.Path self:
             :param str or Path path:"""
@@ -117,7 +117,7 @@ class Path_Strings:
 
     @deco_cache()
     def remove_end(self, path):
-        """ Remove a string from the end of this Path.
+        """ Remove a string from the end of this Path if it exists.
 
             :param generalfile.Path self:
             :param str or Path path:"""
@@ -258,7 +258,7 @@ class Path_Strings:
 
     @deco_cache()
     def match(self, *patterns):
-        """ Get whether any parts of this Path matches any given filter line.
+        """ Get whether this Path matches any given filter line.
 
             :param generalfile.Path self: """
         return match(self.path, *map(self._replace_delimiters, patterns))

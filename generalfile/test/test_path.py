@@ -192,6 +192,8 @@ class FileTest(PathTest):
         self.assertEqual(path.relative("folder"), "folder2/file.txt")
         self.assertEqual(path.relative("folder/folder2"), "file.txt")
 
+        self.assertEqual(path, path.relative("doesntexist"))
+
     def test_is_file_or_folder(self):
         Path("folder.txt/file.txt").write()
         self.assertEqual(True, Path("folder.txt").is_folder())

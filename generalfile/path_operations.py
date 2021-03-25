@@ -458,18 +458,18 @@ class Path_Operations:
         assert target.is_folder()
 
         if filt is None:
-            filt = lambda path: path.exists()
+            new_filt = lambda path: path.is_file()
         else:
-            filt = lambda path: path.exists() and filt(path)
+            new_filt = lambda path: path.is_file() and filt(path)
 
-        self_paths = {child.relative(self) for child in self.get_children(filt=filt)}
-        target_paths = {child.relative(target) for child in target.get_children(filt=filt)}
+        self_paths = {child.relative(self) for child in self.get_children(depth=-1, filt=new_filt, traverse_excluded=True)}
+        target_paths = {child.relative(target) for child in target.get_children(depth=-1, filt=new_filt, traverse_excluded=True)}
 
         diff = set()
         if exist:
             diff.update(self_paths.symmetric_difference(target_paths))
         if content:
-            diff.update({path for path in self_paths.intersection(target_paths) if not (self / path).is_identical(path=target / path)})
+            diff.update({path for path in self_paths.intersection(target_paths) if path not in diff and not (self / path).is_identical(path=target / path)})
         return diff
 
     def contains(self, text):
