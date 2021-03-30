@@ -56,7 +56,7 @@ class _Lock:
             raise AttributeError(f"A file stream is already opened for '{self.path}'.")
 
         try:
-            self.lock_file_stream = open(str(self.path.get_lock_path()), "x")
+            self.lock_file_stream = open(self.path.get_lock_path(), "x")
         except FileExistsError:
             return False
 

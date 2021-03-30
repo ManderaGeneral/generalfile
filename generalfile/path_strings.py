@@ -51,7 +51,7 @@ class Path_Strings:
             if base is None:
                 base = self.get_working_dir()
             try:
-                return self.Path() if self == base else self.Path(self._path.relative_to(str(base)))
+                return self.Path() if self == base else self.Path(self._path.relative_to(base))
             except ValueError:
                 return None
 

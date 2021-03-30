@@ -100,7 +100,7 @@ class Path_Operations:
             :param generalfile.Path self:
             :param mode:
             :param func: """
-        with open(self.path, mode, encoding="utf-8") as stream:
+        with open(self, mode, encoding="utf-8") as stream:
             return func(stream)
 
     def write(self, content=None, overwrite=False, indent=None):
@@ -147,9 +147,9 @@ class Path_Operations:
 
         with self.lock(new_path):
             if overwrite:
-                self._path.replace(str(new_path))
+                self._path.replace(new_path)
             else:
-                self._path.rename(str(new_path))
+                self._path.rename(new_path)
             self._removed_path()
         return new_path
 
@@ -176,9 +176,9 @@ class Path_Operations:
     def _copy_file_or_folder(self, new_path):
         """ :param generalfile.Path self: """
         if self.is_file():
-            shutil.copy(self.path, str(new_path), follow_symlinks=False)  # Can clobber
+            shutil.copy(self.path, new_path, follow_symlinks=False)  # Can clobber
         else:
-            copy_tree(self.path, str(new_path))
+            copy_tree(self.path, new_path.path)
 
     @deco_require_state(exists=True)
     def _copy_or_move(self, target_folder_path, overwrite, method):
@@ -208,7 +208,7 @@ class Path_Operations:
                     self.__class__._copy_file_or_folder(path, target)  # Same as path._copy_file_or_folder(target)
 
                 elif method == "move":
-                    shutil.move(str(path), str(target))  # Can clobber if full target path is specified like we do
+                    shutil.move(path, target)  # Can clobber if full target path is specified like we do
 
             if method == "move":
                 self._removed_path()
@@ -300,7 +300,7 @@ class Path_Operations:
 
             :param generalfile.Path self: """
         self.create_folder()
-        os.startfile(str(self.without_file()))
+        os.startfile(self.without_file())
 
     @classmethod
     def get_working_dir(cls):
@@ -328,7 +328,7 @@ class Path_Operations:
             :param generalfile.Path self: """
         self.create_folder()
         self._working_dir = self.absolute()
-        os.chdir(str(self._working_dir))
+        os.chdir(self._working_dir)
 
     @classmethod
     @deco_cache()
@@ -368,9 +368,11 @@ class Path_Operations:
         with self.lock():
             try:
                 if self.is_file():
-                    os.remove(self.path)
+                    os.remove(self)
                 elif self.is_folder():
-                    shutil.rmtree(self.path, ignore_errors=True)
+                    shutil.rmtree(self)
+            except PermissionError:
+                self.trash()  # Sometimes
             except Exception as e:
                 if error:
                     raise e
@@ -394,7 +396,7 @@ class Path_Operations:
         """ Delete every path in a folder.
 
             :param generalfile.Path self: """
-        for path in self.get_children(gen=True, ):
+        for path in self.get_children(gen=True):
             path.delete()
 
     @deco_preserve_working_dir
@@ -403,7 +405,7 @@ class Path_Operations:
         """ Trash a file or folder and then create an empty folder in it's place.
 
             :param generalfile.Path self: """
-        for path in self.get_children(gen=True, ):
+        for path in self.get_children(gen=True):
             path.trash()
 
     @deco_require_state(is_file=True)
@@ -412,14 +414,14 @@ class Path_Operations:
             NOTE: Doesn't seem to update very quickly for windows (7).
 
             :param generalfile.Path self: """
-        return time.time() - os.path.getctime(self.path)
+        return time.time() - os.path.getctime(self)
 
     @deco_require_state(is_file=True)
     def seconds_since_modified(self):
         """ Get time in seconds since file was modified.
 
             :param generalfile.Path self: """
-        return time.time() - os.path.getmtime(self.path)
+        return time.time() - os.path.getmtime(self)
 
     @deco_require_state(is_file=True)
     def size(self):
@@ -441,8 +443,8 @@ class Path_Operations:
             return self_exists == path_exists
 
         with self.lock(path):
-            with open(self.path, "r") as file1:
-                with open(str(path), "r") as file2:
+            with open(self, "r") as file1:
+                with open(path, "r") as file2:
                     return file1.read() == file2.read()
 
     @deco_require_state(is_folder=True)
@@ -478,7 +480,7 @@ class Path_Operations:
             :param generalfile.Path self:
             :param text: """
         with self.lock():
-            with open(self.path, "r") as stream:
+            with open(self, "r") as stream:
                 for line in stream:
                     if text in line:
                         return True
@@ -507,8 +509,7 @@ class Path_Operations:
         target_suffix = "".join(target.suffixes())[1:]
         target_suffix = {"tar.gz": "gztar"}.get(target_suffix, target_suffix)
 
-        shutil.make_archive(root_dir=str(root_dir), base_name=target_stem, format=target_suffix)
-        # shutil.make_archive(root_dir=str(root_dir.get_parent()), base_dir=root_dir.parts()[-1], base_name=target_stem, format=target_suffix)
+        shutil.make_archive(root_dir=root_dir, base_name=target_stem, format=target_suffix)
 
         return target
 
@@ -522,7 +523,7 @@ class Path_Operations:
         if not overwrite:
             assert not base.exists() or base.empty()
 
-        shutil.unpack_archive(filename=str(self._pack_default_suffix()), extract_dir=str(base))
+        shutil.unpack_archive(filename=self._pack_default_suffix(), extract_dir=base)
         return base
 
 

@@ -12,7 +12,6 @@ def setup_workdir(use_working_dir=False):
 
     if not Path.get_working_dir().endswith("test/tests"):
         raise EnvironmentError(f"Failed setting correct working dir, should be ..test/tests but it's {path}")
-
     path.delete_folder_content()
 
 

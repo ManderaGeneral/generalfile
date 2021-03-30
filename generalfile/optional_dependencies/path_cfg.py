@@ -36,7 +36,7 @@ class Path_Cfg:
                 """ Read from this path to get a dictionary. """
                 config = configparser.RawConfigParser()
                 with self.ReadContext(self.path) as read_path:
-                    config.read(str(read_path))
+                    config.read(read_path)
                 return {s: {key: self._read_json_cast(value) for key, value in config.items(s)} for s in config.sections()}
 
             def append(self, dict_):

@@ -69,6 +69,9 @@ class Path(TreeDiagram, Recycle, Path_ContextManager, Path_Operations, Path_Stri
     def __repr__(self):
         return self.name()
 
+    def __fspath__(self):
+        return self.path
+
     def __format__(self, format_spec):
         return self.path.__format__(format_spec)
 

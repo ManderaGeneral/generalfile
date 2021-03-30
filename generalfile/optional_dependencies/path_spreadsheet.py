@@ -45,7 +45,7 @@ class Path_Spreadsheet:
                     useHeader = self._indexIsNamed(df.columns)
                     useIndex = self._indexIsNamed(df.index)
 
-                    df.to_csv(str(write_path), sep="\t", header=useHeader, index=useIndex)
+                    df.to_csv(write_path, sep="\t", header=useHeader, index=useIndex)
 
                     return useHeader, useIndex
 
@@ -141,7 +141,7 @@ class Path_Spreadsheet:
                     return df
 
             def _read_helper(self, path, header, column):
-                return self._try_convert_dtypes(self.pd.read_csv(str(path), sep="\t", header=header, index_col=column))
+                return self._try_convert_dtypes(self.pd.read_csv(path, sep="\t", header=header, index_col=column))
 
             def _append_helper(self, iterable_obj, key=None):
                 """
