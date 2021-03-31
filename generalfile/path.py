@@ -44,7 +44,7 @@ class Path(TreeDiagram, Recycle, Path_ContextManager, Path_Operations, Path_Stri
     def spawn_parents(self):
         if not self.get_parent(spawn=False) and self.path and not self.is_root():
             try:
-                index = self.path.rindex(self.path_delimiter)
+                index = self.path.rindex(self.path_delimiter) + 1
             except ValueError:
                 index = 0
             self.set_parent(Path(path=self.path[:index]))
@@ -120,6 +120,7 @@ class Path(TreeDiagram, Recycle, Path_ContextManager, Path_Operations, Path_Stri
         for character in '<>"|?*':
             if character in str_path:
                 raise InvalidCharacterError(f"Invalid character '{character}' in '{str_path}'")
+
         if ":" in str_path:
             if not cls.verInfo.pathRootHasColon:
                 raise InvalidCharacterError(f"Path has a colon but '{cls.verInfo.os}' doesn't use colon for path root: '{str_path}'")
@@ -129,6 +130,7 @@ class Path(TreeDiagram, Recycle, Path_ContextManager, Path_Operations, Path_Stri
                 raise InvalidCharacterError(f"Path has a colon but index 2 is not a delimiter: '{str_path}'")
             if ":" in str_path[2:]:
                 raise InvalidCharacterError(f"Path has a colon that's not at index 1: '{str_path}'")
+
         if str_path.endswith("."):
             raise InvalidCharacterError(f"Path cannot end with a dot ('.').")
         return str_path

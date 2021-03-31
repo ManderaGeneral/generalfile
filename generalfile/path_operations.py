@@ -372,7 +372,7 @@ class Path_Operations:
                 elif self.is_folder():
                     shutil.rmtree(self)
             except PermissionError:
-                self.trash()  # Sometimes
+                self.trash()  # Sometimes failing to remove a git file on windows, send2trash still worked
             except Exception as e:
                 if error:
                     raise e
