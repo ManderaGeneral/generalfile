@@ -7,6 +7,8 @@ def setup_workdir(use_working_dir=False):
 
     if path.endswith("test"):
         path /= "tests"
+    else:
+        path /= "test/tests"
 
     path.set_working_dir()
 
