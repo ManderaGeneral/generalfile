@@ -474,8 +474,9 @@ class Path_Operations:
             diff.update({path for path in self_paths.intersection(target_paths) if path not in diff and not (self / path).is_identical(path=target / path)})
         return diff
 
+    @deco_require_state(is_file=True)
     def contains(self, text):
-        """ Return whether text string exists in one of the files.
+        """ Return whether text string exists in one of the lines in this file.
 
             :param generalfile.Path self:
             :param text: """

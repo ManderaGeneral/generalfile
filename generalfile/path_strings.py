@@ -74,7 +74,8 @@ class Path_Strings:
         """ Return mirror Path which currently points to same destination based on working dir.
             Absolute Path returns relative Path and vice versa.
 
-            :param generalfile.Path self: """
+            :param generalfile.Path self:
+            :rtype: generalfile.Path """
         if self.is_absolute():
             return self.relative()
         else:

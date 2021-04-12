@@ -49,8 +49,6 @@ class Path_Text:
                             text = text.replace(key, value)
                     self.path.text.write(text, overwrite=True)
 
-
-
         return _Text
 
 

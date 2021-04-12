@@ -21,7 +21,7 @@ class PathTest(unittest.TestCase):
 
 
 class FileTest(PathTest):
-    """ Skipped: open_folder, view"""
+    """ Skipped: open_folder, view, scrub"""
     def test_path(self):
         self.assertRaises(InvalidCharacterError, Path, "hello:there")
         self.assertRaises(InvalidCharacterError, Path, "hello<")
@@ -193,6 +193,11 @@ class FileTest(PathTest):
         self.assertEqual(path.relative("folder/folder2"), "file.txt")
 
         self.assertEqual(path, path.relative("doesntexist"))
+
+    def test_mirror_path(self):
+        path = Path("foo")
+        self.assertEqual(path.mirror_path().mirror_path(), path)
+        self.assertEqual(True, path.mirror_path().is_absolute())
 
     def test_is_file_or_folder(self):
         Path("folder.txt/file.txt").write()
@@ -515,6 +520,12 @@ class FileTest(PathTest):
             self.assertEqual({"foo"}, Path(base).get_differing_files(target, exist=False, content=True))
             self.assertEqual({"foo", "bar"}, Path(base).get_differing_files(target, exist=True, content=True))
             self.assertEqual(set(), Path(base).get_differing_files(target, exist=False, content=False))
+
+    def test_contains(self):
+        path = Path("foo")
+        path.text.write("hello there test")
+        self.assertEqual(True, path.contains("there"))
+        self.assertEqual(False, path.contains("hi"))
 
     def test_is_identical(self):
         Path("foo").write("hello")
