@@ -1,6 +1,6 @@
 {
     "name": "generalfile",
-    "version": "2.3.15",
+    "version": "2.3.16",
     "description": "Easily manage files cross platform.",
     "install_requires": [
         "generallibrary",
