@@ -15,15 +15,13 @@ setup(
         'generallibrary',
         'send2trash',
         'appdirs',
+        'pandas',
     ],
     url="https://github.com/ManderaGeneral/generalfile",
     license="mit",
     python_requires=">=3.8, <3.10",
     packages=find_namespace_packages(exclude=("build*", "dist*")),
-    extras_require={
-        'spreadsheet': ['pandas'],
-        'full': ['pandas'],
-    },
+    extras_require={},
     classifiers=[
         'Topic :: Desktop Environment :: File Managers',
         'Programming Language :: Python :: 3.8',
