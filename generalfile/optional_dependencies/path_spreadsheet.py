@@ -1,6 +1,9 @@
 
 from generallibrary import deco_cache, typeChecker, get_rows, initBases
 
+import pandas as pd
+import csv
+
 
 class Path_Spreadsheet:
     """ Spreadsheet methods for Path. """
@@ -18,11 +21,6 @@ class Path_Spreadsheet:
             """ Contains all functionality to handle spreadsheet files.
                 Such as CSV and TSV. """
 
-            import pandas
-            import csv
-
-            pd, csv = pandas, csv
-
             def __init__(self, path):
                 self.path = path
 
@@ -35,7 +33,7 @@ class Path_Spreadsheet:
                     :param pandas.DataFrame df: Serializable by JSON
                     :param overwrite: Whether to allow overwriting or not. """
 
-                typeChecker(df, self.pd.DataFrame)
+                typeChecker(df, pd.DataFrame)
 
                 with self.WriteContext(self.path, overwrite=overwrite) as write_path:
                     if df.empty:
@@ -69,12 +67,12 @@ class Path_Spreadsheet:
                 with self.ReadContext(self.path) as read_path:
                     try:
                         df = self._read_helper(read_path, header, column)
-                    except self.pd.errors.EmptyDataError:
-                        return self.pd.DataFrame()
+                    except pd.errors.EmptyDataError:
+                        return pd.DataFrame()
 
                     # Get rid of empty cell (Happens if file was written with header=True, column=True)
-                    headerFalseColumnFalse = self.pd.isna(df.iat[0, 0])
-                    headerFalseColumnTrue = self.pd.isna(df.index[0])
+                    headerFalseColumnFalse = pd.isna(df.iat[0, 0])
+                    headerFalseColumnTrue = pd.isna(df.index[0])
                     headerTrueColumnFalse = str(df.columns[0]).startswith("Unnamed: ")
                     if headerFalseColumnFalse or headerFalseColumnTrue or headerTrueColumnFalse:
                         header = "infer"
@@ -92,9 +90,9 @@ class Path_Spreadsheet:
                                 df = self._read_helper(read_path, header, column)
 
                     if not self._indexIsNamed(df.columns):
-                        df.columns = self.pd.RangeIndex(len(df.columns))
+                        df.columns = pd.RangeIndex(len(df.columns))
                     if not self._indexIsNamed(df.index):
-                        df.index = self.pd.RangeIndex(len(df.index))
+                        df.index = pd.RangeIndex(len(df.index))
 
                     return self._try_convert_dtypes(df)
 
@@ -110,12 +108,12 @@ class Path_Spreadsheet:
                  | {1: {"b": 2, "c": 3}, 4: {"e": 5, "f": 6}}
                  | {1: [2, 3], 4: [5, 6]}
 
-                TODO: Support DataFrame and Series with spreadsheet.append()
+                Todo: Support DataFrame and Series with spreadsheet.append()
 
                 :param obj: Iterable (Optionally inside another iterable) or a value for a single cell
                 """
                 def _append_helper(stream):
-                    writer = self.csv.writer(stream, delimiter="\t", lineterminator="\n")
+                    writer = csv.writer(stream, delimiter="\t", lineterminator="\n")
                     for row in get_rows(obj):
                         writer.writerow(row)
 
@@ -141,7 +139,7 @@ class Path_Spreadsheet:
                     return df
 
             def _read_helper(self, path, header, column):
-                return self._try_convert_dtypes(self.pd.read_csv(path, sep="\t", header=header, index_col=column))
+                return self._try_convert_dtypes(pd.read_csv(path, sep="\t", header=header, index_col=column))
 
             def _append_helper(self, iterable_obj, key=None):
                 """

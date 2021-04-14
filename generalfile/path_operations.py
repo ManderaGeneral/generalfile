@@ -361,7 +361,6 @@ class Path_Operations:
     @deco_return_if_removed(content=False)
     def delete(self, error=True):
         """ Delete a file or folder.
-            Todo: Proper decorator to optionally suppress specified errors.
 
             :param error:
             :param generalfile.Path self: """

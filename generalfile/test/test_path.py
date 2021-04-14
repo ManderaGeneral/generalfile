@@ -4,9 +4,6 @@ import multiprocessing as mp
 
 from generalfile import *
 from generalfile.test.setup_workdir import setup_workdir
-# from generallibrary import cache_clear
-
-
 
 
 def _thread_test(queue, i):
@@ -16,7 +13,6 @@ def _thread_test(queue, i):
 class PathTest(unittest.TestCase):
     def setUp(self):
         """Set working dir and clear folder. Set path delimiter to '/' for testing."""
-        # Path.path_delimiter = "/"
         setup_workdir()
 
 

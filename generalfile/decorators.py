@@ -1,5 +1,3 @@
-""" Todo: Tests for decorators, not sure why they aren't found for readme.
-    Todo: Warn for redundant requirements. (Both file and lib requires pandas.) """
 
 from generallibrary.functions import wrapper_transfer
 

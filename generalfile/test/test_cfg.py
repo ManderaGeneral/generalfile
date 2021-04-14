@@ -2,8 +2,8 @@
 from generalfile import Path
 from generalfile.test.test_path import PathTest
 
-class FileTest(PathTest):
 
+class FileTest(PathTest):
     def test_cfg(self):
         dict_ = {'test': {'foo': 'bar', 'number': 2, 'hi': ['a', 'b', 3]}}
 

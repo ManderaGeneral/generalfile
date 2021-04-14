@@ -5,13 +5,10 @@
     "install_requires": [
         "generallibrary",
         "send2trash",
-        "appdirs"
+        "appdirs",
+        "pandas"
     ],
-    "extras_require": {
-        "spreadsheet": [
-            "pandas"
-        ]
-    },
+    "extras_require": {},
     "topics": [
         "file-manager"
     ]
