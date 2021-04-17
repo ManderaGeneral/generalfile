@@ -6,7 +6,7 @@ This package and 3 other make up [ManderaGeneral](https://github.com/Mandera).
 ## Information
 | Package                                                      | Ver                                          | Latest Release        | Python                                                                                                                   | Platform        |   Lvl | Todo                                                    | Tests   |
 |:-------------------------------------------------------------|:---------------------------------------------|:----------------------|:-------------------------------------------------------------------------------------------------------------------------|:----------------|------:|:--------------------------------------------------------|:--------|
-| [generalfile](https://github.com/ManderaGeneral/generalfile) | [2.4](https://pypi.org/project/generalfile/) | 2021-04-17 12:24 CEST | [3.8](https://www.python.org/downloads/release/python-380/), [3.9](https://www.python.org/downloads/release/python-390/) | Windows, Ubuntu |     1 | [3](https://github.com/ManderaGeneral/generalfile#Todo) | 100.0 % |
+| [generalfile](https://github.com/ManderaGeneral/generalfile) | [2.4](https://pypi.org/project/generalfile/) | 2021-04-17 12:25 CEST | [3.8](https://www.python.org/downloads/release/python-380/), [3.9](https://www.python.org/downloads/release/python-390/) | Windows, Ubuntu |     1 | [3](https://github.com/ManderaGeneral/generalfile#Todo) | 100.0 % |
 
 ## Contents
 <pre>
@@ -103,5 +103,5 @@ This package and 3 other make up [ManderaGeneral](https://github.com/Mandera).
 | <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_lock.py#L1'>path_lock.py</a>                                     | <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_lock.py#L12'>Lock the optional extra paths.</a>                                                       |
 
 <sup>
-Generated 2021-04-17 12:24 CEST for commit <a href='https://github.com/ManderaGeneral/generalfile/commit/master'>master</a>.
+Generated 2021-04-17 12:25 CEST for commit <a href='https://github.com/ManderaGeneral/generalfile/commit/8472562'>8472562</a>.
 </sup>
