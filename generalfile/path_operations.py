@@ -110,7 +110,7 @@ class Path_Operations:
             :param any content: Serializable by JSON
             :param overwrite: Whether to allow overwriting or not.
             :param indent: """
-        content_json = json.dumps(content, indent=indent) if content else ""
+        content_json = "" if content is None else json.dumps(content, indent=indent)
         with WriteContext(self, overwrite=overwrite) as write_path:
             write_path.open_operation("w", lambda stream: stream.write(content_json))
         return content_json
