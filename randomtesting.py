@@ -3,6 +3,16 @@ from generalfile import Path
 from generalfile.test.setup_workdir import setup_workdir
 
 
+setup_workdir()
 
-# with Path("hi").lock("there"):
-#     print(5)
+Path().open_folder()
+
+class A:
+    def __init__(self):
+        self.x = 53
+
+Path("hi.txt").pickle.write(A())
+
+a = Path("hi.txt").pickle.read()
+
+print(a.x)

@@ -6,7 +6,8 @@
         "generallibrary",
         "send2trash",
         "appdirs",
-        "pandas"
+        "pandas",
+        "dill"
     ],
     "extras_require": {},
     "topics": [

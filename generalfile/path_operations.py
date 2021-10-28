@@ -26,13 +26,17 @@ class Path_Operations:
         """ :param generalfile.Path self: """
         self.set_parent(None)
 
-    def open_operation(self, mode, func):
+    def open_operation(self, mode, func, encoding=...):
         """ Handles all open() calls.
 
             :param generalfile.Path self:
             :param mode:
-            :param func: """
-        with open(self, mode, encoding="utf-8") as stream:
+            :param func:
+            :param encoding: """
+        if encoding is Ellipsis:
+            encoding = "utf-8"
+
+        with open(self, mode, encoding=encoding) as stream:
             return func(stream)
 
     def write(self, content=None, overwrite=False, indent=None):

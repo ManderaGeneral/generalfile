@@ -12,9 +12,10 @@ from generalfile.path_strings import Path_Strings
 from generalfile.optional_dependencies.path_spreadsheet import Path_Spreadsheet
 from generalfile.optional_dependencies.path_text import Path_Text
 from generalfile.optional_dependencies.path_cfg import Path_Cfg
+from generalfile.optional_dependencies.path_pickle import Path_Pickle
 
 
-class Path(TreeDiagram, Recycle, Path_ContextManager, Path_Operations, Path_Strings, Path_Spreadsheet, Path_Text, Path_Cfg):
+class Path(TreeDiagram, Recycle, Path_ContextManager, Path_Operations, Path_Strings, Path_Spreadsheet, Path_Text, Path_Cfg, Path_Pickle):
     """ Immutable cross-platform Path.
         Built on pathlib and TreeDiagram.
         Implements rules to ensure cross-platform compatability.
