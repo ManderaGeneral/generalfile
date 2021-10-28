@@ -65,7 +65,10 @@ class TextTest(PathTest):
         path.text.write("├")
         self.assertEqual("├", path.text.read())
 
-
+    def test_read_empty(self):
+        with self.assertRaises(FileNotFoundError):
+            Path("hey").text.read()
+        self.assertEqual(None, Path("hi").text.read(default=None))
 
 
 

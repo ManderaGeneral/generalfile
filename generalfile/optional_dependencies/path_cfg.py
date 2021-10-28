@@ -30,10 +30,17 @@ class _Cfg(_Extension):
         except json.decoder.JSONDecodeError:
             return value
 
-    def read(self):
+    def read(self, default=...):
         """ Read from this path to get a dictionary. """
         config = configparser.RawConfigParser()
         with self.ReadContext(self.path) as read_path:
+
+            if not read_path.exists():
+                if default is Ellipsis:
+                    raise FileNotFoundError
+                else:
+                    return default
+
             config.read(read_path)
         return {s: {key: self._read_json_cast(value) for key, value in config.items(s)} for s in config.sections()}
 

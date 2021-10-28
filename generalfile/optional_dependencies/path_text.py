@@ -21,12 +21,12 @@ class _Text(_Extension):
         with self.WriteContext(self.path, overwrite=overwrite) as write_path:
             return write_path.open_operation("w", lambda stream: stream.write(str(text)))
 
-    def read(self):
+    def read(self, default=...):
         """ Read from this path to get a string.
 
             :rtype: str"""
         with self.ReadContext(self.path) as read_path:
-            return read_path.open_operation("r", lambda stream: stream.read())
+            return read_path.open_operation("r", lambda stream: stream.read(), no_file_default=default)
 
     def append(self, text, newline=False):
         """ Append to this path with a given string.

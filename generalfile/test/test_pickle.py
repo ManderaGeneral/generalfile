@@ -18,3 +18,8 @@ class FileTest(PathTest):
         l = Path("hi.txt").pickle.read()
         self.assertEqual("hi", l[0].x)
         self.assertEqual(53, l[1].x)
+
+    def test_read_empty(self):
+        with self.assertRaises(FileNotFoundError):
+            Path("hey").pickle.read()
+        self.assertEqual(None, Path("hi").pickle.read(default=None))

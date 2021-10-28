@@ -26,18 +26,25 @@ class Path_Operations:
         """ :param generalfile.Path self: """
         self.set_parent(None)
 
-    def open_operation(self, mode, func, encoding=...):
+    def open_operation(self, mode, func, encoding=..., no_file_default=...):
         """ Handles all open() calls.
 
             :param generalfile.Path self:
             :param mode:
             :param func:
-            :param encoding: """
+            :param encoding:
+            :param no_file_default: """
         if encoding is Ellipsis:
             encoding = "utf-8"
 
-        with open(self, mode, encoding=encoding) as stream:
-            return func(stream)
+        try:
+            with open(self, mode, encoding=encoding) as stream:
+                return func(stream)
+        except FileNotFoundError as e:
+            if no_file_default is ...:
+                raise e
+            else:
+                return no_file_default
 
     def write(self, content=None, overwrite=False, indent=None):
         """ Write to this Path with JSON.
@@ -57,13 +64,7 @@ class Path_Operations:
             :param generalfile.Path self:
             :param default: Optionally return a default value. """
         with ReadContext(self) as read_path:
-            try:
-                return read_path.open_operation("r", lambda stream: json.loads(stream.read()))
-            except FileNotFoundError as e:
-                if default is ...:
-                    raise e
-                else:
-                    return default
+            return read_path.open_operation("r", lambda stream: json.loads(stream.read()), no_file_default=default)
 
     @deco_require_state(exists=True)
     def rename(self, name=None, stem=None, suffix=None, overwrite=False):

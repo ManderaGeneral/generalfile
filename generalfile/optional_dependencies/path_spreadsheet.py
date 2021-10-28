@@ -42,7 +42,7 @@ class _Spreadsheet(_Extension):
 
             return useHeader, useIndex
 
-    def read(self, header=False, column=False):
+    def read(self, header=False, column=False, default=...):
         """
         If any cell becomes NaN then the header and column parameters are overriden silently.
 
@@ -53,6 +53,7 @@ class _Spreadsheet(_Extension):
 
         :param bool header: Use headers or not, overriden if any top left cell is NaN
         :param bool column: Use columns or not, overriden if any top left cell is NaN
+        :param default:
         :rtype: pd.DataFrame
         """
 
@@ -64,6 +65,11 @@ class _Spreadsheet(_Extension):
                 df = self._read_helper(read_path, header, column)
             except pd.errors.EmptyDataError:
                 return pd.DataFrame()
+            except FileNotFoundError as e:
+                if default is Ellipsis:
+                    raise e
+                else:
+                    return default
 
             # Get rid of empty cell (Happens if file was written with header=True, column=True)
             headerFalseColumnFalse = pd.isna(df.iat[0, 0])
@@ -134,7 +140,8 @@ class _Spreadsheet(_Extension):
             return df
 
     def _read_helper(self, path, header, column):
-        return self._try_convert_dtypes(pd.read_csv(path, sep="\t", header=header, index_col=column))
+        result = pd.read_csv(path, sep="\t", header=header, index_col=column)
+        return self._try_convert_dtypes(result)
 
     def _append_helper(self, iterable_obj, key=None):
         """

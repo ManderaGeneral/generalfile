@@ -23,4 +23,7 @@ class FileTest(PathTest):
 
         self.assertEqual({'setup': {'foo': 'random'}, 'test': {'5': 'bar'}}, Path("foo").cfg.read())
 
-
+    def test_read_empty(self):
+        with self.assertRaises(FileNotFoundError):
+            Path("hey").cfg.read()
+        self.assertEqual(None, Path("hi").cfg.read(default=None))

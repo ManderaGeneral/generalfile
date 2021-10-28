@@ -570,6 +570,11 @@ class FileTest(PathTest):
         self.assertIsNot(Path("hithere"), Path("hi") / "there")
         self.assertIsNot(Path("hi"), Path("hi").absolute())
 
+    def test_read_empty(self):
+        with self.assertRaises(FileNotFoundError):
+            Path("hey").read()
+        self.assertEqual(None, Path("hi").read(default=None))
+
 
 
 

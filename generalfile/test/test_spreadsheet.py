@@ -46,3 +46,7 @@ class FileTest(PathTest):
         self._compareFrames(df, self._writeAndReadDF(df))
         self._compareFrames(df.T, self._writeAndReadDF(df.T))
 
+    def test_read_empty(self):
+        with self.assertRaises(FileNotFoundError):
+            Path("hey").spreadsheet.read()
+        self.assertEqual(None, Path("hi").spreadsheet.read(default=None))
