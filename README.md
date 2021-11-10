@@ -1,7 +1,7 @@
 # generalfile
 Easily manage files cross platform.
 
-This package and 3 other make up [ManderaGeneral](https://github.com/Mandera).
+This package and 4 other make up [ManderaGeneral](https://github.com/Mandera).
 
 ## Information
 | Package                                                      | Ver                                            | Latest Release        | Python                                                                                                                   | Platform        |   Lvl | Todo                                                    | Tests   |
@@ -99,10 +99,10 @@ This package and 3 other make up [ManderaGeneral](https://github.com/Mandera).
 ## Todo
 | Module                                                                                                                                               | Message                                                                                                                                                                                   |
 |:-----------------------------------------------------------------------------------------------------------------------------------------------------|:------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/optional_dependencies/path_spreadsheet.py#L1'>path_spreadsheet.py</a> | <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/optional_dependencies/path_spreadsheet.py#L112'>Support DataFrame and Series with spreadsheet.append()</a> |
 | <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_lock.py#L1'>path_lock.py</a>                                     | <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_lock.py#L12'>Lock the optional extra paths.</a>                                                       |
 | <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path.py#L1'>path.py</a>                                               | <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path.py#L23'>Binary extension.</a>                                                                         |
-| <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/optional_dependencies/path_spreadsheet.py#L1'>path_spreadsheet.py</a> | <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/optional_dependencies/path_spreadsheet.py#L112'>Support DataFrame and Series with spreadsheet.append()</a> |
 
 <sup>
-Generated 2021-11-10 16:23 CET for commit <a href='https://github.com/ManderaGeneral/generalfile/commit/master'>master</a>.
+Generated 2021-11-10 18:02 CET for commit <a href='https://github.com/ManderaGeneral/generalfile/commit/master'>master</a>.
 </sup>
