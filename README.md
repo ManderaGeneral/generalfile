@@ -1,7 +1,7 @@
 # generalfile
 Easily manage files cross platform.
 
-This package and 4 other make up [ManderaGeneral](https://github.com/Mandera).
+This package and 5 other make up [ManderaGeneral](https://github.com/ManderaGeneral).
 
 ## Information
 | Package                                                      | Ver                                            | Latest Release        | Python                                                                                                                   | Platform        |   Lvl | Todo                                                    | Tests   |
@@ -104,5 +104,5 @@ This package and 4 other make up [ManderaGeneral](https://github.com/Mandera).
 | <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path.py#L1'>path.py</a>                                               | <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path.py#L23'>Binary extension.</a>                                                                         |
 
 <sup>
-Generated 2021-11-13 13:10 CET for commit <a href='https://github.com/ManderaGeneral/generalfile/commit/master'>master</a>.
+Generated 2021-11-18 23:47 CET for commit <a href='https://github.com/ManderaGeneral/generalfile/commit/master'>master</a>.
 </sup>
