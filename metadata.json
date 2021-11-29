@@ -1,7 +1,6 @@
 {
     "enabled": true,
     "private": false,
-    "installable": true,
     "name": "generalfile",
     "version": "2.5.4",
     "description": "Easily manage files cross platform.",
