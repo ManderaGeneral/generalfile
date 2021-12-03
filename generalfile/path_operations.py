@@ -197,8 +197,9 @@ class Path_Operations:
         """ Get whether this Path exists.
 
             :param generalfile.Path self: """
-        if self.get_sibling(spawn=False, filt=self._case_sens_test, traverse_excluded=True):
-            raise CaseSensitivityError(f"Same path with differing case not allowed: '{self}'")
+        sibling = self.get_sibling(spawn=False, filt=self._case_sens_test, traverse_excluded=True)
+        if sibling:
+            raise CaseSensitivityError(f"Same path with differing case not allowed: '{self}' & '{sibling}'")
         return self._path.exists()
 
     def empty(self):
