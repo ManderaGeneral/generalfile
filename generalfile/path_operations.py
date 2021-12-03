@@ -52,7 +52,7 @@ class Path_Operations:
             :param generalfile.Path self:
             :param any content: Serializable by JSON
             :param overwrite: Whether to allow overwriting or not.
-            :param indent: """
+            :param indent: Default None. Set to 4 for normal. """
         content_json = "" if content is None else json.dumps(content, indent=indent)
         with WriteContext(self, overwrite=overwrite) as write_path:
             write_path.open_operation("w", lambda stream: stream.write(content_json))

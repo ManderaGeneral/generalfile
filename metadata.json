@@ -1,4 +1,6 @@
 {
+    "enabled": true,
+    "private": false,
     "name": "generalfile",
     "version": "2.5.1",
     "description": "Easily manage files cross platform.",
@@ -12,5 +14,6 @@
     "extras_require": {},
     "topics": [
         "file-manager"
-    ]
+    ],
+    "manifest": []
 }
