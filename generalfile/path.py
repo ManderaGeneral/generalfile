@@ -40,6 +40,9 @@ class Path(TreeDiagram, Recycle, Path_ContextManager, Path_Operations, Path_Stri
     def path_delimiter(cls):
         return cls._path_delimiter
 
+    def view_paths(self):
+        self.view(spawn=True, custom_repr=lambda path: path.name())
+
     def spawn_parents(self):
         if not self.get_parent(spawn=False) and self.path and not self.is_root():
             try:
@@ -70,7 +73,7 @@ class Path(TreeDiagram, Recycle, Path_ContextManager, Path_Operations, Path_Stri
         # return self.path
 
     def __repr__(self):
-        return f"<Path: '{self.name()}'>"
+        return f"<Path: '{self.path}'>"
 
     def __fspath__(self):
         return self.path
