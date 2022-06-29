@@ -471,7 +471,6 @@ class FileTest(PathTest):
 
     def test_CaseSensitivityError(self):
         Path("foo.txt").write("hi")
-        # Path("foo.txt").get_parent()
         self.assertRaises(CaseSensitivityError, Path("Foo.txt").exists)
 
     def test_get_alternative_path(self):
@@ -575,8 +574,12 @@ class FileTest(PathTest):
             Path("hey").read()
         self.assertEqual(None, Path("hi").read(default=None))
 
-
-
+    def test_empty_child_parent_one_way(self):
+        a = Path("foo")
+        b = a / "bar"
+        self.assertIs(a, b.get_parent())
+        self.assertIs(b, a.get_child(spawn=False))
+        self.assertIs(None, a.get_child())
 
 
 

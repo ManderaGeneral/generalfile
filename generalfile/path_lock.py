@@ -81,7 +81,6 @@ class _Lock:
             Use `get_alternative_path()` or 'get_lock_path()' if actual lock path is wanted.
 
             :rtype: tuple[generalfile.Path] """
-        # print(len(self.path.get_lock_dir().get_children()))
         for alternative_path in self.path.get_lock_dir().get_children(gen=True):
             path = alternative_path.from_alternative()
             if self.path.startswith(path) or path.startswith(self.path):

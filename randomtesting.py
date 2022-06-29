@@ -2,17 +2,26 @@
 from generalfile import Path
 from generalfile.test.setup_workdir import setup_workdir
 
+from generallibrary import TreeDiagram
+
+# class A(TreeDiagram):
+#     pass
+# a = A()
+# b = a.add_node()
+# print(a.get_children())
+# b.set_parent(None)
+# print(a.get_children())
+
 
 setup_workdir()
+print(Path().empty())
+Path("foo").write("bar")
+print(Path().empty())
+setup_workdir()
+print(Path().empty())
 
-Path().open_folder()
+print(Path().get_children())
 
-class A:
-    def __init__(self):
-        self.x = 53
+# Path().open_folder()
 
-Path("hi.txt").pickle.write(A())
-
-a = Path("hi.txt").pickle.read()
-
-print(a.x)
+# Path().delete()

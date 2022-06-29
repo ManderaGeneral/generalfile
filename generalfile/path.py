@@ -57,16 +57,20 @@ class Path(TreeDiagram, Recycle, Path_ContextManager, Path_Operations, Path_Stri
             except PermissionError:
                 new_children = set()
 
-            for name in old_children.symmetric_difference(new_children):
-                path = Path(path=self / name)
-                path.set_parent(self if name in new_children else None)
+            for name in old_children - new_children:
+                Path(path=self / name).set_parent(parent=None)
+
+            for name in new_children - old_children:
+                Path(path=self / name).set_parent(parent=self)
+        else:
+            self._children.clear()
 
     def __str__(self):
         return getattr(self, "path", "<Path not loaded yet>")
         # return self.path
 
     def __repr__(self):
-        return self.name()
+        return f"<Path: '{self.name()}'>"
 
     def __fspath__(self):
         return self.path
@@ -76,10 +80,12 @@ class Path(TreeDiagram, Recycle, Path_ContextManager, Path_Operations, Path_Stri
 
     def __truediv__(self, other):
         """ :rtype: generalfile.Path """
-        # print("here", self._recycle_instances)
         return self.Path(self._path / str(other))
 
     def __eq__(self, other):
+        if other is None:  # None in [Path()] was returning True without this
+            return False
+
         if isinstance(other, Path):
             other = other.path
         else:

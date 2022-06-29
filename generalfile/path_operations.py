@@ -195,11 +195,14 @@ class Path_Operations:
 
     def exists(self):
         """ Get whether this Path exists.
+            Compromised a bit with accuracy to gain speed by not spawning children.
 
             :param generalfile.Path self: """
-        sibling = self.get_sibling(spawn=False, filt=self._case_sens_test, traverse_excluded=True)
-        if sibling:
-            raise CaseSensitivityError(f"Same path with differing case not allowed: '{self}' & '{sibling}'")
+        parent = self.get_parent()
+        if parent:
+            sibling = parent.get_children(spawn=False, filt=self._case_sens_test, traverse_excluded=True)
+            if sibling:
+                raise CaseSensitivityError(f"Same path with differing case not allowed: '{self}' & '{sibling}'")
         return self._path.exists()
 
     def empty(self):
