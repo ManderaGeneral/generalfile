@@ -1,27 +1,44 @@
+from typing import Literal, get_args, get_origin
+import inspect
+from generallibrary import auto_deco
 
-from generalfile import Path
-from generalfile.test.setup_workdir import setup_workdir
-
-from generallibrary import TreeDiagram
-
-# class A(TreeDiagram):
-#     pass
-# a = A()
-# b = a.add_node()
-# print(a.get_children())
-# b.set_parent(None)
-# print(a.get_children())
+import dataclasses as dc
 
 
-setup_workdir()
-print(Path().empty())
-Path("foo").write("bar")
-print(Path().empty())
-setup_workdir()
-print(Path().empty())
+class DataClass(metaclass=auto_deco(dc.dataclass)):
+    def fields(self):
+        return dc.fields(self)
 
-print(Path().get_children())
+    def asdict(self):
+        return dc.asdict(self)
 
-# Path().open_folder()
+    @property
+    @deco_cache()
+    def dict(self):
+        return self.path.read(default={})
 
-# Path().delete()
+
+# from typing import Literal
+#
+# class ConfigFile(DataClass):
+#     def __init__(self, fmt: Literal["JSON", "CFG"]):
+#         """ :param  fmt: """
+#         print("hi")
+#
+#
+# a = ConfigFile(fmt="CFG")
+#
+# print(a)
+
+
+
+
+# class SettingsFile:
+#     def __init__(self, path):
+#         pass
+
+
+
+
+
+
