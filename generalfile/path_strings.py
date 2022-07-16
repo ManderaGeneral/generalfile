@@ -199,7 +199,7 @@ class Path_Strings:
 
     @deco_cache()
     def suffix(self):
-        """ Get suffix which is name without stem.
+        """ Get suffix which is name without stem (e.g. .txt or .json).
             Empty string if missing.
 
             :param generalfile.Path self: """

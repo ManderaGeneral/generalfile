@@ -200,7 +200,7 @@ class Path_Operations:
             :param generalfile.Path self: """
         parent = self.get_parent()
         if parent:
-            sibling = parent.get_children(spawn=False, filt=self._case_sens_test, traverse_excluded=True)
+            sibling = parent.get_child(spawn=False, filt=self._case_sens_test, traverse_excluded=True)
             if sibling:
                 raise CaseSensitivityError(f"Same path with differing case not allowed: '{self}' & '{sibling}'")
         return self._path.exists()
