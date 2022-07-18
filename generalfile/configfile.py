@@ -1,4 +1,4 @@
-from generallibrary import comma_and_or, Recycle, dumps, ObjInfo, deco_cache
+from generallibrary import comma_and_or, Recycle, ObjInfo, deco_cache
 
 from generalfile import Path
 
@@ -6,7 +6,51 @@ from generalpackager import LocalRepo
 
 
 
-class ConfigFile(Recycle):
+class _ConfigFile_Serialize:
+    @staticmethod
+    def _has_serializers(value):
+        return hasattr(value, "__dumps__") and hasattr(value, "__loads__")
+
+    @classmethod
+    def _serializable(cls, value):
+        if cls._has_serializers(value):
+            return value.__dumps__()
+        else:
+            return value
+
+    def _unserialize(self, key, value):
+        if key in self.get_custom_serializers():
+            return self.get_custom_serializers()[key].__loads__(value)
+        else:
+            return value
+
+    @deco_cache()
+    def get_custom_serializers(self):
+        """ :param ConfigFile self: """
+        return {key: type(value) for key, value in self.get_config_dict_defaults().items() if self._has_serializers(value=value)}
+
+    def _read_config(self):
+        """ :param ConfigFile self: """
+        if self.exists():
+            for key, value in self.path.read().items():
+                self.__dict__[key] = self._unserialize(key, value)  # Don't trigger __setattr__
+
+    def get_config_dict_serializable(self):
+        """ :param ConfigFile self: """
+        return {key: self._serializable(value) for key, value in self.get_config_dict().items()}
+
+    def _write_config(self):
+        """ :param ConfigFile self: """
+        self.path.write(self.get_config_dict_serializable(), overwrite=True, indent=4)
+
+
+
+class ConfigFile(Recycle, _ConfigFile_Serialize):
+    """ Read config file when created.
+        If value changes then write to file.
+        Path must have support format suffix.
+        Default value or annotation cls can define __dumps__ and __loads__. """
+
     _supported_formats = {
         ".json": Path,
         ".cfg": Path.cfg,
@@ -16,12 +60,7 @@ class ConfigFile(Recycle):
 
     def __init__(self, path):
         self.path = self._scrub_path(path=path)
-        self._load_config()
-
-    def _load_config(self):
-        if self.exists():
-            for key, value in self.path.read().items():
-                self.__dict__[key] = value  # Don't trigger __setattr__
+        self._read_config()
 
     @classmethod
     def _scrub_path(cls, path):
@@ -41,15 +80,20 @@ class ConfigFile(Recycle):
         objinfos = ObjInfo(type(self)).get_children(traverse_excluded=True, filt=filt, gen=True)
         return [objinfo.name for objinfo in objinfos]
 
-    def config_dict(self):
-        """ Get current metadata values as a dict. """
+    def get_config_dict(self):
+        """ Get current config values as a dict. """
         return {key: getattr(self, key) for key in self.config_keys}
+
+    @deco_cache()
+    def get_config_dict_defaults(self):
+        """ Get default config values defined by class as a dict. """
+        return {key: getattr(type(self), key) for key in self.config_keys}
 
     def __setattr__(self, key, value):
         prev_value = getattr(self, key, ...)
         super().__setattr__(key, value)
         if key in self.config_keys and prev_value != value:
-            self.path.write(self.config_dict(), overwrite=True, indent=4)
+            self._write_config()
 
 
 #     def load_metadata(self):
