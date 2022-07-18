@@ -17,6 +17,12 @@ class Path_Cfg:
 
 @initBases
 class _Cfg(_Extension):
+    _JSON_CAST = {
+        "None": None,
+        "True": True,
+        "False": False,
+    }
+
     def write(self, dict_=None, overwrite=False):
         """ Write to this path with a given dictionary. """
         config = configparser.RawConfigParser()
@@ -25,6 +31,8 @@ class _Cfg(_Extension):
             return write_path.open_operation("w", lambda stream: config.write(stream))
 
     def _read_json_cast(self, value):
+        if value in self._JSON_CAST:
+            return self._JSON_CAST[value]
         try:
             return json.loads(value.replace("'", '"'))
         except json.decoder.JSONDecodeError:

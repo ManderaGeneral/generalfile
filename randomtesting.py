@@ -3,20 +3,18 @@ from generalfile.configfile import ConfigFile
 
 from generallibrary import Ver
 
+from itertools import chain
 
 class A(ConfigFile):
-    name = "foo"
-    ver = Ver(1.3)
-    ver2: Ver = None  # Make this work too
+    ver: Ver = None
 
+a = A("foo.cfg")
 
-a = A("foo.json")
-a.name = "hi"
+# a.ver = None
 
+# a.ver = Ver(1.3)
 
-# print(a.get_config_dict())
-a._write_config()
+print(a.ver)
 
-print(a.get_config_dict())
 
 

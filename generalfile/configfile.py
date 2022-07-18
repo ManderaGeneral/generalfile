@@ -1,9 +1,44 @@
-from generallibrary import comma_and_or, Recycle, ObjInfo, deco_cache
+from generallibrary import comma_and_or, Recycle, ObjInfo, deco_cache, AutoInitBases
 
 from generalfile import Path
 
 from generalpackager import LocalRepo
 
+from itertools import chain
+
+
+class _ConfigFile_ReadWrite:
+    _CFG_HEADER_NAME = "config"
+
+    def _read_JSON(self):
+        """ :param ConfigFile self: """
+        return self._path.read()
+
+    def _read_CFG(self):
+        """ :param ConfigFile self: """
+        return self._path.cfg.read()[self._CFG_HEADER_NAME]
+
+    def _read_config(self):
+        """ :param ConfigFile self: """
+        if self.exists():
+            read_method = {"JSON": self._read_JSON, "CFG": self._read_CFG}[self._format]
+            for key, value in read_method().items():
+                if key in self.config_keys:
+                    self.__dict__[key] = self._unserialize(key, value)  # Don't trigger __setattr__
+
+    def _write_JSON(self):
+        """ :param ConfigFile self: """
+        self._path.write(self.get_config_dict_serializable(), overwrite=True, indent=4)
+
+    def _write_CFG(self):
+        """ :param ConfigFile self: """
+        config_dict = {self._CFG_HEADER_NAME: self.get_config_dict_serializable()}
+        self._path.cfg.write(config_dict, overwrite=True)
+
+    def _write_config(self):
+        """ :param ConfigFile self: """
+        write_method = {"JSON": self._write_JSON, "CFG": self._write_CFG}[self._format]
+        write_method()
 
 
 class _ConfigFile_Serialize:
@@ -13,53 +48,57 @@ class _ConfigFile_Serialize:
 
     @classmethod
     def _serializable(cls, value):
-        if cls._has_serializers(value):
+        if value is not None and cls._has_serializers(value):
             return value.__dumps__()
         else:
             return value
 
     def _unserialize(self, key, value):
-        if key in self.get_custom_serializers():
+        if value is not None and key in self.get_custom_serializers():
             return self.get_custom_serializers()[key].__loads__(value)
         else:
             return value
 
-    @deco_cache()
-    def get_custom_serializers(self):
+    def _serializers_from_defaults(self):
         """ :param ConfigFile self: """
         return {key: type(value) for key, value in self.get_config_dict_defaults().items() if self._has_serializers(value=value)}
 
-    def _read_config(self):
+    def _serializers_from_annotations(self):
         """ :param ConfigFile self: """
-        if self.exists():
-            for key, value in self.path.read().items():
-                self.__dict__[key] = self._unserialize(key, value)  # Don't trigger __setattr__
+        return {key: cls for key, cls in getattr(self, "__annotations__", {}).items() if self._has_serializers(value=cls)}
+
+    @deco_cache()
+    def get_custom_serializers(self):
+        """ :param ConfigFile self: """
+        combined = chain(self._serializers_from_defaults().items(), self._serializers_from_annotations().items())
+        return {key: value for key, value in combined if key in self.config_keys}
 
     def get_config_dict_serializable(self):
         """ :param ConfigFile self: """
         return {key: self._serializable(value) for key, value in self.get_config_dict().items()}
 
-    def _write_config(self):
-        """ :param ConfigFile self: """
-        self.path.write(self.get_config_dict_serializable(), overwrite=True, indent=4)
 
 
 
-class ConfigFile(Recycle, _ConfigFile_Serialize):
+class ConfigFile(Recycle, _ConfigFile_Serialize, _ConfigFile_ReadWrite, metaclass=AutoInitBases):
     """ Read config file when created.
         If value changes then write to file.
         Path must have support format suffix.
-        Default value or annotation cls can define __dumps__ and __loads__. """
+        Default value or annotation cls can define __dumps__ and __loads__.
+        'name: str' will do nothing, must write 'name: str = None'
+
+        Todo: Handle custom serializers within iterable for ConfigFile. """
 
     _supported_formats = {
-        ".json": Path,
-        ".cfg": Path.cfg,
+        ".json": "JSON",
+        ".cfg": "CFG",
     }
 
     _recycle_keys = {"path": lambda path: str(ConfigFile._scrub_path(path=path))}
 
     def __init__(self, path):
-        self.path = self._scrub_path(path=path)
+        self._path = self._scrub_path(path=path)
+        self._format = self._supported_formats[self._path.suffix().lower()]
         self._read_config()
 
     @classmethod
@@ -69,7 +108,7 @@ class ConfigFile(Recycle, _ConfigFile_Serialize):
         return path
 
     def exists(self):
-        return self.path.exists()
+        return self._path.exists()
 
     @property
     @deco_cache()
@@ -92,52 +131,6 @@ class ConfigFile(Recycle, _ConfigFile_Serialize):
     def __setattr__(self, key, value):
         prev_value = getattr(self, key, ...)
         super().__setattr__(key, value)
-        if key in self.config_keys and prev_value != value:
-            self._write_config()
-
-
-#     def load_metadata(self):
-#         """ Read metadata path and load values. """
-#         self.has_loaded_file = True
-#         if self.exists():
-#             for key, value in self.get_metadata_path().read().items():
-#                 setattr(self, f"_{key}", value)
-#
-#             if self.extras_require:
-#                 self.extras_require["full"] = list(set().union(*self.extras_require.values()))
-#                 self.extras_require["full"].sort()
-#
-#             self.version = Ver(self.version)
-#
-#         if self.name is Ellipsis:
-#             self.name = self.path.name()
-#
-#     def get_metadata_dict(self):
-#         """ Get current metadata values as a dict. """
-#         return {key: str(getattr(self, key)) if key == "version" else getattr(self, key) for key in self.metadata_keys}
-#
-#     def write_metadata(self):
-#         """ Write to metadata path using current metadata values. """
-#         self.get_metadata_path().write(self.get_metadata_dict(), overwrite=True, indent=4)
-#
-#
-#     @load_metadata_before
-#     def _metadata_getter(self, key):
-#         return getattr(self, f"_{key}")
-#
-#     @load_metadata_before
-#     def _metadata_setter(self, key, value):
-#         """ Set a metadata's key both in instance and json file. """
-#         if self.has_metadata() and value != getattr(self, f"_{key}", ...):
-#             metadata = self.get_metadata_path().read()
-#             metadata[key] = str(value) if key == "version" else value  # Todo: Decoupled JSON serialize instructions with custom dumps in lib.
-#             self.get_metadata_path().write(metadata, overwrite=True, indent=4)
-#         setattr(self, f"_{key}", value)
-#
-# for key in LocalRepo.metadata_keys:
-#     value = getattr(LocalRepo, key)
-#     setattr(LocalRepo, f"_{key}", value)
-#     setattr(LocalRepo, key, property(
-#         fget=lambda self, key=key: LocalRepo._metadata_getter(self, key),
-#         fset=lambda self, value, key=key: LocalRepo._metadata_setter(self, key, value),
-#     ))
+        if key in self.config_keys:
+            if prev_value != value:
+                self._write_config()

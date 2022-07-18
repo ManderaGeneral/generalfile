@@ -159,6 +159,13 @@ class Path(TreeDiagram, Recycle, Path_ContextManager, Path_Operations, Path_Stri
             return f"{str_path}{cls.path_delimiter}"
         return str_path
 
+    def __dumps__(self):
+        return str(self)
+
+    @staticmethod
+    def __loads__(path):
+        return Path(path)
+
 setattr(Path, "Path", Path)
 
 
