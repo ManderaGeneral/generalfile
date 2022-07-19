@@ -14,7 +14,5 @@ a = A("foo.cfg")
 
 # a.ver = Ver(1.3)
 
-print(a.ver)
-
-
+# print(a.ver)
 

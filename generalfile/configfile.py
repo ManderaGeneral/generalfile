@@ -1,8 +1,6 @@
+
 from generallibrary import comma_and_or, Recycle, ObjInfo, deco_cache, AutoInitBases
-
 from generalfile import Path
-
-from generalpackager import LocalRepo
 
 from itertools import chain
 
@@ -86,6 +84,7 @@ class ConfigFile(Recycle, _ConfigFile_Serialize, _ConfigFile_ReadWrite, metaclas
         Path must have support format suffix.
         Default value or annotation cls can define __dumps__ and __loads__.
         'name: str' will do nothing, must write 'name: str = None'
+        Keys of dictionaries must be strings.
 
         Todo: Handle custom serializers within iterable for ConfigFile. """
 

@@ -206,6 +206,16 @@ class TestConfigFile(PathTest):
         self.assertEqual([], a.config_keys)
         self.assertRaises(AttributeError, getattr, a, "ver")
 
+    def test_dict(self):
+        class A(ConfigFile):
+            x = {"Foo": "bar", "5": 2}
+        a = A(path="foo.json")
+
+        self.assertEqual({"Foo": "bar", "5": 2}, a.x)
+        a._write_config()
+        a._read_config()
+        self.assertEqual({"Foo": "bar", "5": 2}, a.x)
+
 
 
 
@@ -323,6 +333,7 @@ class TestConfigFileCFG(PathTest):
             x = 2
             y = "foo"
             z = ["bar"]
+            a = {"foo": "bar"}
             path = Path("foo")
             path2: Path = Path("bar")
 
@@ -332,6 +343,7 @@ class TestConfigFileCFG(PathTest):
             "x",
             "y",
             "z",
+            "a",
             "path",
             "path2",
         ], A("foo.cfg").config_keys)
@@ -346,6 +358,7 @@ class TestConfigFileCFG(PathTest):
             "x": 2,
             "y": "foo",
             "z": ["bar"],
+            "a": {"foo": "bar"},
             "path": Path("foo"),
             "path2": Path("bar"),
         }, a.get_config_dict_defaults())
@@ -398,7 +411,25 @@ class TestConfigFileCFG(PathTest):
         self.assertEqual([], a.config_keys)
         self.assertRaises(AttributeError, getattr, a, "ver")
 
+    def test_dict(self):
+        class A(ConfigFile):
+            x = {"Foo": "bar", "5": 2}
+        a = A(path="foo.cfg")
 
+        self.assertEqual({"Foo": "bar", "5": 2}, a.x)
+        a._write_config()
+        a._read_config()
+        self.assertEqual({"Foo": "bar", "5": 2}, a.x)
+
+    def test_list(self):
+        class A(ConfigFile):
+            x = ["foo", "bar"]
+        a = A(path="foo.cfg")
+
+        self.assertEqual(["foo", "bar"], a.x)
+        a._write_config()
+        a._read_config()
+        self.assertEqual(["foo", "bar"], a.x)
 
 
 
