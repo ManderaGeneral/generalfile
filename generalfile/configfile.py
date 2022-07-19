@@ -16,6 +16,7 @@ class _ConfigFile_ReadWrite:
         """ :param ConfigFile self: """
         return self._path.cfg.read()[self._CFG_HEADER_NAME]
 
+    @deco_cache()
     def _read_config(self):
         """ :param ConfigFile self: """
         if self.exists():
@@ -98,7 +99,6 @@ class ConfigFile(Recycle, _ConfigFile_Serialize, _ConfigFile_ReadWrite, metaclas
     def __init__(self, path):
         self._path = self._scrub_path(path=path)
         self._format = self._supported_formats[self._path.suffix().lower()]
-        self._read_config()
 
     @classmethod
     def _scrub_path(cls, path):
@@ -133,3 +133,8 @@ class ConfigFile(Recycle, _ConfigFile_Serialize, _ConfigFile_ReadWrite, metaclas
         if key in self.config_keys:
             if prev_value != value:
                 self._write_config()
+
+    def __getattribute__(self, item):
+        if item != "config_keys" and item in self.config_keys:
+            self._read_config()
+        return super().__getattribute__(item)

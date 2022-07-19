@@ -165,7 +165,7 @@ class TestConfigFile(PathTest):
         Path("foo.json").write({"foo": "bar"})
 
         a = A("foo.json")
-        self.assertEqual(a.foo, "bar")
+        self.assertEqual("bar", a.foo)
 
     def test_remove_unused(self):
         class A(ConfigFile):
