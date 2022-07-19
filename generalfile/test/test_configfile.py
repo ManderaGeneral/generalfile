@@ -60,7 +60,7 @@ class TestConfigFile(PathTest):
         a = A(path="foo.json")
 
         self.assertEqual(Ver(0.2), a.ver)
-        a._write_config()
+        a.write_config()
         a._read_config()
         self.assertEqual(Ver(0.2), a.ver)
         self.assertIsInstance(a.ver, Ver)
@@ -71,7 +71,7 @@ class TestConfigFile(PathTest):
         a = A(path="foo.json")
 
         self.assertEqual(Ver(0.2), a.ver)
-        a._write_config()
+        a.write_config()
         a._read_config()
         self.assertEqual(Ver(0.2), a.ver)
         self.assertIsInstance(a.ver, Ver)
@@ -82,7 +82,7 @@ class TestConfigFile(PathTest):
         a = A(path="foo.json")
 
         self.assertIs(None, a.ver)
-        a._write_config()
+        a.write_config()
         a._read_config()
         self.assertIs(None, a.ver)
 
@@ -112,7 +112,7 @@ class TestConfigFile(PathTest):
 
         x = A().get_config_dict().copy()
 
-        A()._write_config()
+        A().write_config()
         A()._read_config()
 
         self.assertEqual(x, A().get_config_dict())
@@ -212,7 +212,7 @@ class TestConfigFile(PathTest):
         a = A(path="foo.json")
 
         self.assertEqual({"Foo": "bar", "5": 2}, a.x)
-        a._write_config()
+        a.write_config()
         a._read_config()
         self.assertEqual({"Foo": "bar", "5": 2}, a.x)
 
@@ -262,7 +262,7 @@ class TestConfigFileCFG(PathTest):
         a = A(path="foo.cfg")
 
         self.assertEqual(Ver(0.2), a.ver)
-        a._write_config()
+        a.write_config()
         a._read_config()
         self.assertEqual(Ver(0.2), a.ver)
         self.assertIsInstance(a.ver, Ver)
@@ -273,7 +273,7 @@ class TestConfigFileCFG(PathTest):
         a = A(path="foo.cfg")
 
         self.assertEqual(Ver(0.2), a.ver)
-        a._write_config()
+        a.write_config()
         a._read_config()
         self.assertEqual(Ver(0.2), a.ver)
         self.assertIsInstance(a.ver, Ver)
@@ -284,7 +284,7 @@ class TestConfigFileCFG(PathTest):
         a = A(path="foo.cfg")
 
         self.assertIs(None, a.ver)
-        a._write_config()
+        a.write_config()
         a._read_config()
         self.assertIs(None, a.ver)
 
@@ -314,7 +314,7 @@ class TestConfigFileCFG(PathTest):
 
         x = A().get_config_dict().copy()
 
-        A()._write_config()
+        A().write_config()
         A()._read_config()
 
         self.assertEqual(x, A().get_config_dict())
@@ -417,7 +417,7 @@ class TestConfigFileCFG(PathTest):
         a = A(path="foo.cfg")
 
         self.assertEqual({"Foo": "bar", "5": 2}, a.x)
-        a._write_config()
+        a.write_config()
         a._read_config()
         self.assertEqual({"Foo": "bar", "5": 2}, a.x)
 
@@ -427,7 +427,7 @@ class TestConfigFileCFG(PathTest):
         a = A(path="foo.cfg")
 
         self.assertEqual(["foo", "bar"], a.x)
-        a._write_config()
+        a.write_config()
         a._read_config()
         self.assertEqual(["foo", "bar"], a.x)
 

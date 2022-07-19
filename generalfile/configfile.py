@@ -7,7 +7,9 @@ from itertools import chain
 
 class _ConfigFile_ReadWrite:
     _CFG_HEADER_NAME = "config"
-
+    
+    def read_hook(self): ...
+    
     def _read_JSON(self):
         """ :param ConfigFile self: """
         return self._path.read()
@@ -24,6 +26,8 @@ class _ConfigFile_ReadWrite:
             for key, value in read_method().items():
                 if key in self.config_keys:
                     self.__dict__[key] = self._unserialize(key, value)  # Don't trigger __setattr__
+            
+            self.read_hook()
 
     def _write_JSON(self):
         """ :param ConfigFile self: """
@@ -34,7 +38,7 @@ class _ConfigFile_ReadWrite:
         config_dict = {self._CFG_HEADER_NAME: self.get_config_dict_serializable()}
         self._path.cfg.write(config_dict, overwrite=True)
 
-    def _write_config(self):
+    def write_config(self):
         """ :param ConfigFile self: """
         write_method = {"JSON": self._write_JSON, "CFG": self._write_CFG}[self._format]
         write_method()
@@ -132,7 +136,7 @@ class ConfigFile(Recycle, _ConfigFile_Serialize, _ConfigFile_ReadWrite, metaclas
         super().__setattr__(key, value)
         if key in self.config_keys:
             if prev_value != value:
-                self._write_config()
+                self.write_config()
 
     def __getattribute__(self, item):
         if item != "config_keys" and item in self.config_keys:
