@@ -110,12 +110,12 @@ class TestConfigFile(PathTest):
             "path2": Path
         }, A(path="foo.json").get_custom_serializers())
 
-        x = A().get_config_dict().copy()
+        x = A().field_dict().copy()
 
         A().write_config()
         A()._read_config()
 
-        self.assertEqual(x, A().get_config_dict())
+        self.assertEqual(x, A().field_dict())
 
     def test_recycle(self):
         class A(ConfigFile):
@@ -124,7 +124,7 @@ class TestConfigFile(PathTest):
         self.assertIs(A("x.json"), A("x.json"))
         self.assertIsNot(A("x.json"), A("y.json"))
 
-    def test_config_keys(self):
+    def test_field_keys(self):
         class A(ConfigFile):
             ver: Ver = None
             ver2 = Ver(5)
@@ -142,7 +142,7 @@ class TestConfigFile(PathTest):
             "z",
             "path",
             "path2",
-        ], A("foo.json").config_keys)
+        ], A("foo.json").field_keys())
 
         a = A(path="foo.json")
 
@@ -156,7 +156,7 @@ class TestConfigFile(PathTest):
             "z": ["bar"],
             "path": Path("foo"),
             "path2": Path("bar"),
-        }, a.get_config_dict_defaults())
+        }, a.field_dict_defaults())
 
     def test_load_on_init(self):
         class A(ConfigFile):
@@ -196,14 +196,14 @@ class TestConfigFile(PathTest):
         class A(ConfigFile):
             name: str
         a = A("foo.json")
-        self.assertEqual([], a.config_keys)
+        self.assertEqual([], a.field_keys())
         self.assertRaises(AttributeError, getattr, a, "name")
 
     def test_only_annotation_which_is_serializer(self):
         class A(ConfigFile):
             version: Ver
         a = A("foo.json")
-        self.assertEqual([], a.config_keys)
+        self.assertEqual([], a.field_keys())
         self.assertRaises(AttributeError, getattr, a, "ver")
 
     def test_dict(self):
@@ -312,12 +312,12 @@ class TestConfigFileCFG(PathTest):
             "path2": Path
         }, A(path="foo.cfg").get_custom_serializers())
 
-        x = A().get_config_dict().copy()
+        x = A().field_dict().copy()
 
         A().write_config()
         A()._read_config()
 
-        self.assertEqual(x, A().get_config_dict())
+        self.assertEqual(x, A().field_dict())
 
     def test_recycle(self):
         class A(ConfigFile):
@@ -326,7 +326,7 @@ class TestConfigFileCFG(PathTest):
         self.assertIs(A("x.cfg"), A("x.cfg"))
         self.assertIsNot(A("x.cfg"), A("y.cfg"))
 
-    def test_config_keys(self):
+    def test_field_keys(self):
         class A(ConfigFile):
             ver: Ver = None
             ver2 = Ver(5)
@@ -346,7 +346,7 @@ class TestConfigFileCFG(PathTest):
             "a",
             "path",
             "path2",
-        ], A("foo.cfg").config_keys)
+        ], A("foo.cfg").field_keys())
 
         a = A(path="foo.cfg")
 
@@ -361,7 +361,7 @@ class TestConfigFileCFG(PathTest):
             "a": {"foo": "bar"},
             "path": Path("foo"),
             "path2": Path("bar"),
-        }, a.get_config_dict_defaults())
+        }, a.field_dict_defaults())
 
     def test_load_on_init(self):
         class A(ConfigFile):
@@ -401,14 +401,14 @@ class TestConfigFileCFG(PathTest):
         class A(ConfigFile):
             name: str
         a = A("foo.cfg")
-        self.assertEqual([], a.config_keys)
+        self.assertEqual([], a.field_keys())
         self.assertRaises(AttributeError, getattr, a, "name")
 
     def test_only_annotation_which_is_serializer(self):
         class A(ConfigFile):
             version: Ver
         a = A("foo.cfg")
-        self.assertEqual([], a.config_keys)
+        self.assertEqual([], a.field_keys())
         self.assertRaises(AttributeError, getattr, a, "ver")
 
     def test_dict(self):

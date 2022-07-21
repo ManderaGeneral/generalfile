@@ -1,5 +1,5 @@
 
-from generallibrary import comma_and_or, Recycle, ObjInfo, deco_cache, AutoInitBases
+from generallibrary import comma_and_or, Recycle, ObjInfo, deco_cache, AutoInitBases, DataClass
 from generalfile import Path
 
 from itertools import chain
@@ -24,7 +24,7 @@ class _ConfigFile_ReadWrite:
         if self.exists():
             read_method = {"JSON": self._read_JSON, "CFG": self._read_CFG}[self._format]
             for key, value in read_method().items():
-                if key in self.config_keys:
+                if key in self.field_keys():
                     self.__dict__[key] = self._unserialize(key, value)  # Don't trigger __setattr__
             
             self.read_hook()
@@ -64,7 +64,7 @@ class _ConfigFile_Serialize:
 
     def _serializers_from_defaults(self):
         """ :param ConfigFile self: """
-        return {key: type(value) for key, value in self.get_config_dict_defaults().items() if self._has_serializers(value=value)}
+        return {key: type(value) for key, value in self.field_dict_defaults().items() if self._has_serializers(value=value)}
 
     def _serializers_from_annotations(self):
         """ :param ConfigFile self: """
@@ -73,17 +73,20 @@ class _ConfigFile_Serialize:
     @deco_cache()
     def get_custom_serializers(self):
         """ :param ConfigFile self: """
-        combined = chain(self._serializers_from_defaults().items(), self._serializers_from_annotations().items())
-        return {key: value for key, value in combined if key in self.config_keys}
+        combined = chain(
+            self._serializers_from_defaults().items(),
+            self._serializers_from_annotations().items(),
+        )
+        return {key: value for key, value in combined if key in self.field_keys()}
 
     def get_config_dict_serializable(self):
         """ :param ConfigFile self: """
-        return {key: self._serializable(value) for key, value in self.get_config_dict().items()}
+        return {key: self._serializable(value) for key, value in self.field_dict().items()}
 
 
 
 
-class ConfigFile(Recycle, _ConfigFile_Serialize, _ConfigFile_ReadWrite, metaclass=AutoInitBases):
+class ConfigFile(Recycle, DataClass, _ConfigFile_Serialize, _ConfigFile_ReadWrite, metaclass=AutoInitBases):
     """ Read config file when created.
         If value changes then write to file.
         Path must have support format suffix.
@@ -104,6 +107,9 @@ class ConfigFile(Recycle, _ConfigFile_Serialize, _ConfigFile_ReadWrite, metaclas
         self._path = self._scrub_path(path=path)
         self._format = self._supported_formats[self._path.suffix().lower()]
 
+    def __repr__(self):
+        return f"<{type(self).__name__} for '{self._path}'>"
+
     @classmethod
     def _scrub_path(cls, path):
         path = Path(path).absolute()
@@ -113,32 +119,14 @@ class ConfigFile(Recycle, _ConfigFile_Serialize, _ConfigFile_ReadWrite, metaclas
     def exists(self):
         return self._path.exists()
 
-    @property
-    @deco_cache()
-    def config_keys(self):
-        """ Get a list of keys defined by subclass. """
-        def filt(objinfo: ObjInfo):
-            return objinfo.is_instance()
-        objinfos = ObjInfo(type(self)).get_children(traverse_excluded=True, filt=filt, gen=True)
-        return [objinfo.name for objinfo in objinfos]
-
-    def get_config_dict(self):
-        """ Get current config values as a dict. """
-        return {key: getattr(self, key) for key in self.config_keys}
-
-    @deco_cache()
-    def get_config_dict_defaults(self):
-        """ Get default config values defined by class as a dict. """
-        return {key: getattr(type(self), key) for key in self.config_keys}
-
     def __setattr__(self, key, value):
         prev_value = getattr(self, key, ...)
         super().__setattr__(key, value)
-        if key in self.config_keys:
+        if key in self.field_keys():
             if prev_value != value:
                 self.write_config()
 
     def __getattribute__(self, item):
-        if item != "config_keys" and item in self.config_keys:
+        if item != "field_keys" and item in self.field_keys():
             self._read_config()
         return super().__getattribute__(item)
