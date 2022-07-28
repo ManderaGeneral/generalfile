@@ -7,6 +7,9 @@ from itertools import chain
 
 class _ConfigFile_ReadWrite:
     _CFG_HEADER_NAME = "config"
+
+    def __init__(self):
+        self._has_written = False
     
     def read_hook(self): ...
     
@@ -42,6 +45,7 @@ class _ConfigFile_ReadWrite:
         """ :param ConfigFile self: """
         write_method = {"JSON": self._write_JSON, "CFG": self._write_CFG}[self._format]
         write_method()
+        self._has_written = True
 
 
 class _ConfigFile_Serialize:
@@ -117,6 +121,12 @@ class ConfigFile(Recycle, DataClass, _ConfigFile_Serialize, _ConfigFile_ReadWrit
         return path
 
     def exists(self):
+        if self._file_exists():
+            return True
+        return self._has_written
+
+    @deco_cache()
+    def _file_exists(self):
         return self._path.exists()
 
     def __setattr__(self, key, value):
