@@ -132,11 +132,11 @@ class ConfigFile(Recycle, DataClass, _ConfigFile_Serialize, _ConfigFile_ReadWrit
     def __setattr__(self, key, value):
         prev_value = getattr(self, key, ...)
         super().__setattr__(key, value)
-        if key in self.field_keys():
+        if key in type(self).field_keys():
             if prev_value != value:
-                self.write_config()
+                type(self).write_config(self)
 
     def __getattribute__(self, item):
-        if item != "field_keys" and item in self.field_keys():
+        if not item.startswith("_") and item in type(self).field_keys():
             self._read_config()
         return super().__getattribute__(item)
