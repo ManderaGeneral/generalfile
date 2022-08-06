@@ -213,7 +213,7 @@ class _Path_Operations:
             return True
         elif self.is_file():
             return False
-        if self.get_child():
+        if self.get_child(filt=self.Path.exists):
             return False
         return True
 

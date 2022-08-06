@@ -1,13 +1,12 @@
 
 from generalfile import *
+from generalfile.test.setup_workdir import setup_workdir
 
 from generalpackager import LocalModule
 
 
-module = LocalModule("matplotlib")
+# setup_workdir()
 
-print(module.path.get_parent_package())
-print(module.path.get_parent_venv())
 
 # print(Path().get_parent_package())
 # print(Path("generalfile/optional_dependencies").get_parent_repo())
