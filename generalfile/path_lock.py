@@ -97,7 +97,7 @@ class _Lock:
         return False
 
 
-class Path_ContextManager:
+class _Path_ContextManager:
     """ Context manager methods for Path. """
     locked_paths = []
 

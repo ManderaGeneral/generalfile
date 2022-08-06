@@ -15,7 +15,7 @@ import time
 from generalfile.optional_dependencies._extension import WriteContext, ReadContext
 
 
-class Path_Operations:
+class _Path_Operations:
     """ File operations methods for Path. """
     _suffixIO = {"plain_text": ("txt", "md", ""), "spreadsheet": ("tsv", "csv")}
     timeout_seconds = 5
@@ -195,7 +195,7 @@ class Path_Operations:
 
     def exists(self):
         """ Get whether this Path exists.
-            Compromised a bit with accuracy to gain speed by not spawning children.
+            Compromised a bit with accuracy to gain speed by not spawning children when checking for CaseSensitivityError.
 
             :param generalfile.Path self: """
         parent = self.get_parent()

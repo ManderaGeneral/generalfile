@@ -6,16 +6,21 @@ import os
 from generallibrary import VerInfo, TreeDiagram, Recycle, classproperty, deco_cache
 
 from generalfile.errors import InvalidCharacterError
-from generalfile.path_lock import Path_ContextManager
-from generalfile.path_operations import Path_Operations
-from generalfile.path_strings import Path_Strings
+
+from generalfile.path_lock import _Path_ContextManager
+from generalfile.path_operations import _Path_Operations
+from generalfile.path_strings import _Path_Strings
+from generalfile.path_envs import _Path_Envs
+
 from generalfile.optional_dependencies.path_spreadsheet import Path_Spreadsheet
 from generalfile.optional_dependencies.path_text import Path_Text
 from generalfile.optional_dependencies.path_cfg import Path_Cfg
 from generalfile.optional_dependencies.path_pickle import Path_Pickle
 
 
-class Path(TreeDiagram, Recycle, Path_ContextManager, Path_Operations, Path_Strings, Path_Spreadsheet, Path_Text, Path_Cfg, Path_Pickle):
+class Path(TreeDiagram, Recycle,
+           _Path_ContextManager, _Path_Operations, _Path_Strings, _Path_Envs,
+           Path_Spreadsheet, Path_Text, Path_Cfg, Path_Pickle):
     """ Immutable cross-platform Path.
         Built on pathlib and TreeDiagram.
         Implements rules to ensure cross-platform compatability.

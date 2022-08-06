@@ -4,7 +4,7 @@ from generallibrary import match, replace, deco_cache
 from urllib.parse import quote
 
 
-class Path_Strings:
+class _Path_Strings:
     """ String operations for Path. """
     def __getitem__(self, item):
         """ Get character from path string.

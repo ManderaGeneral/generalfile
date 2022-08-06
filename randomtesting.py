@@ -1,12 +1,16 @@
 
-from generalfile.configfile import ConfigFile
+from generalfile import *
+
+from generalpackager import LocalModule
 
 
-class A(ConfigFile):
-    foo = "bar"
+module = LocalModule("matplotlib")
+
+print(module.path.get_parent_package())
+print(module.path.get_parent_venv())
+
+# print(Path().get_parent_package())
+# print(Path("generalfile/optional_dependencies").get_parent_repo())
 
 
-a = A("foo.cfg")
 
-
-print(a.foo)

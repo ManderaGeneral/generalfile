@@ -140,3 +140,10 @@ class ConfigFile(Recycle, DataClass, _ConfigFile_Serialize, _ConfigFile_ReadWrit
         if not item.startswith("_") and item in type(self).field_keys():
             self._read_config()
         return super().__getattribute__(item)
+
+    def halt_getattr(self, item):
+        """ Get an item wihtout trigger __getattribute__"""
+        if item in self.__dict__:
+            return self.__dict__[item]
+        else:
+            return getattr(type(self), item)
