@@ -418,9 +418,13 @@ class FileTest(PathTest):
             self.assertEqual("/", str_path)
         else:
             self.assertTrue(len(str_path) == 3 and str_path[1] == ":" and str_path[2] == Path.path_delimiter)
-        self.assertEqual(True, Path().absolute().get_parent(-1, -1).is_root())
-        self.assertEqual(False, Path("foo").is_root())
-        self.assertEqual(False, Path().absolute().is_root())
+        self.assertIs(True, Path().absolute().get_parent(-1, -1).is_root())
+        self.assertIs(False, Path("foo").is_root())
+        self.assertIs(False, Path().absolute().is_root())
+
+        self.assertIs(True, Path().root().is_root())
+        self.assertIs(False, (Path().root() / "hi").is_root())
+        self.assertIs(Path().root(), Path().root().root())
 
     def test_as_working_dir(self):
         working_dir = Path.get_working_dir()
@@ -580,6 +584,36 @@ class FileTest(PathTest):
         self.assertIs(a, b.get_parent())
         self.assertIs(b, a.get_child(spawn=False))
         self.assertIs(None, a.get_child())
+
+    def test_dots_no_suffix(self):
+        a = Path().absolute()
+        self.assertIs(a, Path("./"))
+        self.assertIs(a.get_parent(), Path("../"))
+        self.assertIs(a.get_parent().get_parent(), Path(".../"))
+
+    def test_dots_with_suffix(self):
+        a = Path().absolute()
+        self.assertIs(a / "hi", Path("./hi"))
+        self.assertIs(a.get_parent() / "hi", Path("../hi"))
+        self.assertIs(a.get_parent().get_parent() / "hi", Path(".../hi"))
+
+    def test_dots_with_filesuffix(self):
+        a = Path().absolute()
+        self.assertIs(a / "hi.txt", Path("./hi.txt"))
+        self.assertIs(a.get_parent() / "hi.txt", Path("../hi.txt"))
+        self.assertIs(a.get_parent().get_parent() / "hi.txt", Path(".../hi.txt"))
+
+    def test_dots_root(self):
+        self.assertIs(Path().root(), Path("..................../"))
+        self.assertIs(Path().root() / "hi.txt", Path("..................../hi.txt"))
+
+    def test_dots_without_delimiter(self):
+        self.assertEqual(".hi", Path(".....hi").suffix())
+
+        x = Path(".....hi/there")
+        x.create_folder()
+        self.assertIs(True, x.exists())
+
 
 
 

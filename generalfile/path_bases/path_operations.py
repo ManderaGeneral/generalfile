@@ -189,6 +189,11 @@ class _Path_Operations:
         else:
             return len(self.path) == 3 and self.path[1] == ":" and self.path[2] == self.path_delimiter
 
+    def root(self):
+        """ :param generalfile.Path self:
+            :rtype: generalfile.Path """
+        return self.absolute().get_parent(depth=-1, index=-1, include_self=True)
+
     def _case_sens_test(self, path):
         """ :param generalfile.Path self: """
         return self != path and self.path.lower() == str(path).lower()

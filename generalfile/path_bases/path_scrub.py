@@ -2,6 +2,8 @@
 from generallibrary import deco_cache
 from generalfile.errors import InvalidCharacterError
 
+import regex as re
+
 
 class _Path_Scrub:
     @classmethod
@@ -15,9 +17,27 @@ class _Path_Scrub:
         """ :param generalfile.Path cls: """
         str_path = "" if str_path is None else str(str_path)
         str_path = cls._replace_delimiters(str_path=str_path)
+
+
+        match = re.match(fr"(\.+{re.escape(cls.path_delimiter)})", str_path)
+        if match:
+            dots = match.group()
+            rest = str_path[len(dots):]
+            index = len(dots) - 2
+
+            rest_path = cls.Path(rest)
+            working_dir = cls.Path().absolute()
+            dot_path = working_dir.get_parent(depth=index, index=index, include_self=True)
+            if dot_path is None:
+                dot_path = working_dir.root()
+            return str(dot_path / rest_path)
+
+
         str_path = cls._invalid_characters(str_path=str_path)
         str_path = cls._trim(str_path=str_path)
         str_path = cls._delimiter_suffix_if_root(str_path=str_path)
+
+
         return str_path
 
     @classmethod
