@@ -2,7 +2,7 @@
 from generallibrary import deco_cache
 from generalfile.errors import InvalidCharacterError
 
-import regex as re
+import re
 
 
 class _Path_Scrub:
