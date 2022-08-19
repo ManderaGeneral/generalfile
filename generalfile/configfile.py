@@ -129,11 +129,19 @@ class ConfigFile(Recycle, DataClass, _ConfigFile_Serialize, _ConfigFile_ReadWrit
     def _file_exists(self):
         return self._path.exists()
 
+    @staticmethod
+    def safe_equals(left, right):
+        try:
+            return left == right
+        except:
+            return False
+
     def __setattr__(self, key, value):
         prev_value = getattr(self, key, ...)
         super().__setattr__(key, value)
         if key in type(self).field_keys():
-            if prev_value != value:
+            # if prev_value != value:
+            if not self.safe_equals(prev_value, value):  # StrictVersion struggled here, but should cover any scenario
                 type(self).write_config(self)
 
     def __getattribute__(self, item):

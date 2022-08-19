@@ -4,9 +4,9 @@ import os
 
 
 class _Path_Diagram(TreeDiagram):
-    def view_paths(self):
+    def view_paths(self, spawn=True):
         """ :param generalfile.Path self: """
-        self.view(spawn=True, custom_repr=lambda path: path.name())
+        self.view(spawn=spawn, custom_repr=lambda path: path.name())
 
     def spawn_parents(self):
         """ :param generalfile.Path self: """
