@@ -1,9 +1,4 @@
 {
-    "enabled": true,
-    "private": false,
-    "name": "generalfile",
-    "version": "2.5.6",
-    "description": "Easily manage files cross platform.",
     "install_requires": [
         "generallibrary",
         "send2trash",
@@ -12,6 +7,12 @@
         "dill"
     ],
     "extras_require": {},
+    "enabled": true,
+    "private": false,
+    "name": "generalfile",
+    "target": "python",
+    "version": "2.5.6",
+    "description": "Easily manage files cross platform.",
     "topics": [
         "file-manager"
     ],
