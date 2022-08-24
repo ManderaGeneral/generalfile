@@ -1,6 +1,7 @@
 
 import unittest
 import multiprocessing as mp
+from time import sleep
 
 from generalfile import *
 from generalfile.test.setup_workdir import setup_workdir
@@ -388,15 +389,15 @@ class FileTest(PathTest):
 
     def test_time_created_and_modified(self):
         path = Path("test.txt")
-        methods = (path.seconds_since_creation, path.seconds_since_modified)
 
-        for method in methods:
-            self.assertRaises(AttributeError, method)
+        self.assertRaises(AttributeError, path.seconds_since_creation)
+        self.assertRaises(AttributeError, path.seconds_since_modified)
 
         path.write()
+        sleep(0.1)
 
-        for method in methods:
-            self.assertGreater(method(), 0)
+        self.assertGreater(path.seconds_since_creation(), 0.09)
+        self.assertGreater(path.seconds_since_modified(), 0.09)
 
         # Think you need to flush and stuff to make this work for windows atleast
         # self.assertEqual(methods[0](), methods[1]())

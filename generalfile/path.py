@@ -42,7 +42,6 @@ class Path(Recycle,
 
     def __str__(self):
         return getattr(self, "path", "<Path not loaded yet>")
-        # return self.path
 
     def __repr__(self):
         return f"<Path: '{self.path}'>"
@@ -81,7 +80,6 @@ class Path(Recycle,
         return Path(path)
 
 setattr(Path, "Path", Path)
-
 
 
 
