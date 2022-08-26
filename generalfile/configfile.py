@@ -1,5 +1,5 @@
 
-from generallibrary import comma_and_or, Recycle, ObjInfo, deco_cache, AutoInitBases, DataClass
+from generallibrary import comma_and_or, Recycle, ObjInfo, deco_cache, AutoInitBases, DataClass, Log
 from generalfile import Path
 
 from itertools import chain
@@ -28,17 +28,19 @@ class _ConfigFile_ReadWrite:
             read_method = {"JSON": self._read_JSON, "CFG": self._read_CFG}[self._format]
             for key, value in read_method().items():
                 if key in self.field_keys():
+                    # Not sure what this does
                     self.__dict__[key] = self._unserialize(key, value)  # Don't trigger __setattr__
             
-            self.read_hook()
+            result = self.read_hook()
+            Log().debug("Reading config", self._path, result)
 
     def _write_JSON(self):
         """ :param ConfigFile self: """
-        self._path.write(self.get_config_dict_serializable(), overwrite=True, indent=4)
+        self._path.write(self.get_field_dict_serializable(), overwrite=True, indent=4)
 
     def _write_CFG(self):
         """ :param ConfigFile self: """
-        config_dict = {self._CFG_HEADER_NAME: self.get_config_dict_serializable()}
+        config_dict = {self._CFG_HEADER_NAME: self.get_field_dict_serializable()}
         self._path.cfg.write(config_dict, overwrite=True)
 
     def write_config(self):
@@ -46,6 +48,7 @@ class _ConfigFile_ReadWrite:
         write_method = {"JSON": self._write_JSON, "CFG": self._write_CFG}[self._format]
         write_method()
         self._has_written = True
+        Log().debug("Writing to config", self._path, self.field_dict())
 
 
 class _ConfigFile_Serialize:
@@ -83,7 +86,7 @@ class _ConfigFile_Serialize:
         )
         return {key: value for key, value in combined if key in self.field_keys()}
 
-    def get_config_dict_serializable(self):
+    def get_field_dict_serializable(self):
         """ :param ConfigFile self: """
         return {key: self._serializable(value) for key, value in self.field_dict().items()}
 
