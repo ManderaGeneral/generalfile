@@ -47,7 +47,6 @@ class _ConfigFile_ReadWrite:
         Log().debug("Read json is", self._path.read())
 
 
-
     def _write_CFG(self):
         """ :param ConfigFile self: """
         config_dict = {self._CFG_HEADER_NAME: self.get_field_dict_serializable()}
