@@ -59,7 +59,7 @@ class _Path_Operations:
 
         if self.path.endswith("metadata.json"):
             Log().debug("Writing metadata.json", content_json)
-            print_stack()
+            print_stack()  # HERE **
 
         with WriteContext(self, overwrite=overwrite) as write_path:
             write_path.open_operation("w", lambda stream: stream.write(content_json))
