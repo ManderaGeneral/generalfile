@@ -27,14 +27,14 @@ This package and 3 other make up [ManderaGeneral](https://github.com/ManderaGene
 <pre>
 <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/__init__.py#L1'>Module: generalfile</a>
 ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/errors.py#L6'>Class: CaseSensitivityError</a>
-├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/configfile.py#L99'>Class: ConfigFile</a>
-│  ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/configfile.py#L129'>Method: exists</a>
-│  ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/configfile.py#L84'>Method: get_custom_serializers</a>
-│  ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/configfile.py#L92'>Method: get_field_dict_serializable</a> <b>(Untested)</b>
-│  ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/configfile.py#L158'>Method: halt_getattr</a> <b>(Untested)</b>
+├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/configfile.py#L105'>Class: ConfigFile</a>
+│  ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/configfile.py#L135'>Method: exists</a>
+│  ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/configfile.py#L90'>Method: get_custom_serializers</a>
+│  ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/configfile.py#L98'>Method: get_field_dict_serializable</a> <b>(Untested)</b>
+│  ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/configfile.py#L164'>Method: halt_getattr</a> <b>(Untested)</b>
 │  ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/configfile.py#L14'>Method: read_hook</a> <b>(Untested)</b>
-│  ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/configfile.py#L138'>Method: safe_equals</a> <b>(Untested)</b>
-│  └─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/configfile.py#L49'>Method: write_config</a>
+│  ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/configfile.py#L144'>Method: safe_equals</a> <b>(Untested)</b>
+│  └─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/configfile.py#L55'>Method: write_config</a>
 ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/errors.py#L10'>Class: InvalidCharacterError</a>
 └─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path.py#L20'>Class: Path</a>
    ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path.py#L20'>Class: Path</a>
@@ -118,11 +118,11 @@ This package and 3 other make up [ManderaGeneral](https://github.com/ManderaGene
 ## Todo
 | Module                                                                                                                                               | Message                                                                                                                                                                                   |
 |:-----------------------------------------------------------------------------------------------------------------------------------------------------|:------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/configfile.py#L1'>configfile.py</a>                                   | <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/configfile.py#L113'>Handle custom serializers within iterable for ConfigFile.</a>                          |
+| <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_bases/path_lock.py#L1'>path_lock.py</a>                          | <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_bases/path_lock.py#L12'>Lock the optional extra paths.</a>                                            |
 | <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path.py#L1'>path.py</a>                                               | <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path.py#L27'>Binary extension.</a>                                                                         |
 | <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/optional_dependencies/path_spreadsheet.py#L1'>path_spreadsheet.py</a> | <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/optional_dependencies/path_spreadsheet.py#L112'>Support DataFrame and Series with spreadsheet.append()</a> |
-| <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_bases/path_lock.py#L1'>path_lock.py</a>                          | <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_bases/path_lock.py#L12'>Lock the optional extra paths.</a>                                            |
-| <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/configfile.py#L1'>configfile.py</a>                                   | <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/configfile.py#L107'>Handle custom serializers within iterable for ConfigFile.</a>                          |
 
 <sup>
-Generated 2022-08-27 05:41 CEST for commit <a href='https://github.com/ManderaGeneral/generalfile/commit/master'>master</a>.
+Generated 2022-08-27 06:03 CEST for commit <a href='https://github.com/ManderaGeneral/generalfile/commit/master'>master</a>.
 </sup>
