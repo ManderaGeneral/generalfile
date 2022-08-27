@@ -56,11 +56,6 @@ class _Path_Operations:
             :param overwrite: Whether to allow overwriting or not.
             :param indent: Default None. Set to 4 for normal. """
         content_json = "" if content is None else json.dumps(content, indent=indent)
-
-        if self.path.endswith("metadata.json"):
-            Log().debug("Writing metadata.json", content_json)
-            print_stack()  # HERE **
-
         with WriteContext(self, overwrite=overwrite) as write_path:
             write_path.open_operation("w", lambda stream: stream.write(content_json))
         return content_json
