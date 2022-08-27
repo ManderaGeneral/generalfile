@@ -124,5 +124,5 @@ This package and 3 other make up [ManderaGeneral](https://github.com/ManderaGene
 | <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/configfile.py#L1'>configfile.py</a>                                   | <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/configfile.py#L107'>Handle custom serializers within iterable for ConfigFile.</a>                          |
 
 <sup>
-Generated 2022-08-27 06:19 CEST for commit <a href='https://github.com/ManderaGeneral/generalfile/commit/master'>master</a>.
+Generated 2022-08-27 10:19 CEST for commit <a href='https://github.com/ManderaGeneral/generalfile/commit/master'>master</a>.
 </sup>
