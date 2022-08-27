@@ -25,14 +25,17 @@ class _ConfigFile_ReadWrite:
     def _read_config(self):
         """ :param ConfigFile self: """
         if self.exists():
-            read_method = {"JSON": self._read_JSON, "CFG": self._read_CFG}[self._format]
-            for key, value in read_method().items():
+            read_methods = {"JSON": self._read_JSON, "CFG": self._read_CFG}
+            read_method = read_methods[self._format]
+            read_method_result = read_method()
+
+            for key, value in read_method_result.items():
                 if key in self.field_keys():
-                    # Not sure what this does
                     self.__dict__[key] = self._unserialize(key, value)  # Don't trigger __setattr__
             
-            result = self.read_hook()
-            Log().debug("Reading config", self._path, result)
+            Log().debug("Reading config", self._path, read_method_result)
+
+            self.read_hook()
 
     def _write_JSON(self):
         """ :param ConfigFile self: """
@@ -48,7 +51,7 @@ class _ConfigFile_ReadWrite:
         write_method = {"JSON": self._write_JSON, "CFG": self._write_CFG}[self._format]
         write_method()
         self._has_written = True
-        Log().debug("Writing to config", self._path, self.field_dict())
+        Log().debug("Writing config", self._path, self.field_dict())
 
 
 class _ConfigFile_Serialize:
