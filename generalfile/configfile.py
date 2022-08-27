@@ -39,13 +39,7 @@ class _ConfigFile_ReadWrite:
 
     def _write_JSON(self):
         """ :param ConfigFile self: """
-        Log().debug("Field dict is", self.field_dict())
-        Log().debug("Field dict serializable is", self.get_field_dict_serializable())
-
         self._path.write(self.get_field_dict_serializable(), overwrite=True, indent=4)
-
-        Log().debug("Read json is", self._path.read())
-
 
     def _write_CFG(self):
         """ :param ConfigFile self: """
