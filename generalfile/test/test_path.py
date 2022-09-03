@@ -449,6 +449,14 @@ class FileTest(PathTest):
         self.assertEqual(False, Path("hello/there").match("*x*"))
         self.assertEqual(False, Path("hello/there").match("there/"))
 
+    def test_forward_slash(self):
+        self.assertEqual("foo/bar", Path("foo\\bar").forward_slash())
+        self.assertEqual("foo/bar", Path("foo/bar").forward_slash())
+        self.assertEqual("foo bar", Path("foo bar").forward_slash())
+        self.assertEqual("foo/bar/hi there", Path("foo/bar\\hi there").forward_slash())
+        self.assertEqual("_hello/there_now.py", Path("_hello/there_now.py").forward_slash())
+        self.assertEqual("foo/_bar_now", Path("foo\\_bar_now").forward_slash())
+
     def test_encode(self):
         self.assertEqual("foo/bar", Path("foo\\bar").encode())
         self.assertEqual("foo/bar", Path("foo/bar").encode())

@@ -265,12 +265,18 @@ class _Path_Strings:
         return match(self.path, *map(self._replace_delimiters, patterns))
 
     @deco_cache()
+    def forward_slash(self):
+        """ Return string path with forward slashes.
+
+            :param generalfile.Path self: """
+        return self.path.replace("\\", "/")
+
+    @deco_cache()
     def encode(self):
         """ Return a URL encoded string from this Path.
 
             :param generalfile.Path self: """
-        url = self.path.replace("\\", "/")
-        return quote(url)
+        return quote(self.forward_slash())
 
 
 
