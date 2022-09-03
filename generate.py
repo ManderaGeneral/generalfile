@@ -2,10 +2,9 @@
 
 from generalpackager import Packager
 
-Packager("generalfile").generate_localfiles(aesthetic=False, print_out=True)
+Packager("generalfile").generate_localfiles(aesthetic=False, print_out=True, error_on_change=True)
 
-# if Packager("generalfile").localrepo.git_changed_files():
-exit()
+
 
 
 
