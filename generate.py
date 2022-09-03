@@ -2,7 +2,7 @@
 
 from generalpackager import Packager
 
-Packager("generalfile").generate_localfiles(aesthetic=False, error_on_change=True)
+Packager("generalfile").generate_localfiles(print_out=True)
 
 
 
