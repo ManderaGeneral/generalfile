@@ -16,6 +16,11 @@ class PathTest(unittest.TestCase):
         """Set working dir and clear folder. Set path delimiter to '/' for testing."""
         setup_workdir()
 
+    @classmethod
+    def tearDownClass(cls):
+        """Set working dir and clear folder. Set path delimiter to '/' for testing."""
+        setup_workdir()
+
 
 class FileTest(PathTest):
     """ Skipped: open_folder, view, scrub"""
