@@ -4,7 +4,8 @@ from generalpackager import Packager
 
 Packager("generalfile").generate_localfiles(aesthetic=False, print_out=True)
 
-
+# if Packager("generalfile").localrepo.git_changed_files():
+exit()
 
 
 
