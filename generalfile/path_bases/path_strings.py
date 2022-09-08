@@ -153,7 +153,8 @@ class _Path_Strings:
     def name(self):
         """ Get string name of Path which is stem + suffix, or entire path if root.
 
-            :param generalfile.Path self: """
+            :param generalfile.Path self:
+            :rtype: str """
         return self.path if self.is_root() else self._path.name
 
     @deco_cache()
@@ -169,7 +170,8 @@ class _Path_Strings:
     def stem(self):
         """ Get stem which is name without last suffix.
 
-            :param generalfile.Path self: """
+            :param generalfile.Path self:
+            :rtype: str """
         return self._path.stem
 
     @deco_cache()
@@ -185,7 +187,8 @@ class _Path_Strings:
     def true_stem(self):
         """ Get true stem which is name without any suffixes.
 
-            :param generalfile.Path self: """
+            :param generalfile.Path self:
+            :rtype: str """
         return self._path.stem.split(".")[0]
 
     @deco_cache()
@@ -202,7 +205,8 @@ class _Path_Strings:
         """ Get suffix which is name without stem (e.g. .txt or .json).
             Empty string if missing.
 
-            :param generalfile.Path self: """
+            :param generalfile.Path self:
+            :rtype: str """
         return self._path.suffix
 
     @deco_cache()
@@ -245,7 +249,8 @@ class _Path_Strings:
     def suffixes(self):
         """ Get every suffix as a list.
 
-            :param generalfile.Path self: """
+            :param generalfile.Path self:
+            :rtype: list[str] """
         return self._path.suffixes
 
     @deco_cache()
