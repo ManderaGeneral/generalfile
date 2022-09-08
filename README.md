@@ -1,27 +1,28 @@
 # generalfile
 Easily manage files cross platform.
 
-This package and 3 other make up [ManderaGeneral](https://github.com/ManderaGeneral).
-
-## Information
-| Package                                                      | Ver                                            | Latest Release        | Python                                                                                                                   | Platform        |   Lvl | Todo                                                    | Cover   |
-|:-------------------------------------------------------------|:-----------------------------------------------|:----------------------|:-------------------------------------------------------------------------------------------------------------------------|:----------------|------:|:--------------------------------------------------------|:--------|
-| [generalfile](https://github.com/ManderaGeneral/generalfile) | [2.5.8](https://pypi.org/project/generalfile/) | 2022-09-01 06:56 CEST | [3.8](https://www.python.org/downloads/release/python-380/), [3.9](https://www.python.org/downloads/release/python-390/) | Windows, Ubuntu |     1 | [4](https://github.com/ManderaGeneral/generalfile#Todo) | 73.1 %  |
-
 ## Contents
 <pre>
 <a href='#generalfile'>generalfile</a>
-├─ <a href='#Information'>Information</a>
 ├─ <a href='#Contents'>Contents</a>
+├─ <a href='#Examples'>Examples</a>
 ├─ <a href='#Installation'>Installation</a>
+├─ <a href='#Information'>Information</a>
 ├─ <a href='#Attributes'>Attributes</a>
+├─ <a href='#Contributions'>Contributions</a>
 └─ <a href='#Todo'>Todo</a>
 </pre>
+
 
 ## Installation
 | Command                   | <a href='https://pypi.org/project/generallibrary'>generallibrary</a>   | <a href='https://pypi.org/project/send2trash'>send2trash</a>   | <a href='https://pypi.org/project/appdirs'>appdirs</a>   | <a href='https://pypi.org/project/pandas'>pandas</a>   | <a href='https://pypi.org/project/dill'>dill</a>   |
 |:--------------------------|:-----------------------------------------------------------------------|:---------------------------------------------------------------|:---------------------------------------------------------|:-------------------------------------------------------|:---------------------------------------------------|
 | `pip install generalfile` | Yes                                                                    | Yes                                                            | Yes                                                      | Yes                                                    | Yes                                                |
+
+## Information
+| Package                                                      | Ver                                            | Latest Release        | Python                                                                                                                   | Platform        |   Lvl | Todo                                                    | Cover   |
+|:-------------------------------------------------------------|:-----------------------------------------------|:----------------------|:-------------------------------------------------------------------------------------------------------------------------|:----------------|------:|:--------------------------------------------------------|:--------|
+| [generalfile](https://github.com/ManderaGeneral/generalfile) | [2.5.8](https://pypi.org/project/generalfile/) | 2022-09-01 06:56 CEST | [3.8](https://www.python.org/downloads/release/python-380/), [3.9](https://www.python.org/downloads/release/python-390/) | Windows, Ubuntu |     2 | [4](https://github.com/ManderaGeneral/generalfile#Todo) | 72.8 %  |
 
 ## Attributes
 <pre>
@@ -119,14 +120,18 @@ This package and 3 other make up [ManderaGeneral](https://github.com/ManderaGene
    └─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_bases/path_operations.py#L51'>Method: write</a>
 </pre>
 
+## Contributions
+Issue-creation and discussion is most welcome!
+Pull requests are **not wanted**, please discuss with me before investing any time.
+
 ## Todo
 | Module                                                                                                                                               | Message                                                                                                                                                                                   |
 |:-----------------------------------------------------------------------------------------------------------------------------------------------------|:------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path.py#L1'>path.py</a>                                               | <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path.py#L27'>Binary extension.</a>                                                                         |
-| <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_bases/path_lock.py#L1'>path_lock.py</a>                          | <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_bases/path_lock.py#L12'>Lock the optional extra paths.</a>                                            |
 | <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/optional_dependencies/path_spreadsheet.py#L1'>path_spreadsheet.py</a> | <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/optional_dependencies/path_spreadsheet.py#L112'>Support DataFrame and Series with spreadsheet.append()</a> |
 | <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/configfile.py#L1'>configfile.py</a>                                   | <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/configfile.py#L117'>Handle custom serializers within iterable for ConfigFile.</a>                          |
+| <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_bases/path_lock.py#L1'>path_lock.py</a>                          | <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_bases/path_lock.py#L12'>Lock the optional extra paths.</a>                                            |
 
 <sup>
-Generated 2022-09-08 06:23 CEST for commit <a href='https://github.com/ManderaGeneral/generalfile/commit/master'>master</a>.
+Generated 2022-09-08 18:51 CEST for commit <a href='https://github.com/ManderaGeneral/generalfile/commit/master'>master</a>.
 </sup>
