@@ -3,10 +3,13 @@
         "generallibrary",
         "send2trash",
         "appdirs",
-        "pandas",
         "dill"
     ],
-    "extras_require": {},
+    "extras_require": {
+        "spreadsheet": [
+        "pandas"
+        ]
+    },
     "enabled": true,
     "private": false,
     "name": "generalfile",
