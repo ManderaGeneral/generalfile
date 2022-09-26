@@ -57,18 +57,16 @@ class Path(Recycle,
         """ :rtype: generalfile.Path """
         return self.Path(self._path / str(other))
 
-    # @staticmethod
-    # @deco_cache()
-    # def _equal(pair):
-    #     return
+    @staticmethod
+    @deco_cache()
+    def _equal(str_pair):
+        return
 
     def __eq__(self, other):
-        # return self.path == getattr(other, "path", other)
-
         if other is None:  # None in [Path()] was returning True without this
             return False
 
-        if type(other) is Path:
+        if isinstance(other, Path):
             other = other.path
         else:
             other = self.scrub(other)
