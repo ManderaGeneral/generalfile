@@ -1,3 +1,4 @@
+import filecmp
 from inspect import stack
 from traceback import print_stack
 
@@ -389,11 +390,11 @@ class _Path_Operations:
 
         if not self_exists or not path_exists:
             return self_exists == path_exists
-
         with self.lock(path):
-            with open(self, "r") as file1:
-                with open(path, "r") as file2:
-                    return file1.read() == file2.read()
+            return filecmp.cmp(self, path)
+            # with open(self, "r") as file1:
+            #     with open(path, "r") as file2:
+            #         return file1.read() == file2.read()
 
     @deco_require_state(is_folder=True)
     def get_differing_files(self, target, exist=True, content=True, filt=None):
