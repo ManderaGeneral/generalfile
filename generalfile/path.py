@@ -32,6 +32,7 @@ class Path(Recycle,
     _recycle_keys = {"path": lambda path: Path.scrub(path)}
     _alternative_chars = {path_delimiter: "&#47;", ":": "&#58", ".": "&#46;"}
 
+
     def __init__(self, path=None):  # Don't have parent here because of Recycle
         self.path = self.scrub(path)
 

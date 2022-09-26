@@ -7,17 +7,15 @@ import re
 
 class _Path_Scrub:
     @classmethod
-    def scrub(cls, str_path):
+    def scrub(cls, path):
         """ :param generalfile.Path cls: """
-        return cls._scrub(str_path=str(str_path) if str_path else "")
+        return cls._scrub(str_path=str(path) if path else "")
 
     @classmethod
     @deco_cache()
     def _scrub(cls, str_path):
         """ :param generalfile.Path cls: """
-        str_path = "" if str_path is None else str(str_path)
         str_path = cls._replace_delimiters(str_path=str_path)
-
 
         match = re.match(fr"(\.+{re.escape(cls.path_delimiter)})", str_path)
         if match:
