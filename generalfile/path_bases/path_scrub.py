@@ -7,12 +7,12 @@ import re
 
 class _Path_Scrub:
     @classmethod
-    @deco_cache()
     def scrub(cls, str_path):
         """ :param generalfile.Path cls: """
-        return cls._scrub(str_path=str_path)
+        return cls._scrub(str_path=str(str_path) if str_path else "")
 
     @classmethod
+    @deco_cache()
     def _scrub(cls, str_path):
         """ :param generalfile.Path cls: """
         str_path = "" if str_path is None else str(str_path)

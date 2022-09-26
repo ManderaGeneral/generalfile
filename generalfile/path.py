@@ -1,7 +1,7 @@
 
 import pathlib
 
-from generallibrary import VerInfo, TreeDiagram, Recycle
+from generallibrary import VerInfo, TreeDiagram, Recycle, deco_cache
 
 from generalfile.path_bases.path_lock import _Path_ContextManager
 from generalfile.path_bases.path_operations import _Path_Operations
@@ -56,14 +56,21 @@ class Path(Recycle,
         """ :rtype: generalfile.Path """
         return self.Path(self._path / str(other))
 
+    # @staticmethod
+    # @deco_cache()
+    # def _equal(pair):
+    #     return
+
     def __eq__(self, other):
+        # return self.path == getattr(other, "path", other)
+
         if other is None:  # None in [Path()] was returning True without this
             return False
 
-        if isinstance(other, Path):
+        if type(other) is Path:
             other = other.path
         else:
-            other = self._scrub("" if other is None else str(other))
+            other = self.scrub(other)
         return self.path == other
 
     def __hash__(self):

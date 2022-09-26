@@ -44,7 +44,7 @@ class _Spreadsheet(_Extension):
 
             return useHeader, useIndex
 
-    def read(self, header=False, column=False, default=...):
+    def read(self, header=False, column=False, default=..., sep=None):
         """
         If any cell becomes NaN then the header and column parameters are overriden silently.
 
@@ -56,6 +56,7 @@ class _Spreadsheet(_Extension):
         :param bool header: Use headers or not, overriden if any top left cell is NaN
         :param bool column: Use columns or not, overriden if any top left cell is NaN
         :param default:
+        :param sep: Default to "\t"
         :rtype: pd.DataFrame
         """
 
@@ -64,7 +65,7 @@ class _Spreadsheet(_Extension):
 
         with self.ReadContext(self.path) as read_path:
             try:
-                df = self._read_helper(read_path, header, column)
+                df = self._read_helper(path=read_path, header=header, column=column, sep=sep)
             except pd.errors.EmptyDataError:
                 return pd.DataFrame()
             except FileNotFoundError as e:
@@ -80,7 +81,7 @@ class _Spreadsheet(_Extension):
             if headerFalseColumnFalse or headerFalseColumnTrue or headerTrueColumnFalse:
                 header = "infer"
                 column = 0
-                df = self._read_helper(read_path, header, column)
+                df = self._read_helper(path=read_path, header=header, column=column, sep=sep)
             else:
                 # Get rid of name in index (Happens if file doesn't have an index and column=True)
                 # Doesn't happen other way around for some reason, guess it's the internal order in pandas
@@ -90,7 +91,7 @@ class _Spreadsheet(_Extension):
                     else:
                         header = None
                         column = None
-                        df = self._read_helper(read_path, header, column)
+                        df = self._read_helper(path=read_path, header=header, column=column, sep=sep)
 
             if not self._indexIsNamed(df.columns):
                 df.columns = pd.RangeIndex(len(df.columns))
@@ -141,8 +142,10 @@ class _Spreadsheet(_Extension):
         except ValueError:
             return df
 
-    def _read_helper(self, path, header, column):
-        result = pd.read_csv(path, sep="\t", header=header, index_col=column)
+    def _read_helper(self, path, header, column, sep):
+        if sep is None:
+            sep = "\t"
+        result = pd.read_csv(path, sep=sep, header=header, index_col=column)
         return self._try_convert_dtypes(result)
 
     def _append_helper(self, iterable_obj, key=None):
