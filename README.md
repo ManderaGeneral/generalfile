@@ -15,10 +15,10 @@ Easily manage files cross platform.
 ## Dependency Tree
 ```mermaid
 flowchart LR
-1([library]) --> 4([packager])
-0([import]) --> 1([library])
 2([file]) --> 4([packager])
+0([import]) --> 1([library])
 1([library]) --> 2([file])
+1([library]) --> 4([packager])
 1([library]) --> 3([vector])
 click 0 "https://github.com/ManderaGeneral/generalimport"
 click 1 "https://github.com/ManderaGeneral/generallibrary"
@@ -153,5 +153,5 @@ Pull requests are not wanted, please discuss with me before investing any time
 | <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/optional_dependencies/path_spreadsheet.py#L1'>path_spreadsheet.py</a> | <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/optional_dependencies/path_spreadsheet.py#L115'>Support DataFrame and Series with spreadsheet.append()</a> |
 
 <sup>
-Generated 2022-09-27 09:04 CEST for commit <a href='https://github.com/ManderaGeneral/generalfile/commit/master'>master</a>.
+Generated 2022-09-27 15:46 CEST for commit <a href='https://github.com/ManderaGeneral/generalfile/commit/master'>master</a>.
 </sup>
