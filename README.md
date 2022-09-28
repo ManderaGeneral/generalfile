@@ -4,22 +4,22 @@ Easily manage files cross platform.
 ## Contents
 <pre>
 <a href='#generalfile'>generalfile</a>
-├─ <a href='#Dependency-Tree'>Dependency Tree</a>
-├─ <a href='#Installation'>Installation</a>
+├─ <a href='#Dependency-Diagram'>Dependency Diagram</a>
+├─ <a href='#Installation-showing-dependencies'>Installation showing dependencies</a>
 ├─ <a href='#Information'>Information</a>
 ├─ <a href='#Attributes'>Attributes</a>
 ├─ <a href='#Contributions'>Contributions</a>
 └─ <a href='#Todo'>Todo</a>
 </pre>
 
-## Dependency Tree
+## Dependency Diagram
 ```mermaid
 flowchart LR
+1([library]) --> 3([vector])
 2([file]) --> 4([packager])
+1([library]) --> 4([packager])
 0([import]) --> 1([library])
 1([library]) --> 2([file])
-1([library]) --> 4([packager])
-1([library]) --> 3([vector])
 click 0 "https://github.com/ManderaGeneral/generalimport"
 click 1 "https://github.com/ManderaGeneral/generallibrary"
 click 2 "https://github.com/ManderaGeneral/generalfile"
@@ -28,7 +28,7 @@ click 4 "https://github.com/ManderaGeneral/generalpackager"
 style 2 fill:#482
 ```
 
-## Installation
+## Installation showing dependencies
 | `pip install`                                                        | `generalfile`   | `generalfile[spreadsheet]`   | `generalfile[full]`   |
 |:---------------------------------------------------------------------|:----------------|:-----------------------------|:----------------------|
 | <a href='https://pypi.org/project/generallibrary'>generallibrary</a> | ✔️              | ✔️                           | ✔️                    |
@@ -153,5 +153,5 @@ Pull requests are not wanted, please discuss with me before investing any time
 | <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/optional_dependencies/path_spreadsheet.py#L1'>path_spreadsheet.py</a> | <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/optional_dependencies/path_spreadsheet.py#L115'>Support DataFrame and Series with spreadsheet.append()</a> |
 
 <sup>
-Generated 2022-09-27 15:46 CEST for commit <a href='https://github.com/ManderaGeneral/generalfile/commit/master'>master</a>.
+Generated 2022-09-28 13:07 CEST for commit <a href='https://github.com/ManderaGeneral/generalfile/commit/master'>master</a>.
 </sup>
