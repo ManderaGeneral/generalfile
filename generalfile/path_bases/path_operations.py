@@ -427,7 +427,7 @@ class _Path_Operations:
             :param generalfile.Path self:
             :param text: """
         with self.lock():
-            with open(self, "r") as stream:
+            with open(self, "r") as stream:  # Todo: Fix contains() using raw open()
                 for line in stream:
                     if text in line:
                         return True
