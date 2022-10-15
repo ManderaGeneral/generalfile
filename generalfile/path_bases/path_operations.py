@@ -392,9 +392,6 @@ class _Path_Operations:
             return self_exists == path_exists
         with self.lock(path):
             return filecmp.cmp(self, path)
-            # with open(self, "r") as file1:
-            #     with open(path, "r") as file2:
-            #         return file1.read() == file2.read()
 
     @deco_require_state(is_folder=True)
     def get_differing_files(self, target, exist=True, content=True, filt=None):
