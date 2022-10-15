@@ -16,10 +16,11 @@ Easily manage files cross platform.
 ```mermaid
 flowchart LR
 2([file]) --> 4([packager])
-0([import]) --> 1([library])
 1([library]) --> 4([packager])
-1([library]) --> 3([vector])
+0([import]) --> 1([library])
+0([import]) --> 2([file])
 1([library]) --> 2([file])
+1([library]) --> 3([vector])
 click 0 "https://github.com/ManderaGeneral/generalimport"
 click 1 "https://github.com/ManderaGeneral/generallibrary"
 click 2 "https://github.com/ManderaGeneral/generalfile"
@@ -31,6 +32,7 @@ style 2 fill:#482
 ## Installation showing dependencies
 | `pip install`                                                        | `generalfile`   | `generalfile[spreadsheet]`   | `generalfile[full]`   |
 |:---------------------------------------------------------------------|:----------------|:-----------------------------|:----------------------|
+| <a href='https://pypi.org/project/generalimport'>generalimport</a>   | ✔️              | ✔️                           | ✔️                    |
 | <a href='https://pypi.org/project/generallibrary'>generallibrary</a> | ✔️              | ✔️                           | ✔️                    |
 | <a href='https://pypi.org/project/send2trash'>send2trash</a>         | ✔️              | ✔️                           | ✔️                    |
 | <a href='https://pypi.org/project/appdirs'>appdirs</a>               | ✔️              | ✔️                           | ✔️                    |
@@ -40,7 +42,7 @@ style 2 fill:#482
 ## Information
 | Package                                                      | Ver                                             | Latest Release        | Python                                                                                                                                                                                  | Platform        | Cover   |
 |:-------------------------------------------------------------|:------------------------------------------------|:----------------------|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:----------------|:--------|
-| [generalfile](https://github.com/ManderaGeneral/generalfile) | [2.5.12](https://pypi.org/project/generalfile/) | 2022-10-07 16:07 CEST | [3.8](https://www.python.org/downloads/release/python-380/), [3.9](https://www.python.org/downloads/release/python-390/), [3.10](https://www.python.org/downloads/release/python-3100/) | Windows, Ubuntu | 72.3 %  |
+| [generalfile](https://github.com/ManderaGeneral/generalfile) | [2.5.12](https://pypi.org/project/generalfile/) | 2022-10-07 16:07 CEST | [3.8](https://www.python.org/downloads/release/python-380/), [3.9](https://www.python.org/downloads/release/python-390/), [3.10](https://www.python.org/downloads/release/python-3100/) | Windows, Ubuntu | 72.5 %  |
 
 
 ## Attributes
@@ -64,7 +66,7 @@ style 2 fill:#482
    ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_bases/path_strings.py#L32'>Method: absolute</a>
    ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_bases/path_lock.py#L123'>Method: as_working_dir</a>
    ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/optional_dependencies/path_cfg.py#L13'>Property: cfg</a>
-   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_bases/path_operations.py#L427'>Method: contains</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_bases/path_operations.py#L424'>Method: contains</a>
    ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_bases/path_operations.py#L98'>Method: copy</a>
    ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_bases/path_operations.py#L159'>Method: copy_to_folder</a>
    ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_bases/path_operations.py#L238'>Method: create_folder</a>
@@ -78,7 +80,7 @@ style 2 fill:#482
    ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_bases/path_strings.py#L24'>Method: from_alternative</a>
    ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_bases/path_envs.py#L40'>Method: get_active_venv</a> <b>(Untested)</b>
    ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_bases/path_operations.py#L284'>Method: get_cache_dir</a>
-   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_bases/path_operations.py#L400'>Method: get_differing_files</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_bases/path_operations.py#L397'>Method: get_differing_files</a>
    ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_bases/path_operations.py#L294'>Method: get_lock_dir</a>
    ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_bases/path_operations.py#L303'>Method: get_lock_path</a>
    ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_bases/path_envs.py#L25'>Method: get_parent_package</a> <b>(Untested)</b>
@@ -101,7 +103,7 @@ style 2 fill:#482
    ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_bases/path_strings.py#L153'>Method: name</a>
    ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_bases/path_operations.py#L248'>Method: open_folder</a>
    ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_bases/path_operations.py#L32'>Method: open_operation</a>
-   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_bases/path_operations.py#L447'>Method: pack</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_bases/path_operations.py#L444'>Method: pack</a>
    ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_bases/path_strings.py#L145'>Method: parts</a>
    ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/optional_dependencies/path_pickle.py#L12'>Property: pickle</a>
    ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_bases/path_operations.py#L65'>Method: read</a>
@@ -128,7 +130,7 @@ style 2 fill:#482
    ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_bases/path_operations.py#L333'>Method: trash</a>
    ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_bases/path_operations.py#L353'>Method: trash_folder_content</a>
    ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_bases/path_strings.py#L187'>Method: true_stem</a>
-   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_bases/path_operations.py#L466'>Method: unpack</a>
+   ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_bases/path_operations.py#L463'>Method: unpack</a>
    ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_bases/path_diagram.py#L7'>Method: view_paths</a> <b>(Untested)</b>
    ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_bases/path_strings.py#L161'>Method: with_name</a>
    ├─ <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_bases/path_strings.py#L178'>Method: with_stem</a>
@@ -147,11 +149,12 @@ Pull requests are not wanted, please discuss with me before investing any time
 ## Todo
 | Module                                                                                                                                               | Message                                                                                                                                                                                   |
 |:-----------------------------------------------------------------------------------------------------------------------------------------------------|:------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/configfile.py#L1'>configfile.py</a>                                   | <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/configfile.py#L117'>Handle custom serializers within iterable for ConfigFile.</a>                          |
 | <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path.py#L1'>path.py</a>                                               | <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path.py#L27'>Binary extension.</a>                                                                         |
+| <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_bases/path_operations.py#L1'>path_operations.py</a>              | <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_bases/path_operations.py#L430'>Fix contains() using raw open()</a>                                    |
 | <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_bases/path_lock.py#L1'>path_lock.py</a>                          | <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_bases/path_lock.py#L12'>Lock the optional extra paths.</a>                                            |
+| <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/configfile.py#L1'>configfile.py</a>                                   | <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/configfile.py#L117'>Handle custom serializers within iterable for ConfigFile.</a>                          |
 | <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/optional_dependencies/path_spreadsheet.py#L1'>path_spreadsheet.py</a> | <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/optional_dependencies/path_spreadsheet.py#L115'>Support DataFrame and Series with spreadsheet.append()</a> |
 
 <sup>
-Generated 2022-10-08 15:59 CEST for commit <a href='https://github.com/ManderaGeneral/generalfile/commit/master'>master</a>.
+Generated 2022-10-15 08:45 CEST for commit <a href='https://github.com/ManderaGeneral/generalfile/commit/master'>master</a>.
 </sup>
