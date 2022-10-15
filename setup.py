@@ -16,6 +16,7 @@ setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     install_requires=[
+        'generalimport',
         'generallibrary',
         'send2trash',
         'appdirs',

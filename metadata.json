@@ -1,5 +1,6 @@
 {
     "install_requires": [
+        "generalimport",
         "generallibrary",
         "send2trash",
         "appdirs",
