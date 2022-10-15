@@ -44,7 +44,7 @@ class _Path_Operations:
             with open(self, mode, encoding=encoding) as stream:
                 return func(stream)
         except FileNotFoundError as e:
-            if no_file_default is ...:
+            if no_file_default is Ellipsis:
                 raise e
             else:
                 return no_file_default
