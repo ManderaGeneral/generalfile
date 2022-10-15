@@ -1,7 +1,7 @@
 
 from generallibrary import deco_cache, typeChecker, get_rows, initBases
 from generalfile.optional_dependencies._extension import _Extension
-from generalimport import check_import
+from generalimport import fake_module_check
 
 import pandas as pd
 import csv
@@ -13,7 +13,7 @@ class Path_Spreadsheet:
     @deco_cache()
     def spreadsheet(self):
         """ Easy modify tsv and csv files. """
-        check_import(pd)
+        fake_module_check(pd)
         return _Spreadsheet(self)
 
 
