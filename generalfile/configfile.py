@@ -1,3 +1,4 @@
+from copy import copy
 
 from generallibrary import comma_and_or, Recycle, ObjInfo, deco_cache, AutoInitBases, DataClass, Log
 from generalfile import Path
@@ -75,7 +76,7 @@ class _ConfigFile_Serialize:
         if value is not None and cls._has_serializers(value):
             return value.__dumps__()
         else:
-            return value
+            return copy(value)  # Prevent write_hook_pre from changing original mutable
 
     def _unserialize(self, key, value):
         if value is not None and key in self.get_custom_serializers():

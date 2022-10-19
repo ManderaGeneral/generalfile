@@ -432,6 +432,19 @@ class TestConfigFileCFG(PathTest):
         a.write_config()
         self.assertEqual(2, a._path.read()["x"])
 
+    def test_write_hook_dict(self):
+        class A(ConfigFile):
+            x = {"a": 5}
+            def write_hook_pre(self, dict_):
+                dict_["x"]["a"] = 2
+
+        a = A(path="foo.json")
+
+        self.assertEqual({"a": 5}, a.x)
+        a.write_config()
+        self.assertEqual({"a": 2}, a._path.read()["x"])
+        self.assertEqual({"a": 5}, a.x)
+
 
 
 
