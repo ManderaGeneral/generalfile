@@ -13,7 +13,7 @@ class _ConfigFile_ReadWrite:
     
     def read_hook_pre(self): ...
     def read_hook_post(self): ...
-    def write_hook_pre(self): ...
+    def write_hook_pre(self, dict_): ...
     def write_hook_post(self): ...
 
     def _read_JSON(self):
@@ -44,21 +44,22 @@ class _ConfigFile_ReadWrite:
 
             self.read_hook_post()
 
-    def _write_JSON(self):
+    def _write_JSON(self, dict_):
         """ :param ConfigFile self: """
-        self._path.write(self.get_field_dict_serializable(), overwrite=True, indent=4)
+        self._path.write(content=dict_, overwrite=True, indent=4)
 
-    def _write_CFG(self):
+    def _write_CFG(self, dict_):
         """ :param ConfigFile self: """
-        config_dict = {self._CFG_HEADER_NAME: self.get_field_dict_serializable()}
-        self._path.cfg.write(config_dict, overwrite=True)
+        config_dict = {self._CFG_HEADER_NAME: dict_}
+        self._path.cfg.write(dict_=config_dict, overwrite=True)
 
     def write_config(self):
         """ :param ConfigFile self: """
-        self.write_hook_pre()
+        dict_ = self.get_field_dict_serializable()
+        self.write_hook_pre(dict_=dict_)
         write_methods = {"JSON": self._write_JSON, "CFG": self._write_CFG}
         write_method = write_methods[self._format]
-        write_method()
+        write_method(dict_=dict_)
         self._has_written = True
         Log().debug("Writing config", self._path, self.field_dict())
         self.write_hook_post()
