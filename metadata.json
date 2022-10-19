@@ -9,9 +9,6 @@
     "extras_require": {
         "spreadsheet": [
             "pandas"
-        ],
-        "full": [
-            "pandas"
         ]
     },
     "enabled": true,
@@ -23,5 +20,6 @@
     "topics": [
         "file-manager"
     ],
-    "manifest": []
+    "manifest": [],
+    "contribute": false
 }
