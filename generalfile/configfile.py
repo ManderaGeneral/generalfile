@@ -39,7 +39,7 @@ class _ConfigFile_ReadWrite:
                 if key in self.field_keys():
                     self.__dict__[key] = self._unserialize(key, value)  # Don't trigger __setattr__
                 else:
-                    Log().info("Ignoring key value", key, value, "for", self._path)
+                    Log().debug("Ignoring key value", key, value, "for", self._path)
             
             Log().debug("Reading config", self._path, read_method_result)
 
