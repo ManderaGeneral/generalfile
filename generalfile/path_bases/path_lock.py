@@ -31,8 +31,8 @@ class _Lock:
                 lock_path.delete(error=False)
 
     def _attempt_lock_creation(self):
-        timer = Timer()
-        while timer.seconds() < self.path.timeout_seconds:
+        timer = Timer(print_out=False)
+        while timer.time() < self.path.timeout_seconds:
             affecting_locks = list(self._affecting_locks())
             if self._is_locked_externally(affecting_locks=affecting_locks):
                 for locked_path in affecting_locks:
