@@ -130,11 +130,13 @@ class _Path_ContextManager:
 class TempWorkingDir:
     """ Temporarily set working dir. """
     def __init__(self, path):
+        """ :param generalfile.Path path: """
         self.path = path
         self.original_working_dir = path.get_working_dir()
 
     def __enter__(self):
         self.path.set_working_dir()
+        return self.path
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.original_working_dir.set_working_dir()
