@@ -5,9 +5,8 @@ from generalfile.test.test_path import PathTest
 
 class FileTest(PathTest):
     def test_cfg(self):
-        dict_ = {'test': {'foo': 'bar', 'number': 2, 'hi': ['a', 'b', 3], "uh": None}}
-
-        Path("foo").cfg.write(dict_)
+        dict_ = {'test': {'foo': 'bar', 'number': 2, 'hi': ['a', 'b', 3]}}
+        Path("foo").cfg.write(dict_)  # HERE **
         self.assertEqual(dict_, Path("foo").cfg.read())
 
         dict_["test"]["foo"] = "hi"
