@@ -15,7 +15,7 @@ from tomllib import load
 
 # HERE ** Need to allow None values for ConfigFile etc
 
-dict_ = {'test': {'foo': True, "x": None, "y": {"foo": "bar", "x": None}}}
+dict_ = {'test': "hii"}
 Path("foo").cfg.write(dict_, overwrite=True)
 print(Path("foo").cfg.read())
 

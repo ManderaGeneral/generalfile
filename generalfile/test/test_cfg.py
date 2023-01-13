@@ -6,11 +6,21 @@ from generalfile.test.test_path import PathTest
 class FileTest(PathTest):
     def test_cfg(self):
         dict_ = {'test': {'foo': 'bar', 'number': 2, 'hi': ['a', 'b', 3]}}
-        Path("foo").cfg.write(dict_)  # HERE **
+        Path("foo").cfg.write(dict_)
         self.assertEqual(dict_, Path("foo").cfg.read())
 
         dict_["test"]["foo"] = "hi"
         Path("foo").cfg.write(dict_, overwrite=True)
+        self.assertEqual(dict_, Path("foo").cfg.read())
+
+    def test_cfg_no_header_single(self):
+        dict_ = {'test': 'hii'}
+        Path("foo").cfg.write(dict_)
+        self.assertEqual(dict_, Path("foo").cfg.read())
+
+    def test_cfg_no_header_multiple(self):
+        dict_ = {'test': 'hii', 'foo': 5, 'x': True, 'y': None}
+        Path("foo").cfg.write(dict_)
         self.assertEqual(dict_, Path("foo").cfg.read())
 
     def test_cfg_append(self):
