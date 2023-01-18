@@ -23,12 +23,12 @@ Easily manage files cross platform.
 
 ```mermaid
 flowchart LR
-1([library]) --> 4([packager])
+1([library]) --> 3([vector])
 2([file]) --> 4([packager])
 0([import]) --> 2([file])
-1([library]) --> 3([vector])
 0([import]) --> 1([library])
 1([library]) --> 2([file])
+1([library]) --> 4([packager])
 click 0 "https://github.com/ManderaGeneral/generalimport"
 click 1 "https://github.com/ManderaGeneral/generallibrary"
 click 2 "https://github.com/ManderaGeneral/generalfile"
@@ -186,7 +186,7 @@ Pull requests are currently not wanted, please discuss with me before investing 
 
 
 <sup>
-Generated 2023-01-18 15:01 CET for commit <a href='https://github.com/ManderaGeneral/generalfile/commit/master'>master</a>.
+Generated 2023-01-18 15:31 CET for commit <a href='https://github.com/ManderaGeneral/generalfile/commit/master'>master</a>.
 </sup>
 </details>
 
