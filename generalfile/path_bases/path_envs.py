@@ -5,7 +5,7 @@ class _Path_Envs:
     """ Get information of path such as venv and package. """
     def is_venv(self):
         """ :param generalfile.Path self: """
-        return (self / "Scripts/activate").exists()
+        return (self / "Scripts/activate").exists() or (self / "bin/activate").exists()
 
     def is_package(self):
         """ :param generalfile.Path self: """
