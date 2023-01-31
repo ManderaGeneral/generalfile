@@ -283,6 +283,13 @@ class _Path_Strings:
             :param generalfile.Path self: """
         return quote(self.forward_slash())
 
+    @deco_cache()
+    def escaped(self):
+        """ Return a path string with \\ instead of \.
+
+            :param generalfile.Path self: """
+        return self.path.replace("\\", "\\\\")
+
 
 
 
