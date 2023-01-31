@@ -37,7 +37,7 @@ class _Path_Envs:
         return self.absolute().get_parent(depth=-1, include_self=True, traverse_excluded=True, filt=type(self).is_repo)
 
     @classmethod
-    def get_active_venv(cls):
+    def get_active_venv_path(cls):
         """ :rtype: generalfile.Path """
         virtual_env = EnvVar("VIRTUAL_ENV", default=None).value
         if virtual_env is not None:
