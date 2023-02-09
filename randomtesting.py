@@ -13,7 +13,7 @@ from tomllib import load
 
 # dict_ = {'test': {'foo': 'bar', 'number': 2, 'hi': ['a', 'b', 3], "uh": None}}
 
-# HERE ** Need to allow None values for ConfigFile etc
+# Need to allow None values for ConfigFile etc
 
 dict_ = {'test': "hii"}
 Path("foo").cfg.write(dict_, overwrite=True)

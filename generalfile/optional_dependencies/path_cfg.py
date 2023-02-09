@@ -32,7 +32,7 @@ class _Cfg(_Extension):
 
     def write(self, dict_=None, overwrite=False):
         """ Write to this path with a given dictionary. """
-        if depth(dict_) == 1:  # HERE ** This needs to check for a depth of one consisting of dictionaries because it fails if first value is a list
+        if depth(dict_) == 1:
             return self._basic_write(dict_=dict_, overwrite=overwrite)
 
         config = configparser.ConfigParser()

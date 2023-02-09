@@ -14,7 +14,8 @@ class _Path_Scrub:
     @classmethod
     @deco_cache()
     def _scrub(cls, str_path):
-        """ :param generalfile.Path cls: """
+        """ :param generalfile.Path cls:
+            :param str str_path: """
         str_path = cls._replace_delimiters(str_path=str_path)
 
         match = re.match(fr"(\.+{re.escape(cls.path_delimiter)})", str_path)
