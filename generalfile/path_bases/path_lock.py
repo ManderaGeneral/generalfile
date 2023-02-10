@@ -119,26 +119,6 @@ class _Path_ContextManager:
             :param generalfile.Path self: """
         return self._create_context_manager(self.absolute(), *other_paths)
 
-    def as_working_dir(self):
-        """ Temporarily set working dir.
-
-            :param generalfile.Path self: """
-        return TempWorkingDir(self)
-
-
-class TempWorkingDir:
-    """ Temporarily set working dir. """
-    def __init__(self, path):
-        """ :param generalfile.Path path: """
-        self.path = path
-        self.original_working_dir = path.get_working_dir()
-
-    def __enter__(self):
-        self.path.set_working_dir()
-        return self.path
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        self.original_working_dir.set_working_dir()
 
 
 

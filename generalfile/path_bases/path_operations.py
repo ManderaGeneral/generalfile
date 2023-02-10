@@ -1,6 +1,5 @@
 import filecmp
-from inspect import stack
-from traceback import print_stack
+from contextlib import contextmanager
 
 from generallibrary import deco_cache, Log
 from generalfile.errors import CaseSensitivityError
@@ -87,6 +86,19 @@ class _Path_Operations:
                 self._path.rename(new_path)
             self._removed_path()
         return new_path
+
+    @contextmanager
+    def as_renamed(self, path, overwrite=False):
+        """ Context manager to temporarily rename this single file or folder to anything.
+
+            :param generalfile.Path self:
+            :param generalfile.Path or str path:
+            :param overwrite: """
+        renamed_path = self.rename(path=path, overwrite=overwrite)
+        try:
+            yield renamed_path
+        finally:
+            renamed_path.rename(path=self)
 
     @deco_require_state(exists=True)
     def copy(self, new_path, overwrite=False):
@@ -253,8 +265,6 @@ class _Path_Operations:
 
             :param generalfile.Path cls:
             :rtype: generalfile.Path """
-        # return cls.Path(pathlib.Path.cwd())
-
         try:
             working_dir = cls.Path(pathlib.Path.cwd())
         except FileNotFoundError as e:
@@ -273,6 +283,18 @@ class _Path_Operations:
         self.create_folder()
         self._working_dir = self.absolute()
         os.chdir(self._working_dir)
+
+    @contextmanager
+    def as_working_dir(self):
+        """ Temporarily set working dir.
+
+            :param generalfile.Path self: """
+        working_dir = self.get_working_dir()
+        self.set_working_dir()
+        try:
+            yield self
+        finally:
+            working_dir.set_working_dir()
 
     @classmethod
     @deco_cache()

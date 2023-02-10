@@ -278,6 +278,18 @@ class FileTest(PathTest):
         self.assertEqual("folder2/hello.test", path.rename(path.with_stem("hello")))
         self.assertTrue(Path("folder2/hello.test").exists())
 
+    def test_as_renamed(self):
+        path = Path("hi")
+        path.write()
+        self.assertTrue(path.exists())
+
+        with Path("hi").as_renamed("hello") as path2:
+            self.assertFalse(path.exists())
+            self.assertTrue(path2.exists())
+
+        self.assertTrue(path.exists())
+        self.assertFalse(path2.exists())
+
     def test_copy(self):
         Path("folder/test.txt").write()
         Path("folder/test.txt").copy("foo.txt")
