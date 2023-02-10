@@ -98,7 +98,7 @@ class _Path_Operations:
         try:
             yield renamed_path
         finally:
-            renamed_path.rename(path=self)
+            renamed_path.rename(path=self, overwrite=overwrite)
 
     @deco_require_state(exists=True)
     def copy(self, new_path, overwrite=False):
