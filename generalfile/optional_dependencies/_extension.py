@@ -28,7 +28,7 @@ class WriteContext(_Context):
         return self.temp_path
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        self.temp_path.rename(self.path.name(), overwrite=True)
+        self.temp_path.rename(self.path, overwrite=True)
         super().__exit__(exc_type, exc_val, exc_tb)
 
 
@@ -57,7 +57,7 @@ class AppendContext(_Context):
         return self.temp_path
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        self.temp_path.rename(self.path.name(), overwrite=True)
+        self.temp_path.rename(self.path, overwrite=True)
         super().__exit__(exc_type, exc_val, exc_tb)
 
 

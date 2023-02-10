@@ -253,27 +253,29 @@ class FileTest(PathTest):
     def test_rename(self):
         Path("folder/test.txt").write()
 
-        Path("folder/test.txt").rename(name="hello.txt")
+        Path("folder/test.txt").rename("hello.txt")
         self.assertTrue(Path("folder/hello.txt").exists())
         self.assertFalse(Path("folder/test.txt").exists())
 
-        Path("folder").rename(name="folder2")
+        Path("folder").rename("folder2")
         self.assertTrue(Path("folder2").exists())
         self.assertFalse(Path("folder").exists())
 
-        Path("folder2/hello.txt").rename(name="foo.txt")
+        Path("folder2/hello.txt").rename("foo.txt")
         self.assertTrue(Path("folder2/foo.txt").exists())
 
-        Path("folder2/foo.txt").rename(name="foo.TEST.txt")
+        Path("folder2/foo.txt").rename("foo.TEST.txt")
         self.assertTrue(Path("folder2/foo.TEST.txt").exists())
 
-        Path("folder2/foo.TEST.txt").rename(name="foobar")
+        Path("folder2/foo.TEST.txt").rename("foobar")
         self.assertTrue(Path("folder2/foobar").is_file())
 
-        Path("folder2/foobar").rename(suffix=".test")
+        path = Path("folder2/foobar")
+        path.rename(path.with_suffix(".test"))
         self.assertTrue(Path("folder2/foobar.test").exists())
 
-        self.assertEqual("folder2/hello.test", Path("folder2/foobar.test").rename(stem="hello"))
+        path = Path("folder2/foobar.test")
+        self.assertEqual("folder2/hello.test", path.rename(path.with_stem("hello")))
         self.assertTrue(Path("folder2/hello.test").exists())
 
     def test_copy(self):

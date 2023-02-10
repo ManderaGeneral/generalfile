@@ -71,20 +71,14 @@ class _Path_Operations:
             return read_path.open_operation("r", lambda stream: json.loads(stream.read()), no_file_default=default)
 
     @deco_require_state(exists=True)
-    def rename(self, name=None, stem=None, suffix=None, overwrite=False):
+    def rename(self, path, overwrite=False):
         """ Rename this single file or folder to anything.
 
             :param generalfile.Path self:
-            :param name:
-            :param stem:
-            :param suffix:
+            :param generalfile.Path or str path:
             :param overwrite: """
-        new_path = self
-        for key, value in {"stem": stem, "suffix": suffix, "name": name}.items():
-            if value is not None:
-                new_path = getattr(new_path, f"with_{key}")(value)
-        if new_path == self:
-            return
+        path = self.Path(path)
+        new_path = self.with_name(path.name())
 
         with self.lock(new_path):
             if overwrite:
