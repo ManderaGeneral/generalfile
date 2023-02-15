@@ -78,6 +78,8 @@ class _Path_Operations:
             :param overwrite: """
         path = self.Path(path)
         new_path = self.with_name(path.name())
+        if new_path == self:
+            return self
 
         with self.lock(new_path):
             if overwrite and new_path.exists():
