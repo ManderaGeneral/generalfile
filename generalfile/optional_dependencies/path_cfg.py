@@ -96,9 +96,8 @@ class _Cfg(_Extension):
 
     def append(self, dict_):
         """ Update this cfg with a dictionary. """
-        with self.AppendContext(self.path) as append_path:
-            # append_path.cfg.write(dict_=append_path.cfg.read() | dict_, overwrite=True)
-            append_path.cfg.write(dict_={**append_path.cfg.read(), **dict_}, overwrite=True)
+        # append_path.cfg.write(dict_=append_path.cfg.read() | dict_, overwrite=True)  # 3.9
+        self.write(dict_={**self.path.cfg.read(), **dict_}, overwrite=True)
 
 
 
