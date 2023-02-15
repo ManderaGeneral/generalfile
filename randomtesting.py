@@ -2,13 +2,15 @@
 from generalfile import *
 
 from generalpackager import Venv
+import sys
 
-print(Venv.get_active_venv())
+print(sys.path)
+# print(Venv.get_active_venv().python_home_exe_path())
 from generalfile.test.setup_workdir import setup_workdir
 
 from generallibrary import Ver
 
-Path("hi").write()
+# Path("hi").write()
 
 # with Path("hi").as_renamed("hello") as path:
 #     print(path, path.exists())
