@@ -34,7 +34,7 @@ class _Spreadsheet(_Extension):
 
         with self.WriteContext(self.path, overwrite=overwrite) as write_path:
             if df.empty:
-                write_path.write()
+                self.path.write(overwrite=overwrite)
                 return False, False
 
             useHeader = self._indexIsNamed(df.columns)
