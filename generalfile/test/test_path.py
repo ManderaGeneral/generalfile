@@ -278,6 +278,37 @@ class FileTest(PathTest):
         self.assertEqual("folder2/hello.test", path.rename(path.with_stem("hello")))
         self.assertTrue(Path("folder2/hello.test").exists())
 
+    def test_rename_file_exists(self):
+        Path("test.txt").write()
+        Path("hello.txt").write()
+
+        with self.assertRaises(FileExistsError):
+            Path("test.txt").rename("hello.txt")
+
+    def test_rename_folder_exists(self):
+        Path("test").create_folder()
+        Path("hello").create_folder()
+
+        with self.assertRaises(FileExistsError):
+            Path("test").rename("hello")
+
+    def test_rename_file_overwrite(self):
+        Path("test.txt").write(1)
+        Path("hello.txt").write(2)
+
+        Path("test.txt").rename("hello.txt", overwrite=True)
+
+        self.assertEquals(1, Path("hello.txt").read())
+        self.assertFalse(Path("test.txt").exists())
+
+    def test_rename_folder_overwrite(self):
+        Path("test").create_folder()
+        Path("hello").create_folder()
+
+        Path("test").rename("hello", overwrite=True)
+        self.assertFalse(Path("test").exists())
+        self.assertTrue(Path("hello").exists())
+
     def test_as_renamed(self):
         path = Path("hi")
         path.write()

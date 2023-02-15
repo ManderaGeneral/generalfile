@@ -80,10 +80,9 @@ class _Path_Operations:
         new_path = self.with_name(path.name())
 
         with self.lock(new_path):
-            if overwrite:
-                self._path.replace(new_path)
-            else:
-                self._path.rename(new_path)
+            if overwrite and new_path.exists():
+                new_path.delete()
+            os.rename(self, new_path)
             self._removed_path()
         return new_path
 
