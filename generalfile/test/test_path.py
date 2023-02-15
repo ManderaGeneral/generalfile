@@ -298,7 +298,7 @@ class FileTest(PathTest):
 
         Path("test.txt").rename("hello.txt", overwrite=True)
 
-        self.assertEquals(1, Path("hello.txt").read())
+        self.assertEqual(1, Path("hello.txt").read())
         self.assertFalse(Path("test.txt").exists())
 
     def test_rename_folder_overwrite(self):
@@ -308,6 +308,20 @@ class FileTest(PathTest):
         Path("test").rename("hello", overwrite=True)
         self.assertFalse(Path("test").exists())
         self.assertTrue(Path("hello").exists())
+
+    def test_rename_same(self):
+        Path("test").write(5)
+        Path("test").rename("test")
+        self.assertEquals(5, Path("test").read())
+
+    def test_rename_same_overwrite(self):
+        Path("test").write(5)
+        Path("test").rename("test", overwrite=True)
+        self.assertEquals(5, Path("test").read())
+
+    def test_rename_doesnt_exist(self):
+        with self.assertRaises(AttributeError):
+            Path("test").rename("hello")
 
     def test_as_renamed(self):
         path = Path("hi")
@@ -672,6 +686,10 @@ class FileTest(PathTest):
         x = Path(".....hi/there")
         x.create_folder()
         self.assertIs(True, x.exists())
+
+    def test_write_to_temp(self):
+        from generalfile.optional_dependencies._extension import WriteContext
+        self.assertRaises(AssertionError, Path("foo").with_suffix(WriteContext.SUFFIX).write)
 
 
 
