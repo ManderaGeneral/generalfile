@@ -312,12 +312,12 @@ class FileTest(PathTest):
     def test_rename_same(self):
         Path("test").write(5)
         Path("test").rename("test")
-        self.assertEquals(5, Path("test").read())
+        self.assertEqual(5, Path("test").read())
 
     def test_rename_same_overwrite(self):
         Path("test").write(5)
         Path("test").rename("test", overwrite=True)
-        self.assertEquals(5, Path("test").read())
+        self.assertEqual(5, Path("test").read())
 
     def test_rename_doesnt_exist(self):
         with self.assertRaises(AttributeError):
