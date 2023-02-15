@@ -82,8 +82,7 @@ class _Path_Operations:
             return self
 
         with self.lock(new_path):
-            if overwrite and new_path.exists():
-                new_path.delete()
+            new_path.overwrite_check(overwrite=overwrite)
             os.rename(self, new_path)
             self._removed_path()
         return new_path
@@ -114,12 +113,15 @@ class _Path_Operations:
         new_path = self.with_name(self.Path(new_path).name())
 
         with self.lock(new_path):
-            if new_path.exists():
-                if overwrite:
-                    new_path.delete()
-                else:
-                    raise AttributeError(f"Target path '{new_path}' exists but overwrite is `False`.")
+            new_path.overwrite_check(overwrite=overwrite)
             self._copy_file_or_folder(new_path=new_path)
+
+    def overwrite_check(self, overwrite):
+        if self.exists():
+            if overwrite:
+                self.delete()
+            else:
+                raise FileExistsError(f"Path '{self}' exists but overwrite is `False`.")
 
     def _copy_file_or_folder(self, new_path):
         """ :param generalfile.Path self: """
