@@ -23,12 +23,12 @@ Easily manage files cross platform.
 
 ```mermaid
 flowchart LR
-2([library]) --> 4([vector])
-1([tool]) --> 2([library])
-2([library]) --> 5([packager])
-0([import]) --> 2([library])
 3([file]) --> 5([packager])
 2([library]) --> 3([file])
+1([tool]) --> 2([library])
+2([library]) --> 5([packager])
+2([library]) --> 4([vector])
+0([import]) --> 2([library])
 0([import]) --> 3([file])
 click 0 "https://github.com/ManderaGeneral/generalimport"
 click 1 "https://github.com/ManderaGeneral/generaltool"
@@ -182,16 +182,16 @@ Pull requests are currently not wanted, please discuss with me before investing 
 
 | Module                                                                                                                                               | Message                                                                                                                                                                                   |
 |:-----------------------------------------------------------------------------------------------------------------------------------------------------|:------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_bases/path_lock.py#L1'>path_lock.py</a>                          | <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_bases/path_lock.py#L11'>Lock the optional extra paths.</a>                                            |
-| <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_bases/path_operations.py#L1'>path_operations.py</a>              | <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_bases/path_operations.py#L449'>Fix contains() using raw open()</a>                                    |
 | <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/configfile.py#L1'>configfile.py</a>                                   | <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/configfile.py#L119'>Handle custom serializers within iterable for ConfigFile.</a>                          |
 | <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path.py#L1'>path.py</a>                                               | <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path.py#L27'>Binary extension.</a>                                                                         |
+| <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_bases/path_lock.py#L1'>path_lock.py</a>                          | <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_bases/path_lock.py#L11'>Lock the optional extra paths.</a>                                            |
+| <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_bases/path_operations.py#L1'>path_operations.py</a>              | <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/path_bases/path_operations.py#L449'>Fix contains() using raw open()</a>                                    |
 | <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/optional_dependencies/path_spreadsheet.py#L1'>path_spreadsheet.py</a> | <a href='https://github.com/ManderaGeneral/generalfile/blob/master/generalfile/optional_dependencies/path_spreadsheet.py#L115'>Support DataFrame and Series with spreadsheet.append()</a> |
 </details>
 
 
 <sup>
-Generated 2023-03-06 00:41 CET for commit <a href='https://github.com/ManderaGeneral/generalfile/commit/master'>master</a>.
+Generated 2023-03-07 07:00 CET for commit <a href='https://github.com/ManderaGeneral/generalfile/commit/master'>master</a>.
 </sup>
 </details>
 
