@@ -5,7 +5,7 @@ def setup_workdir():
     repo_path = Path().get_parent_repo()
 
     if not repo_path:
-        raise EnvironmentError(f"Failed setting correct woroking dir, current working dir is not inside a repo")
+        raise EnvironmentError(f"Failed setting correct working dir, current working dir {Path().absolute()} is not inside a repo")
 
     path = repo_path / repo_path.name() / "test/tests"
     path.set_working_dir()
