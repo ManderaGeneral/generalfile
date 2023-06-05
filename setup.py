@@ -11,7 +11,7 @@ setup(
     name="generalfile",
     author='Rickard "Mandera" Abraham',
     author_email="rickard.abraham@gmail.com",
-    version="2.5.15",
+    version="2.5.16",
     description="Easily manage files cross platform.",
     long_description=long_description,
     long_description_content_type="text/markdown",
